@@ -67,7 +67,7 @@ export const Settings = ({
   };
 
   return (
-    <div className="mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
+    <div className="w-full md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
       <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdSettings /> <span>Settings</span>
@@ -103,7 +103,7 @@ export const Settings = ({
         {/* <pre className="text-[6px]">
           {JSON.stringify(searchSettings, null, 2)}
         </pre> */}
-        <div>
+        <div className="flex space-x-2">
           <label>
             <input
               type="checkbox"
@@ -139,6 +139,12 @@ export const Settings = ({
             />
             Pre-Owned
           </label>
+        </div>
+        <div className="flex space-x-2">
+          <label>Year</label>
+          <input placeholder="Min" className="w-16" />
+          <input placeholder="Max" className="w-16" />
+          <button>Or By Year</button>
         </div>
       </div>
 

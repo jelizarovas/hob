@@ -11,6 +11,7 @@ import { inventory } from "./data";
 import { VehicleCard } from "./VehicleCard";
 import useSearchSettings from "./useSearchSettings";
 import { Settings } from "./Settings";
+import { camelCaseToProperCase, debounce } from "./utils";
 
 const burienAPI = {
   name: "Burien",
@@ -27,22 +28,78 @@ const rairdonAPI = {
   index: "rairdonautomotivegroup_production_inventory_low_to_high",
 };
 
-function debounce(func, delay) {
-  let timeoutId;
-  return function (...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(this, args), delay);
-  };
-}
+const performInitialSearch = (api) => {
+  fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify({
+        hitsPerPage: 1,
+        facets: [
+          "features",
+          "our_price",
+          "lightning.lease_monthly_payment",
+          "lightning.finance_monthly_payment",
+          "type",
+          "api_id",
+          "year",
+          "make",
+          "model",
+          "model_number",
+          "trim",
+          "body",
+          "doors",
+          "miles",
+          "ext_color_generic",
+          "features",
+          "lightning.isSpecial",
+          "lightning.locations",
+          "lightning.status",
+          "lightning.class",
+          "fueltype",
+          "engine_description",
+          "transmission_description",
+          "metal_flags",
+          "city_mpg",
+          "hw_mpg",
+          "days_in_stock",
+          "ford_SpecialVehicle",
+          "lightning.locations.meta_location",
+          "ext_color",
+          "title_vrp",
+          "int_color",
+          "certified",
+          "lightning",
+          "location",
+          "drivetrain",
+          "int_options",
+          "ext_options",
+          "cylinders",
+        ],
+      }),
+    }
+  )
+    .then((response) => response.json())
+    .then(({ facets, facets_states, nbHits }) => {
+      console.log({ facets, facets_states, nbHits });
+    });
+};
 
 export const Check = () => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [api, setAPI] = useState(burienAPI);
   const [total, setTotal] = useState(0);
+  const [settingsOpen, setSettingsOpen] = React.useState(true);
 
   const [searchSettings, updateSearchSettings] = useSearchSettings();
+
+  const yearRange = false;
 
   useEffect(() => {
     const performSearch = debounce(() => {
@@ -55,8 +112,20 @@ export const Check = () => {
           },
           method: "POST",
           body: JSON.stringify({
-            hitsPerPage: 50,
+            hitsPerPage: 100,
             query: query,
+            facetFilters: [
+              Object.entries(searchSettings.type).reduce(
+                (acc, [label, val]) => {
+                  if (val)
+                    return [...acc, "type:" + camelCaseToProperCase(label)];
+                  return acc;
+                },
+                []
+              ),
+              // ["year:2022"],
+              // ["location:cpo|purchase"],
+            ],
             // facetFilters: [
             //   [
             //     searchSettings.type.new && "type:New",
@@ -131,7 +200,7 @@ export const Check = () => {
           console.log({ data });
           // data?.facets_stats &&
           //   updateSearchSettings(data.facets_stats, "UPDATE_FACET_STATS");
-          setResults(data.hits);
+          setFilteredResults(data.hits);
           setTotal(data.nbHits);
         });
     }, 1000);
@@ -157,7 +226,12 @@ export const Check = () => {
         total={total}
         searchSettings={searchSettings}
         updateSearchSettings={updateSearchSettings}
+        setSettingsOpen={setSettingsOpen}
+        settingsOpen={settingsOpen}
       />
+      {/* <button className="bg-red-500" onClick={() => performInitialSearch(api)}>
+        API
+      </button> */}
       {/* <pre className="text-[6px]">{JSON.stringify(searchSettings, null, 2)}</pre> */}
       {/* <QueryEdit /> */}
       {/* <input
@@ -165,11 +239,24 @@ export const Check = () => {
         className="bg-transparent border border-white border-opacity-30 rounded px-2 py-1 my-1"
         placeholder="Price from"
       /> */}
-      <div className="container mx-auto flex flex-col md:flex-row gap-2 justify-center transition-all flex-wrap md:space-y-0 md:px-4">
-        {isLoading && <div>Loading....</div>}
-        {results.map((r, i) => (
-          <VehicleCard num={i} key={r?.stock || i} v={r} />
-        ))}
+      <div className="flex flex-col md:flex-row px-2">
+        {settingsOpen && (
+          <Settings
+            api={api}
+            setAPI={setAPI}
+            total={total}
+            setSettingsOpen={setSettingsOpen}
+            searchSettings={searchSettings}
+            updateSearchSettings={updateSearchSettings}
+            settingsOpen={settingsOpen}
+          />
+        )}
+        <div className="container mx-auto flex flex-col md:flex-row gap-2 justify-center transition-all flex-wrap md:space-y-0 md:px-4">
+          {isLoading && <div>Loading....</div>}
+          {filteredResults.map((r, i) => (
+            <VehicleCard num={i} key={r?.stock || i} v={r} />
+          ))}
+        </div>
       </div>
 
       {/* <pre className="text-xs">{JSON.stringify(results, null, 2)}</pre> */}
@@ -186,10 +273,10 @@ const MenuBar = ({
   total,
   searchSettings,
   updateSearchSettings,
+  settingsOpen,
+  setSettingsOpen,
   ...props
 }) => {
-  const [settingsOpen, setSettingsOpen] = React.useState(true);
-
   return (
     <>
       <div className="flex ">
@@ -220,16 +307,6 @@ const MenuBar = ({
           </button>
         </div>
       </div>
-      {settingsOpen && (
-        <Settings
-          api={api}
-          setAPI={setAPI}
-          total={total}
-          setSettingsOpen={setSettingsOpen}
-          searchSettings={searchSettings}
-          updateSearchSettings={updateSearchSettings}
-        />
-      )}
     </>
   );
 };

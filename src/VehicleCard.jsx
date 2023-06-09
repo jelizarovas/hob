@@ -15,9 +15,9 @@ export const VehicleCard = ({ v, num, ...props }) => {
 
   return (
     <>
-      <div className="w-full md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded ">
+      <div className="w-full  md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded ">
         <div
-          className="w-full h-48  rounded-t flex-shrink-0 overflow-hidden"
+          className="w-full h-72 md:h-48  rounded-t flex-shrink-0 overflow-hidden"
           style={backgroundStyle}
         >
           {/* <img className="w-full h-auto" src={v?.thumbnail} /> */}
