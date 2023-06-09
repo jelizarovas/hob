@@ -57,19 +57,19 @@ export const Check = () => {
           body: JSON.stringify({
             hitsPerPage: 50,
             query: query,
-            facetFilters: [
-              [
-                searchSettings.type.new && "type:New",
-                searchSettings.type.used && "type:Used",
-                searchSettings.type.certifiedUsed && "type:Certified Used",
-              ],
-              ["year:2022", "year:2019", "year:2017"],
-            ], //"type:New",
-            numericFilters: [
-              "miles>=48494",
-              "our_price<=26299",
-              "our_price>=22799",
-            ],
+            // facetFilters: [
+            //   [
+            //     searchSettings.type.new && "type:New",
+            //     searchSettings.type.used && "type:Used",
+            //     searchSettings.type.certifiedUsed && "type:Certified Used",
+            //   ],
+            //   ["year:2022", "year:2019", "year:2017"],
+            // ], //"type:New",
+            // numericFilters: [
+            //   "miles>=48494",
+            //   "our_price<=26299",
+            //   "our_price>=22799",
+            // ],
             facets: [
               "features",
               "our_price",
