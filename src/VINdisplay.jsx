@@ -27,9 +27,9 @@ export const VINComponent = ({ vin }) => {
       className="flex space-x-1 group cursor-copy"
       onClick={(e) => handleCopy(vin)}
     >
-      <span className="opacity-30 group-hover:opacity-70 transition-all">
+      {/* <span className="opacity-30 group-hover:opacity-70 transition-all">
         {regularVIN}
-      </span>
+      </span> */}
       <span
         className="opacity-70 transition-all group-hover:opacity-100 hover:text-indigo-400 "
         onClick={(e) => e.stopPropagation() || handleCopy(boldStockNumber)}
