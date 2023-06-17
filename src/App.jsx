@@ -1,6 +1,6 @@
 import { Check } from "./Check";
 import { Navbar } from "./Navbar";
-import { HashRouter as Router, Route, Routes, Switch } from "react-router-dom";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import ModalComponent from "./ModalComponent";
 import { QRScanner } from "./QRScanner";
 
@@ -9,10 +9,8 @@ function App({ children }) {
     <Router>
       {/* <QRScanner /> */}
       {/* <Navbar /> */}
-      <Routes>
-        <Route exact path="/stock/:stock" component={ModalComponent} />
-        <Route path="/" component={Check} />
-      </Routes>
+      <Route exact path="/:stock" component={ModalComponent} />
+      <Route path="/" component={Check} />
     </Router>
   );
 }

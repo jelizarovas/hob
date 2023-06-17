@@ -104,7 +104,7 @@ export const Check = () => {
   const [isLoading, setLoading] = useState(true);
   const [api, setAPI] = useState(burienAPI);
   const [total, setTotal] = useState(0);
-  const [settingsOpen, setSettingsOpen] = React.useState(true);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   const [searchSettings, updateSearchSettings] = useSearchSettings();
 
@@ -244,7 +244,7 @@ export const Check = () => {
   }
 
   return (
-    <>
+    <div className="relative overflow-y-scroll h-screen">
       <MenuBar
         setQuery={setQuery}
         query={query}
@@ -279,7 +279,7 @@ export const Check = () => {
             settingsOpen={settingsOpen}
           />
         )}
-        <div className="container mx-auto flex flex-col md:flex-row gap-2 justify-center transition-all flex-wrap md:space-y-0 md:px-4">
+        <div className="container   mx-auto flex flex-col md:flex-row gap-2 justify-center transition-all flex-wrap md:space-y-0 md:px-4">
           {isLoading && <div>Loading....</div>}
           {filteredResults.map((r, i) => (
             <VehicleCard num={i} key={r?.stock || i} v={r} />
@@ -288,7 +288,7 @@ export const Check = () => {
       </div>
 
       {/* <pre className="text-xs">{JSON.stringify(results, null, 2)}</pre> */}
-    </>
+    </div>
   );
 };
 
