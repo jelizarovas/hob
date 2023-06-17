@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 
 const initialSettings = {
-  type: { new: true, certifiedUsed: true, used: true },
+  type: { new: false, certifiedUsed: true, used: true },
   price: [null /*min*/, null /*max*/],
   year: [null /*min*/, null /*max*/],
   mileage: [null /*min*/, null /*max*/],

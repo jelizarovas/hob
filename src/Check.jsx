@@ -12,6 +12,7 @@ import { VehicleCard } from "./VehicleCard";
 import useSearchSettings from "./useSearchSettings";
 import { Settings } from "./Settings";
 import { camelCaseToProperCase, debounce } from "./utils";
+import algoliasearch from "algoliasearch";
 
 const burienAPI = {
   name: "Burien",
@@ -26,6 +27,12 @@ const rairdonAPI = {
   "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
   "X-Algolia-Application-Id": "V3ZOVI2QFZ",
   index: "rairdonautomotivegroup_production_inventory_low_to_high",
+  index2: "rairdonautomotivegroup_production_inventory_high_to_low",
+  index3: "rairdonautomotivegroup_production_inventory_specials_price",
+  index4: "rairdonautomotivegroup_production_inventory_mileage_low_to_high",
+  index5: "rairdonautomotivegroup_production_inventory_mileage_high_to_low",
+  index6:
+    "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
 };
 
 const performInitialSearch = (api) => {
@@ -79,6 +86,8 @@ const performInitialSearch = (api) => {
           "int_options",
           "ext_options",
           "cylinders",
+          "imageUrls",
+          "imageThumbUrls",
         ],
       }),
     }
@@ -100,6 +109,22 @@ export const Check = () => {
   const [searchSettings, updateSearchSettings] = useSearchSettings();
 
   const yearRange = false;
+
+  // const client = algoliasearch(
+  //   api["X-Algolia-Application-Id"],
+  //   api["X-Algolia-API-Key"]
+  // );
+  // // client.listIndices().then(({ items }) => {
+  // //   console.log(items);
+  // // });
+  // const index = client.initIndex(api.index);
+
+  // let hits = [];
+
+  // // Get all records as an iterator
+  // index.search("civic").then(({ hits }) => {
+  //   console.log(hits);
+  // });
 
   useEffect(() => {
     const performSearch = debounce(() => {
@@ -150,47 +175,50 @@ export const Check = () => {
               "make",
               "model",
               "model_number",
-              "trim",
-              "body",
-              "doors",
-              "miles",
-              "ext_color_generic",
-              "features",
-              "lightning.isSpecial",
-              "lightning.locations",
-              "lightning.status",
-              "lightning.class",
-              "fueltype",
-              "engine_description",
-              "transmission_description",
-              "metal_flags",
-              "city_mpg",
-              "hw_mpg",
-              "days_in_stock",
-              "ford_SpecialVehicle",
-              "lightning.locations.meta_location",
-              "ext_color",
-              "title_vrp",
-              "int_color",
-              "certified",
-              "lightning",
-              "location",
-              "drivetrain",
-              "int_options",
-              "ext_options",
-              "cylinders",
-              "vin",
-              "stock",
-              "msrp",
-              "our_price_label",
-              "finance_details",
-              "lease_details",
-              "thumbnail",
-              "link",
-              "objectID",
-              "algolia_sort_order",
-              "date_modified",
-              "hash",
+              // "trim",
+              // "body",
+              // "doors",
+              // "miles",
+              // "ext_color_generic",
+              // "features",
+              // "lightning.isSpecial",
+              // "lightning.locations",
+              // "lightning.status",
+              // "lightning.class",
+              // "fueltype",
+              // "engine_description",
+              // "transmission_description",
+              // "metal_flags",
+              // "city_mpg",
+              // "hw_mpg",
+              // "days_in_stock",
+              // "ford_SpecialVehicle",
+              // "lightning.locations.meta_location",
+              // "ext_color",
+              // "title_vrp",
+              // "int_color",
+              // "certified",
+              // "lightning",
+              // "location",
+              // "drivetrain",
+              // "int_options",
+              // "ext_options",
+              // "cylinders",
+              // "vin",
+              // "stock",
+              // "msrp",
+              // "our_price_label",
+              // "finance_details",
+              // "lease_details",
+              // "thumbnail",
+              // "link",
+              // "objectID",
+              // "algolia_sort_order",
+              // "date_modified",
+              // "hash",
+              // "vdp",
+              // "gallery",
+              // "vdp_gallery",
             ],
           }),
         }
