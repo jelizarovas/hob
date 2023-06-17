@@ -62,7 +62,7 @@ const IframeComponent = ({ url }) => {
       id="dipPhoton360Player"
       allowFullScreen={false}
       src={url}
-      className="w-full max-w-[600px] h-[600px] lg:h-[520px]"
+      className="w-full max-w-[600px] h-[355px] lg:h-[520px]"
       // style={{ width: "100%", height: "100%" }}
     />
   );
