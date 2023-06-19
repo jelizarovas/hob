@@ -21,10 +21,10 @@ export const VehicleCard = ({ v, num, ...props }) => {
         state: v,
       }}
       // onClick={toggleOpen}
-      className="w-full  md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded "
+      className="w-2/5 sm:w-1/3  md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded "
     >
       <div
-        className="w-full h-72 md:h-48  rounded-t flex-shrink-0 overflow-hidden"
+        className="w-full h-28 sm:h-28 md:h-48  rounded-t flex-shrink-0 overflow-hidden"
         style={backgroundStyle}
       >
         {/* <img className="w-full h-auto" src={v?.thumbnail} /> */}

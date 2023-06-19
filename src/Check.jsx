@@ -279,7 +279,7 @@ export const Check = () => {
             settingsOpen={settingsOpen}
           />
         )}
-        <div className="container   mx-auto flex flex-col md:flex-row gap-2 justify-center transition-all flex-wrap md:space-y-0 md:px-4">
+        <div className="container   mx-auto flex flex-row sm:flex-row gap-2 justify-center transition-all flex-wrap md:space-y-0 md:px-4">
           {isLoading && <div>Loading....</div>}
           {filteredResults.map((r, i) => (
             <VehicleCard num={i} key={r?.stock || i} v={r} />
