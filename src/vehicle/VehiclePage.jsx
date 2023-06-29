@@ -30,7 +30,7 @@ function getVehicleDataByStockNumber(stock) {
     });
 }
 
-const ModalComponent = () => {
+export const VehiclePage = () => {
   const { stock } = useParams();
   const { state } = useLocation();
   const history = useHistory();
@@ -206,5 +206,3 @@ const IframeComponent = ({ url }) => {
     />
   );
 };
-
-export default ModalComponent;

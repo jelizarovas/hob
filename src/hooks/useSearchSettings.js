@@ -1,6 +1,30 @@
 import { useReducer } from "react";
 
+const burienAPI = {
+  name: "Burien",
+  "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
+  "X-Algolia-Application-Id": "SEWJN80HTN",
+  index:
+    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+};
+
+const rairdonAPI = {
+  name: "Rairdon",
+  "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
+  "X-Algolia-Application-Id": "V3ZOVI2QFZ",
+  index: "rairdonautomotivegroup_production_inventory_low_to_high",
+  index2: "rairdonautomotivegroup_production_inventory_high_to_low",
+  index3: "rairdonautomotivegroup_production_inventory_specials_price",
+  index4: "rairdonautomotivegroup_production_inventory_mileage_low_to_high",
+  index5: "rairdonautomotivegroup_production_inventory_mileage_high_to_low",
+  index6:
+    "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
+};
+
 const initialSettings = {
+  query: "",
+  api: burienAPI,
+  totalFound: 0,
   type: { new: false, certifiedUsed: true, used: true },
   price: [null /*min*/, null /*max*/],
   year: [null /*min*/, null /*max*/],
@@ -23,6 +47,13 @@ const initialSettings = {
 
 const reducer = (state, { type, payload }) => {
   switch (type) {
+    case "QUERY":
+      return { ...state, query: payload };
+    case "UPDATE_API":
+      return {
+        ...state,
+        api: payload === "burienApi" ? burienAPI : rairdonAPI,
+      };
     case "UPDATE_SETTINGS":
       return { ...state, ...payload };
     case "UPDATE_TYPE":
@@ -48,7 +79,7 @@ const reducer = (state, { type, payload }) => {
 const useSearchSettings = () => {
   const [state, dispatch] = useReducer(reducer, initialSettings);
 
-  const updateSearchSettings = (payload, type) => {
+  const updateSearchSettings = (type, payload) => {
     dispatch({ type: type || "UPDATE_SETTINGS", payload });
   };
 
@@ -89,6 +120,6 @@ const lightningLocationsMetaLocation = [
   "Honda of Marysville",
   "Honda of Sumner",
   "Hyundai of Bellingham",
-  "Rairdon’s Dodge Chrysler Jeep Ram of Marysville",
+  "Rairdon's Dodge Chrysler Jeep Ram of Marysville",
   "Subaru of Auburn",
 ];

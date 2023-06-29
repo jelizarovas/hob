@@ -1,69 +1,13 @@
-import { useState, useEffect, useReducer } from "react";
-import {
-  MdClear,
-  MdKeyboardArrowDown,
-  MdOutlineHistory,
-  MdOutlineSettingsSystemDaydream,
-  MdSearch,
-  MdSettings,
-} from "react-icons/md";
-
-const burienAPI = {
-  name: "Burien",
-  "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
-  "X-Algolia-Application-Id": "SEWJN80HTN",
-  index:
-    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
-};
-
-const rairdonAPI = {
-  name: "Rairdon",
-  "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
-  "X-Algolia-Application-Id": "V3ZOVI2QFZ",
-  index: "rairdonautomotivegroup_production_inventory_low_to_high",
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "UPDATE_SETTING":
-      return { ...state, [action.payload.settingName]: action.payload.value };
-    default:
-      return state;
-  }
-};
+import { MdClear, MdSettings } from "react-icons/md";
 
 export const Settings = ({
-  api,
-  setAPI,
-  total,
   setSettingsOpen,
-  searchSettings,
-  updateSearchSettings,
+  settings,
+  updateSettings,
   ...props
 }) => {
-  // Load settings data from local storage on component mount
-  useEffect(() => {
-    const storedData = localStorage.getItem("settingsData");
-    if (storedData) {
-      dispatch({ type: "LOAD_DATA", payload: JSON.parse(storedData) });
-    }
-  }, []);
-
-  // Define state and dispatch for managing local data
-  const [state, dispatch] = useReducer(reducer, settingsObj);
-
-  // Update setting value
-  const updateSetting = (settingName, value) => {
-    dispatch({ type: "UPDATE_SETTING", payload: { settingName, value } });
-  };
-
-  // Save data to local storage whenever state changes
-  useEffect(() => {
-    localStorage.setItem("settingsData", JSON.stringify(state));
-  }, [state]);
-
   const handleCheckboxChange = (option, value) => {
-    updateSearchSettings({ [option]: !value }, "UPDATE_TYPE");
+    updateSettings("UPDATE_TYPE", { [option]: !value });
   };
 
   return (
@@ -83,34 +27,32 @@ export const Settings = ({
       <div className="flex text-xs">
         <button
           className={`py-2 px-4 m-2 border border-white border-opacity-20 rounded-xl ${
-            api.name === burienAPI.name ? "bg-blue-500" : ""
+            settings.api.name === "Burien" ? "bg-blue-500" : ""
           }`}
-          onClick={() => setAPI(burienAPI)}
+          onClick={() => updateSettings("UPDATE_API", "burienApi")}
         >
-          {burienAPI.name}
+          Burien
         </button>
         <button
           className={`py-2 px-4 m-2 border border-white border-opacity-20 rounded-xl ${
-            api.name === rairdonAPI.name ? "bg-red-500" : ""
+            settings.api.name === "Rairdon" ? "bg-red-500" : ""
           }`}
-          onClick={() => setAPI(rairdonAPI)}
+          onClick={() => updateSettings("UPDATE_API", "rairdonApi")}
         >
-          {rairdonAPI.name}
+          Rairdon
         </button>
-        <div className="p-2 m-2">Total results: {total.toString()}</div>
+        {/* <div className="p-2 m-2">Total results: {total.toString()}</div> */}
       </div>
       <div>
         {/* <pre className="text-[6px]">
-          {JSON.stringify(searchSettings, null, 2)}
+          {JSON.stringify(settings, null, 2)}
         </pre> */}
         <div className="flex space-x-2">
           <label>
             <input
               type="checkbox"
-              checked={searchSettings.type.new}
-              onChange={() =>
-                handleCheckboxChange("new", searchSettings.type.new)
-              }
+              checked={settings.type.new}
+              onChange={() => handleCheckboxChange("new", settings.type.new)}
             />
             New
           </label>
@@ -118,11 +60,11 @@ export const Settings = ({
           <label>
             <input
               type="checkbox"
-              checked={searchSettings.type.certifiedUsed}
+              checked={settings.type.certifiedUsed}
               onChange={() =>
                 handleCheckboxChange(
                   "certifiedUsed",
-                  searchSettings.type.certifiedUsed
+                  settings.type.certifiedUsed
                 )
               }
             />
@@ -132,10 +74,8 @@ export const Settings = ({
           <label>
             <input
               type="checkbox"
-              checked={searchSettings.type.used}
-              onChange={() =>
-                handleCheckboxChange("used", searchSettings.type.used)
-              }
+              checked={settings.type.used}
+              onChange={() => handleCheckboxChange("used", settings.type.used)}
             />
             Pre-Owned
           </label>
@@ -147,69 +87,6 @@ export const Settings = ({
           <button>Or By Year</button>
         </div>
       </div>
-
-      {false &&
-        state.map((setting) => (
-          <div key={setting.id}>
-            <h3>{setting.settingName}</h3>
-            <p>{setting.description}</p>
-            {setting.type === "numeric" ? (
-              <input
-                className="bg-red-500"
-                type="number"
-                value={state[setting.settingName] || 0}
-                onChange={(e) =>
-                  updateSetting(setting.settingName, e.target.value)
-                }
-              />
-            ) : setting.type === "selection" ? (
-              <select
-                value={state[setting.settingName] || ""}
-                onChange={(e) =>
-                  updateSetting(setting.settingName, e.target.value)
-                }
-              >
-                {/* Render options based on your specific requirements */}
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-              </select>
-            ) : setting.type === "options" ? (
-              /* Render options based on your specific requirements */
-              <div>
-                <input
-                  type="radio"
-                  id={`option1_${setting.id}`}
-                  name={`options_${setting.id}`}
-                  value="option1"
-                  checked={state[setting.settingName] === "option1"}
-                  onChange={() => updateSetting(setting.settingName, "option1")}
-                />
-                <label htmlFor={`option1_${setting.id}`}>Option 1</label>
-                <br />
-                <input
-                  type="radio"
-                  id={`option2_${setting.id}`}
-                  name={`options_${setting.id}`}
-                  value="option2"
-                  checked={state[setting.settingName] === "option2"}
-                  onChange={() => updateSetting(setting.settingName, "option2")}
-                />
-                <label htmlFor={`option2_${setting.id}`}>Option 2</label>
-                <br />
-                <input
-                  type="radio"
-                  id={`option3_${setting.id}`}
-                  name={`options_${setting.id}`}
-                  value="option3"
-                  checked={state[setting.settingName] === "option3"}
-                  onChange={() => updateSetting(setting.settingName, "option3")}
-                />
-                <label htmlFor={`option3_${setting.id}`}>Option 3</label>
-              </div>
-            ) : null}
-          </div>
-        ))}
     </div>
   );
 };

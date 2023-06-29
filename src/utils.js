@@ -13,3 +13,9 @@ export function camelCaseToProperCase(str) {
   const properCaseStr = spacedStr.charAt(0).toUpperCase() + spacedStr.slice(1);
   return properCaseStr;
 }
+
+export function parseMileage(mileage) {
+  return (
+    Math.floor(Number(mileage.toString().replace(/\D/g, "")) / 1000) + "k miles"
+  );
+}

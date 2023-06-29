@@ -1,16 +1,12 @@
-import { Check } from "./Check";
-import { Navbar } from "./Navbar";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
-import ModalComponent from "./ModalComponent";
-import { QRScanner } from "./QRScanner";
+import { Dashboard } from "./Dashboard";
+import { HashRouter as Router, Route } from "react-router-dom";
+import { VehiclePage } from "./vehicle/VehiclePage";
 
-function App({ children }) {
+function App() {
   return (
     <Router>
-      {/* <QRScanner /> */}
-      {/* <Navbar /> */}
-      <Route exact path="/:stock" component={ModalComponent} />
-      <Route path="/" component={Check} />
+      <Route exact path="/:stock" component={VehiclePage} />
+      <Route path="/" component={Dashboard} />
     </Router>
   );
 }
