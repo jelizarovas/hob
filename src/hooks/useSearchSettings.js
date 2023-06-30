@@ -27,7 +27,8 @@ const initialSettings = {
   totalFound: 0,
   type: { new: false, certifiedUsed: true, used: true },
   price: [null /*min*/, null /*max*/],
-  year: [null /*min*/, null /*max*/],
+  msrp: [null /*min*/, null /*max*/],
+  year: [1995 /*min*/, 2024 /*max*/],
   mileage: [null /*min*/, null /*max*/],
   city_mpg: [null /*min*/, null /*max*/],
   hw_mpg: [null /*min*/, null /*max*/],
@@ -54,6 +55,8 @@ const reducer = (state, { type, payload }) => {
         ...state,
         api: payload === "burienApi" ? burienAPI : rairdonAPI,
       };
+    case "UPDATE_YEAR":
+      return { ...state, year: payload };
     case "UPDATE_SETTINGS":
       return { ...state, ...payload };
     case "UPDATE_TYPE":

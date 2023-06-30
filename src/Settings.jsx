@@ -1,4 +1,5 @@
 import { MdClear, MdSettings } from "react-icons/md";
+import { SettingsSlider } from "./settings/SettingsSlider";
 
 export const Settings = ({
   setSettingsOpen,
@@ -44,9 +45,6 @@ export const Settings = ({
         {/* <div className="p-2 m-2">Total results: {total.toString()}</div> */}
       </div>
       <div>
-        {/* <pre className="text-[6px]">
-          {JSON.stringify(settings, null, 2)}
-        </pre> */}
         <div className="flex space-x-2">
           <label>
             <input
@@ -80,12 +78,88 @@ export const Settings = ({
             Pre-Owned
           </label>
         </div>
-        <div className="flex space-x-2">
-          <label>Year</label>
-          <input placeholder="Min" className="w-16" />
-          <input placeholder="Max" className="w-16" />
-          <button>Or By Year</button>
-        </div>
+
+        <SettingsSlider
+          label={"Year"}
+          minValue={1995}
+          maxValue={2023}
+          value={settings.year}
+          onChange={(newValue) => updateSettings("UPDATE_YEAR", newValue)}
+        />
+        {/* <SettingsSlider
+          label={"City MPG"}
+          minValue={0}
+          maxValue={65}
+          value={settings.city_mpg}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { city_mpg: newValue })
+          }
+        /> */}
+        {/* <SettingsSlider
+          label={"Highway MPG"}
+          minValue={0}
+          maxValue={65}
+          value={settings.hw_mpg}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { hw_mpg: newValue })
+          }
+        /> */}
+        <SettingsSlider
+          label={"Price"}
+          minValue={0}
+          maxValue={100000}
+          value={settings.price}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { price: newValue })
+          }
+        />
+        {/* <SettingsSlider
+          label={"MSRP"}
+          minValue={0}
+          maxValue={100000}
+          value={settings.msrp}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { msrp: newValue })
+          }
+        /> */}
+        <SettingsSlider
+          label={"Mileage"}
+          minValue={0}
+          maxValue={300000}
+          value={settings.mileage}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { mileage: newValue })
+          }
+        />
+        <SettingsSlider
+          label={"Days in Stock"}
+          minValue={0}
+          maxValue={100}
+          value={settings.days_in_stock}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { days_in_stock: newValue })
+          }
+        />
+
+        {/* <SettingsSlider
+          label={"Cylinders"}
+          minValue={1}
+          maxValue={12}
+          value={settings.cylinders}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { cylinders: newValue })
+          }
+        /> */}
+        {/* <SettingsSlider
+          label={"Doors"}
+          minValue={0}
+          maxValue={10}
+          value={settings.doors}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { doors: newValue })
+          }
+        /> */}
+        {/* <pre className="text-[6px]">{JSON.stringify(settings, null, 2)}</pre> */}
       </div>
     </div>
   );
