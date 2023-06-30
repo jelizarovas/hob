@@ -33,7 +33,7 @@ const useFetchVehicles = (settings, facets = initialFacets, updateSettings) => {
             query: settings.query,
             facetFilters: [
               generateTypeNewCertifiedUsed(settings.type),
-              generateYearArray(settings.year),
+              generateRangeArray("year", settings.year),
               // ["location:cpo|purchase"],
             ],
             numericFilters: [
@@ -136,16 +136,16 @@ const facets = [
   "vdp_gallery",
 ];
 
-function generateYearArray(yearRange) {
-  const minYear = yearRange[0];
-  const maxYear = yearRange[1];
-  const yearArray = [];
+function generateRangeArray(label, range) {
+  const minYear = range[0];
+  const maxYear = range[1];
+  const arr = [];
 
-  for (let year = minYear; year <= maxYear; year++) {
-    yearArray.push(`year:${year}`);
+  for (let i = minYear; i <= maxYear; i++) {
+    arr.push(`${label}:${i}`);
   }
 
-  return yearArray;
+  return arr;
 }
 
 function generateTypeNewCertifiedUsed(type) {

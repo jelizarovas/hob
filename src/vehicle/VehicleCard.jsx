@@ -30,6 +30,10 @@ export const VehicleCard = ({ v, num, ...props }) => {
           <div className="text-sm ">{v?.vin && "#" + v.vin.slice(-8)}</div>
           <div className="text-xs">{v?.miles && parseMileage(v.miles)}</div>
         </div>
+        {/* <div className="flex justify-between text-xs w-full ">
+          <div className="text-sm ">{v?.doors}</div>
+          <div className="text-xs">{v?.city_mpg} {v?.hw_mpg}</div>
+        </div> */}
       </div>
     </Link>
   );
