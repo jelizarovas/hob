@@ -11,11 +11,45 @@ const initialFacets = {
   cylinders: [0, 12],
   doors: [0, 10],
   days_in_stock: [0, 120],
+  hitsPerPage: [0, 100],
 };
 
-const useFetchVehicles = (settings, facets = initialFacets, updateSettings) => {
+const useFetchVehicles = (settings, updateSettings) => {
   const [vehicles, setVehicles] = useState([]);
+  const [facets, setFacets] = useState({});
+  const [facetsStats, setFacetsStats] = useState({});
+  const [total, setTotal] = useState(0);
+  const [defaultFacets, setDefaultFacets] = useState({});
+  const [defaultFacetsStats, setDefaultFacetsStats] = useState({});
+  const [defaultTotal, setDefaultTotal] = useState(0);
   const [isLoading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDefaultFacets = debounce(async () => {
+      const response = await fetch(
+        `https://${settings.api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${settings.api.index}/query`,
+        {
+          headers: {
+            "X-Algolia-API-Key": settings.api["X-Algolia-API-Key"],
+            "X-Algolia-Application-Id":
+              settings.api["X-Algolia-Application-Id"],
+          },
+          method: "POST",
+          body: JSON.stringify({
+            hitsPerPage: 1,
+            facetFilters: [generateTypeNewCertifiedUsed(settings.type)],
+            facets: defaultFacetKeys,
+          }),
+        }
+      );
+      const data = await response.json();
+      setDefaultTotal(data.nbHits);
+      setDefaultFacets(data.facets);
+      setDefaultFacetsStats(data.facets_stats);
+    }, 1000);
+    console.log("GETTING DEFAULTS!");
+    fetchDefaultFacets();
+  }, [settings.api, settings.type]);
 
   useEffect(() => {
     const fetchVehicles = debounce(async () => {
@@ -29,7 +63,7 @@ const useFetchVehicles = (settings, facets = initialFacets, updateSettings) => {
           },
           method: "POST",
           body: JSON.stringify({
-            hitsPerPage: 10,
+            hitsPerPage: settings.hitsPerPage,
             query: settings.query,
             facetFilters: [
               generateTypeNewCertifiedUsed(settings.type),
@@ -37,38 +71,32 @@ const useFetchVehicles = (settings, facets = initialFacets, updateSettings) => {
               // ["location:cpo|purchase"],
             ],
             numericFilters: [
-              // ...generateLabelArray(
-              //   "cylinders",
-              //   settings.cylinders,
-              //   facets?.cylinders
-              // ),
-              // ...generateLabelArray("doors", settings.doors, facets?.doors),
               ...generateLabelArray(
                 "days_in_stock",
                 settings.days_in_stock,
-                facets?.days_in_stock
+                facetsStats?.days_in_stock
               ),
-              // ...generateLabelArray("hw_mpg", settings.hw_mpg, facets?.hw_mpg),
-              // ...generateLabelArray(
-              //   "city_mpg",
-              //   settings.city_mpg,
-              //   facets?.city_mpg
-              // ),
-              ...generateLabelArray("miles", settings.mileage, facets?.mileage),
-              ...generateLabelArray("our_price", settings.price, facets?.price),
+              ...generateLabelArray(
+                "miles",
+                settings.mileage,
+                facetsStats?.miles
+              ),
+              ...generateLabelArray(
+                "our_price",
+                settings.price,
+                facetsStats?.our_price
+              ),
             ],
-            facets,
+            facets: defaultFacetKeys,
           }),
         }
       );
 
       const data = await response.json();
-
-      console.log(data?.facets_stats);
-      // data?.facets_stats &&
-      //   updateSearchSettings(data.facets_stats, "UPDATE_FACET_STATS");
       setVehicles(data.hits);
-      //   setTotal(data.nbHits);
+      setTotal(data.nbHits);
+      setFacets(data.facets);
+      setFacetsStats(data.facets_stats);
     }, 1000);
 
     setLoading(true);
@@ -76,10 +104,19 @@ const useFetchVehicles = (settings, facets = initialFacets, updateSettings) => {
     setLoading(false);
   }, [settings]);
 
-  return [vehicles, isLoading];
+  return {
+    vehicles,
+    isLoading,
+    total,
+    facets,
+    facetsStats,
+    defaultTotal,
+    defaultFacets,
+    defaultFacetsStats,
+  };
 };
 
-const facets = [
+const defaultFacetKeys = [
   "features",
   "our_price",
   "lightning.lease_monthly_payment",
@@ -136,15 +173,14 @@ const facets = [
   "vdp_gallery",
 ];
 
-function generateRangeArray(label, range) {
-  const minYear = range[0];
-  const maxYear = range[1];
+function generateRangeArray(label, range, allowedRange) {
+  const minYear = range[0] || 1990;
+  const maxYear = range[1] || 2023;
   const arr = [];
 
   for (let i = minYear; i <= maxYear; i++) {
     arr.push(`${label}:${i}`);
   }
-
   return arr;
 }
 
@@ -155,23 +191,18 @@ function generateTypeNewCertifiedUsed(type) {
   }, []);
 }
 
-function generateLabelArray(label, labelRange, allowedRange) {
+function generateLabelArray(label, range, allowedRange) {
+  if (!range || !allowedRange) return [];
+  console.log(label, range, allowedRange);
   const labelArray = [];
-  if (
-    labelRange?.[0] &&
-    labelRange[0] >= allowedRange[0] // Update condition here
-  ) {
-    labelArray.push(`${label}>=${labelRange[0]}`);
+  if (allowedRange?.min && range?.[0] && range[0] >= allowedRange?.min) {
+    labelArray.push(`${label}>=${range[0]}`);
   }
 
-  if (
-    allowedRange?.[1] &&
-    labelRange?.[1] &&
-    labelRange[1] <= allowedRange[1] // Update condition here
-  ) {
-    labelArray.push(`${label}<=${labelRange[1]}`);
+  if (allowedRange?.max && range?.[1] && range[1] <= allowedRange.max) {
+    labelArray.push(`${label}<=${range[1]}`);
   }
-
+  console.log(labelArray);
   return labelArray;
 }
 

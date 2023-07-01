@@ -1,10 +1,17 @@
 import { MdClear, MdSettings } from "react-icons/md";
 import { SettingsSlider } from "./settings/SettingsSlider";
+import { SettingsListSelect } from "./settings/SettingsListSelect";
 
 export const Settings = ({
   setSettingsOpen,
   settings,
   updateSettings,
+  facets,
+  facetsStats,
+  total,
+  defaultFacets,
+  defaultFacetsStats,
+  defaultTotal,
   ...props
 }) => {
   const handleCheckboxChange = (option, value) => {
@@ -45,7 +52,7 @@ export const Settings = ({
         {/* <div className="p-2 m-2">Total results: {total.toString()}</div> */}
       </div>
       <div>
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 px-2 py-2">
           <label>
             <input
               type="checkbox"
@@ -81,8 +88,10 @@ export const Settings = ({
 
         <SettingsSlider
           label={"Year"}
-          minValue={1995}
-          maxValue={2023}
+          minValue={defaultFacetsStats?.year.min || 1990}
+          maxValue={defaultFacetsStats?.year.max || 2024}
+          currentMinValue={facetsStats?.year.min || 0}
+          currentMaxValue={facetsStats?.year.max || 100000}
           value={settings.year}
           onChange={(newValue) => updateSettings("UPDATE_YEAR", newValue)}
         />
@@ -106,8 +115,10 @@ export const Settings = ({
         /> */}
         <SettingsSlider
           label={"Price"}
-          minValue={0}
-          maxValue={100000}
+          minValue={defaultFacetsStats?.our_price.min || 0}
+          maxValue={defaultFacetsStats?.our_price.max || 100000}
+          currentMinValue={facetsStats?.our_price.min || 0}
+          currentMaxValue={facetsStats?.our_price.max || 100000}
           value={settings.price}
           onChange={(newValue) =>
             updateSettings("UPDATE_SETTINGS", { price: newValue })
@@ -124,8 +135,8 @@ export const Settings = ({
         /> */}
         <SettingsSlider
           label={"Mileage"}
-          minValue={0}
-          maxValue={300000}
+          minValue={defaultFacetsStats?.miles.min || 0}
+          maxValue={defaultFacetsStats?.miles.max || 100000}
           value={settings.mileage}
           onChange={(newValue) =>
             updateSettings("UPDATE_SETTINGS", { mileage: newValue })
@@ -133,13 +144,42 @@ export const Settings = ({
         />
         <SettingsSlider
           label={"Days in Stock"}
-          minValue={0}
-          maxValue={100}
+          minValue={defaultFacetsStats?.days_in_stock.min || 0}
+          maxValue={defaultFacetsStats?.days_in_stock.max || 100000}
           value={settings.days_in_stock}
           onChange={(newValue) =>
             updateSettings("UPDATE_SETTINGS", { days_in_stock: newValue })
           }
         />
+        <SettingsSlider
+          label={"Cars Per Page"}
+          minValue={0}
+          currentMaxValue={total || 50}
+          maxValue={defaultTotal || 100}
+          value={settings.hitsPerPage}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { hitsPerPage: newValue })
+          }
+        />
+        <SettingsListSelect
+          label="Locations"
+          data={facets.location}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { location: newValue })
+          }
+        />
+        <SettingsListSelect label="Body" data={facets.body} />
+        <SettingsListSelect label="Make" data={facets.make} />
+        <SettingsListSelect label="Trim" data={facets.trim} />
+        <SettingsListSelect label="Type" data={facets.type} />
+        <SettingsListSelect label="Year" data={facets.year} />
+        <SettingsListSelect label="Doors" data={facets.doors} />
+        <SettingsListSelect label="Model" data={facets.model} />
+        <SettingsListSelect label="Exterior Color" data={facets.ext_color} />
+        <SettingsListSelect label="Interior Color" data={facets.int_color} />
+        {/* <SettingsListSelect label="fuelType" data={facets.fuelType} /> */}
+
+        {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
 
         {/* <SettingsSlider
           label={"Cylinders"}
@@ -160,6 +200,8 @@ export const Settings = ({
           }
         /> */}
         {/* <pre className="text-[6px]">{JSON.stringify(settings, null, 2)}</pre> */}
+        {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
+        {/* <pre className="text-[6px]">{JSON.stringify(facetsStats, null, 2)}</pre> */}
       </div>
     </div>
   );

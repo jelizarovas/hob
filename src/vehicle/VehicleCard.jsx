@@ -15,7 +15,7 @@ export const VehicleCard = ({ v, num, ...props }) => {
         pathname: `/${v?.stock}`,
         state: v,
       }}
-      className="w-2/5 sm:w-1/3  md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded "
+      className="w-2/5 sm:w-1/3 flex-grow-0  md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded "
     >
       <div
         style={backgroundStyle}

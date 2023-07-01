@@ -25,6 +25,7 @@ const initialSettings = {
   query: "",
   api: burienAPI,
   totalFound: 0,
+  hitsPerPage: 10,
   type: { new: false, certifiedUsed: true, used: true },
   price: [null /*min*/, null /*max*/],
   msrp: [null /*min*/, null /*max*/],
