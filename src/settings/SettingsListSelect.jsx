@@ -1,8 +1,8 @@
 import React from "react";
 
-export const SettingsListSelect = ({ label, data, onChange }) => {
+export const SettingsListSelect = ({ label, data, currentData, onChange }) => {
   const [isOpen, setOpen] = React.useState(false);
-
+  console.log({ data, currentData });
   return (
     <div>
       <label
@@ -14,14 +14,18 @@ export const SettingsListSelect = ({ label, data, onChange }) => {
       </label>
       {isOpen && (
         <ul className="text-xs leading-5 px-4">
-          {Object.entries(data)
-            .sort(sortFn)
-            .map(([key, value], i) => (
-              <li key={i}>
-                <span className="border rounded p-0.5">{value}</span>{" "}
-                {key.replace("<br/>", ", ")}
-              </li>
-            ))}
+          {data &&
+            currentData &&
+            Object.entries(currentData)
+              .sort(sortFn)
+              .map(([key, value], i) => (
+                <li key={i}>
+                  <span className="border rounded p-0.5">
+                    {data?.[key] || 0} / {value}
+                  </span>{" "}
+                  {key.replace("<br/>", ", ")}
+                </li>
+              ))}
         </ul>
       )}
     </div>

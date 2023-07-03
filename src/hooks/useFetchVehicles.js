@@ -14,6 +14,20 @@ const initialFacets = {
   hitsPerPage: [0, 100],
 };
 
+async function fetchReq(api, body) {
+  return fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify(body),
+    }
+  );
+}
+
 const useFetchVehicles = (settings, updateSettings) => {
   const [vehicles, setVehicles] = useState([]);
   const [facets, setFacets] = useState({});
@@ -26,22 +40,11 @@ const useFetchVehicles = (settings, updateSettings) => {
 
   useEffect(() => {
     const fetchDefaultFacets = debounce(async () => {
-      const response = await fetch(
-        `https://${settings.api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${settings.api.index}/query`,
-        {
-          headers: {
-            "X-Algolia-API-Key": settings.api["X-Algolia-API-Key"],
-            "X-Algolia-Application-Id":
-              settings.api["X-Algolia-Application-Id"],
-          },
-          method: "POST",
-          body: JSON.stringify({
-            hitsPerPage: 1,
-            facetFilters: [generateTypeNewCertifiedUsed(settings.type)],
-            facets: defaultFacetKeys,
-          }),
-        }
-      );
+      const response = await fetchReq(settings.api, {
+        hitsPerPage: 1,
+        facetFilters: [generateTypeNewCertifiedUsed(settings.type)],
+        facets: defaultFacetKeys,
+      });
       const data = await response.json();
       setDefaultTotal(data.nbHits);
       setDefaultFacets(data.facets);
@@ -53,44 +56,29 @@ const useFetchVehicles = (settings, updateSettings) => {
 
   useEffect(() => {
     const fetchVehicles = debounce(async () => {
-      const response = await fetch(
-        `https://${settings.api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${settings.api.index}/query`,
-        {
-          headers: {
-            "X-Algolia-API-Key": settings.api["X-Algolia-API-Key"],
-            "X-Algolia-Application-Id":
-              settings.api["X-Algolia-Application-Id"],
-          },
-          method: "POST",
-          body: JSON.stringify({
-            hitsPerPage: settings.hitsPerPage,
-            query: settings.query,
-            facetFilters: [
-              generateTypeNewCertifiedUsed(settings.type),
-              generateRangeArray("year", settings.year),
-              // ["location:cpo|purchase"],
-            ],
-            numericFilters: [
-              ...generateLabelArray(
-                "days_in_stock",
-                settings.days_in_stock,
-                facetsStats?.days_in_stock
-              ),
-              ...generateLabelArray(
-                "miles",
-                settings.mileage,
-                facetsStats?.miles
-              ),
-              ...generateLabelArray(
-                "our_price",
-                settings.price,
-                facetsStats?.our_price
-              ),
-            ],
-            facets: defaultFacetKeys,
-          }),
-        }
-      );
+      const response = await fetchReq(settings.api, {
+        hitsPerPage: settings.hitsPerPage,
+        query: settings.query,
+        facetFilters: [
+          generateTypeNewCertifiedUsed(settings.type),
+          generateRangeArray("year", settings.year),
+          // ["location:cpo|purchase"],
+        ],
+        numericFilters: [
+          ...generateLabelArray(
+            "days_in_stock",
+            settings.days_in_stock,
+            facetsStats?.days_in_stock
+          ),
+          ...generateLabelArray("miles", settings.mileage, facetsStats?.miles),
+          ...generateLabelArray(
+            "our_price",
+            settings.price,
+            facetsStats?.our_price
+          ),
+        ],
+        facets: defaultFacetKeys,
+      });
 
       const data = await response.json();
       setVehicles(data.hits);

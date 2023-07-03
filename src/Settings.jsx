@@ -164,19 +164,56 @@ export const Settings = ({
         <SettingsListSelect
           label="Locations"
           data={facets.location}
+          currentData={defaultFacets.location}
           onChange={(newValue) =>
             updateSettings("UPDATE_SETTINGS", { location: newValue })
           }
         />
-        <SettingsListSelect label="Body" data={facets.body} />
-        <SettingsListSelect label="Make" data={facets.make} />
-        <SettingsListSelect label="Trim" data={facets.trim} />
-        <SettingsListSelect label="Type" data={facets.type} />
-        <SettingsListSelect label="Year" data={facets.year} />
-        <SettingsListSelect label="Doors" data={facets.doors} />
-        <SettingsListSelect label="Model" data={facets.model} />
-        <SettingsListSelect label="Exterior Color" data={facets.ext_color} />
-        <SettingsListSelect label="Interior Color" data={facets.int_color} />
+        <SettingsListSelect
+          label="Body"
+          data={facets.body}
+          currentData={defaultFacets.body}
+        />
+        <SettingsListSelect
+          label="Make"
+          data={facets.make}
+          currentData={defaultFacets.make}
+        />
+        <SettingsListSelect
+          label="Trim"
+          data={facets.trim}
+          currentData={defaultFacets.trim}
+        />
+        <SettingsListSelect
+          label="Type"
+          data={facets.type}
+          currentData={defaultFacets.type}
+        />
+        <SettingsListSelect
+          label="Year"
+          data={facets.year}
+          currentData={defaultFacets.year}
+        />
+        <SettingsListSelect
+          label="Doors"
+          data={facets.doors}
+          currentData={defaultFacets.doors}
+        />
+        <SettingsListSelect
+          label="Model"
+          data={facets.model}
+          currentData={defaultFacets.model}
+        />
+        <SettingsListSelect
+          label="Exterior Color"
+          data={facets.ext_color}
+          currentData={defaultFacets.ext_color}
+        />
+        <SettingsListSelect
+          label="Interior Color"
+          data={facets.int_color}
+          currentData={defaultFacets.int_color}
+        />
         {/* <SettingsListSelect label="fuelType" data={facets.fuelType} /> */}
 
         {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
