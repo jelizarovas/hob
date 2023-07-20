@@ -1,5 +1,6 @@
 import React from "react";
-import { MdClear, MdFilterList, MdSearch } from "react-icons/md";
+import { MdBugReport, MdClear, MdFilterList, MdSearch } from "react-icons/md";
+import { Link } from "react-router-dom";
 export const AppBar = ({
   setQuery,
   query,
@@ -44,6 +45,13 @@ export const AppBar = ({
           >
             <MdFilterList />
           </button>
+          <Link
+            to="/dev/test"
+            type="button"
+            className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
+          >
+            <MdBugReport />
+          </Link>
         </div>
       </div>
     </div>

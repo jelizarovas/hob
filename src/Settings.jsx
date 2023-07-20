@@ -144,8 +144,8 @@ export const Settings = ({
         />
         <SettingsSlider
           label={"Days in Stock"}
-          minValue={defaultFacetsStats?.days_in_stock.min || 0}
-          maxValue={defaultFacetsStats?.days_in_stock.max || 100000}
+          minValue={defaultFacetsStats?.days_in_stock?.min || 0}
+          maxValue={defaultFacetsStats?.days_in_stock?.max || 100000}
           value={settings.days_in_stock}
           onChange={(newValue) =>
             updateSettings("UPDATE_SETTINGS", { days_in_stock: newValue })
