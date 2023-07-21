@@ -1,6 +1,7 @@
 import { MdClear, MdSettings } from "react-icons/md";
 import { SettingsSlider } from "./settings/SettingsSlider";
-import { SettingsListSelect } from "./settings/SettingsListSelect";
+// import { FilterListSelection } from "./settings/FilterListSelection";
+import { FilterListSelection } from "./dev/FilterListSelection";
 
 export const Settings = ({
   setSettingsOpen,
@@ -161,7 +162,7 @@ export const Settings = ({
             updateSettings("UPDATE_SETTINGS", { hitsPerPage: newValue })
           }
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Locations"
           data={facets.location}
           currentData={defaultFacets.location}
@@ -169,52 +170,52 @@ export const Settings = ({
             updateSettings("UPDATE_SETTINGS", { location: newValue })
           }
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Body"
           data={facets.body}
           currentData={defaultFacets.body}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Make"
           data={facets.make}
           currentData={defaultFacets.make}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Trim"
           data={facets.trim}
           currentData={defaultFacets.trim}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Type"
           data={facets.type}
           currentData={defaultFacets.type}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Year"
           data={facets.year}
           currentData={defaultFacets.year}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Doors"
           data={facets.doors}
           currentData={defaultFacets.doors}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Model"
           data={facets.model}
           currentData={defaultFacets.model}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Exterior Color"
           data={facets.ext_color}
           currentData={defaultFacets.ext_color}
         />
-        <SettingsListSelect
+        <FilterListSelection
           label="Interior Color"
           data={facets.int_color}
           currentData={defaultFacets.int_color}
         />
-        {/* <SettingsListSelect label="fuelType" data={facets.fuelType} /> */}
+        {/* <FilterListSelection label="fuelType" data={facets.fuelType} /> */}
 
         {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
 

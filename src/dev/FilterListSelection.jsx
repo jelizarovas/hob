@@ -2,9 +2,11 @@ import React from "react";
 import {
   MdFilterAlt,
   MdKeyboardArrowRight,
+  MdKeyboardArrowUp,
   MdKeyboardDoubleArrowUp,
   MdOutlineFilterAlt,
   MdOutlineFilterAltOff,
+  MdOutlineSortByAlpha,
   MdSort,
 } from "react-icons/md";
 
@@ -69,83 +71,165 @@ export const FilterListSelection = ({
   label = labelx,
   data = datax,
   currentData = currentDatax,
+  openByDefault = false,
+  showAllByDefault = false,
+  sortByAlphabetByDefault = true,
   onChange,
 }) => {
-  const [isOpen, setOpen] = React.useState(true);
-  const [showAll, setShowAll] = React.useState(false);
-  const [sortBy, setSortBy] = React.useState(true); //true - alphabetically, false - by count
-  const isFiltered = false;
+  const [isOpen, setOpen] = React.useState(openByDefault);
+  const [showAll, setShowAll] = React.useState(showAllByDefault);
+  const [sortBy, setSortBy] = React.useState(sortByAlphabetByDefault); //true - alphabetically, false - by count
+  const [selected, setSelected] = React.useState(
+    setAllValuesToTrue(currentData)
+  );
+  const isFiltered = !areAllValuesTrue(selected);
 
-  const dataArray = Object.entries(currentData).sort(sortByCount);
-  console.log({ data, currentData });
+  const toggleSort = (e) => setSortBy((v) => !v);
+
+  const toggleSelect = (e) => {
+    setSelected((obj) => {
+      const updatedObj = { ...obj };
+      updatedObj[e.target.name] = !updatedObj[e.target.name];
+      return updatedObj;
+    });
+  };
+
+  const reset = () => setSelected(setAllValuesToTrue);
+
+  const dataArray = Object.entries(currentData);
   return (
-    <div className="w-64">
-      <label
-        className="px-2 flex items-center justify-between select-none hover:bg-white rounded hover:bg-opacity-10 cursor-pointer"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <div className="flex items-center space-x-1">
-          {!isOpen ? (
-            <MdFilterAlt className={isFiltered ? "" : "opacity-5"} />
-          ) : (
-            <MdOutlineFilterAltOff className={isFiltered ? "" : "opacity-5"} />
-          )}
-
-          <span className="uppercase text-xs p-1"> {label}</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          {isOpen && <MdSort />}
-          <MdKeyboardArrowRight
-            className={`transition-all ${isOpen ? "rotate-90" : ""}`}
-          />
-        </div>
-      </label>
-      {isOpen && (
-        <ul className="text-xs leading-2 px-4">
-          {data &&
-            dataArray
-              .slice(0, showAll ? dataArray.length : 5)
-              .map(([key, value], i) => (
-                <li
-                  key={i}
-                  className="relative space-x-2 flex items-center justify-between hover:bg-gradient-to-r hover:from-[rgba(100,100,100,30)]  hover:to-transparent  cursor-pointer group/li"
-                >
-                  <label className="space-x-2 flex items-center flex-grow cursor-pointer">
-                    <Checkbox />
-                    {key.replace("<br/>", ", ")}
-                  </label>
-                  <span className=" rounded group/span relative flex px-2 hover:bg-[rgba(100,100,100,30)] ">
-                    {data?.[key] || 0}{" "}
-                    {/* <span className="absolute right-9 hidden group-hover/span:block">
-                      Only
-                    </span> */}
-                    {/* <span className="opacity-0  group-hover:opacity-80 ">
-                      / {value}
-                    </span> */}
-                  </span>{" "}
-                </li>
-              ))}
-          {dataArray.length >= 5 && (
-            <button
-              className="w-full flex justify-center hover:bg-white hover:bg-opacity-5 py-1"
-              onClick={() => setShowAll((v) => !v)}
-            >
-              {" "}
-              <MdKeyboardDoubleArrowUp
-                className={`transition-all ${
-                  showAll ? "rotate-0" : "rotate-180"
-                }`}
+    <div className="w-full max-w-md">
+      {!isOpen ? (
+        <button
+          className=" w-full px-2 flex items-center justify-between active:ring-2 select-none hover:bg-white rounded hover:bg-opacity-10 cursor-pointer"
+          onClick={() => setOpen(true)}
+        >
+          <div className="flex items-center space-x-1">
+            <MdFilterAlt className={isFiltered ? "" : "opacity-0"} />
+            <label className="uppercase text-xs p-1"> {label}</label>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="px-2 -mx-2">
+              <MdKeyboardArrowRight />
+            </div>
+          </div>
+        </button>
+      ) : (
+        <>
+          <div
+            onClick={() => setOpen(false)}
+            className=" w-full  flex items-center justify-between active:ring-2 select-none hover:bg-white rounded hover:bg-opacity-10 cursor-pointer"
+          >
+            <div className="flex items-center space-x-1 px-2">
+              <TitleButton
+                Icon={MdOutlineFilterAltOff}
+                onClick={reset}
+                disabled={!isFiltered}
               />
-            </button>
-          )}
-        </ul>
+              <label className="uppercase text-xs p-1"> {label}</label>
+            </div>
+            <div className="flex items-center space-x-4">
+              <TitleButton
+                Icon={sortBy ? MdOutlineSortByAlpha : MdSort}
+                onClick={toggleSort}
+              />
+              <TitleButton
+                Icon={MdKeyboardArrowUp}
+                onClick={() => setOpen(false)}
+              />
+            </div>
+          </div>
+          <ul className="text-xs leading-2 px-4">
+            {data &&
+              dataArray
+                .sort(sortBy ? sortByName : sortByCount)
+                .slice(0, showAll ? dataArray.length : 5)
+                .map(([key, value], i) => (
+                  <li
+                    key={i}
+                    className="relative space-x-2 flex items-center justify-between hover:bg-gradient-to-r rounded hover:from-[rgba(100,100,100,30)]  hover:to-transparent active:bg-white active:bg-opacity-40 cursor-pointer group/li"
+                  >
+                    <label className="space-x-2 flex items-center flex-grow cursor-pointer select-none">
+                      <Checkbox
+                        name={key}
+                        value={selected[key]}
+                        tabIndex={i}
+                        onChange={toggleSelect}
+                      />
+                      <span className={selected[key] ? "" : "opacity-20"}>
+                        {" "}
+                        {key.replace("<br/>", ", ")}
+                      </span>
+                    </label>
+                    <button
+                      tabIndex={i + dataArray.length - 1}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setSelected(selectOnlyOne(key, currentData));
+                      }}
+                      className={`${
+                        selected[key] ? "" : "opacity-20"
+                      } w-8 select-none  group/span relative flex justify-center px-2 hover:-m-2 hover:p-2 hover:z-10 rounded-full hover:bg-[rgba(100,100,100,0.3)] active:bg-[rgba(100,100,100,0.7)] transition-all`}
+                    >
+                      {data?.[key] || 0}
+                    </button>
+                  </li>
+                ))}
+            {dataArray.length >= 5 && (
+              <button
+                className="w-full flex justify-center hover:bg-white hover:bg-opacity-5 py-1 rounded transition-all"
+                onClick={() => setShowAll((v) => !v)}
+              >
+                <MdKeyboardDoubleArrowUp
+                  className={`transition-all ${
+                    showAll ? "rotate-0" : "rotate-180"
+                  }`}
+                />
+              </button>
+            )}
+          </ul>
+        </>
       )}
     </div>
   );
 };
 
-const Checkbox = () => {
-  return <input type="checkbox" className="ml-1 my-0.5" />;
+const Checkbox = ({ name, value, onChange }) => {
+  return (
+    <input
+      type="checkbox"
+      className="ml-1 my-0.5 mr-2 accent-slate-400 cursor-pointer"
+      name={name}
+      checked={value}
+      value={value}
+      onChange={onChange}
+    />
+  );
+};
+
+const TitleButton = ({
+  Icon,
+  onClick,
+  className = "",
+  disabled = false,
+  ...props
+}) => {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick && onClick(e);
+      }}
+      disabled={disabled}
+      className={`p-2 -m-2 hover:p-2 hover:-m-2 hover:opacity-100 opacity-40 disabled:opacity-0 hover:bg-white hover:bg-opacity-20 active:bg-opacity-50 focus:ring-2  rounded-full  transition-all ${className}`}
+    >
+      <Icon className="    " />
+    </button>
+  );
 };
 
 const sortByCount = (a, b) => {
@@ -155,6 +239,56 @@ const sortByCount = (a, b) => {
     return -1; // Sort in descending order
   }
   return 0;
+};
+
+const sortByName = (a, b) => {
+  if (a[0] < b[0]) {
+    return -1; // Sort in descending order
+  } else if (a[0] > b[0]) {
+    return 1; // Sort in descending order
+  }
+  return 0;
+};
+
+const setAllValuesToTrue = (obj) => {
+  const updateObj = { ...obj };
+  for (const key in updateObj) {
+    updateObj[key] = true;
+  }
+  return updateObj;
+};
+const selectOnlyOne = (onlyKey, obj) => {
+  console.log(onlyKey);
+  const updateObj = { ...obj };
+  for (const key in updateObj) {
+    if (onlyKey != key) {
+      updateObj[key] = false;
+    } else {
+      updateObj[key] = true;
+    }
+  }
+  return updateObj;
+};
+
+function areAllValuesTrue(obj) {
+  return Object.values(obj).every((value) => value === true);
+}
+
+const handleKeyDown = (e) => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const currentElement = e.target;
+    const nextSibling = currentElement.nextElementSibling;
+    if (nextSibling) {
+      nextSibling.focus();
+    } else {
+      // If there's no next sibling, focus on the first input (loop to the beginning)
+      const firstInput = document.querySelector("input");
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }
+  }
 };
 
 //bg-gradient-to-r from-slate-50 via-violet-600 to-indigo-600
