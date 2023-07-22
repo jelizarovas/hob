@@ -39,12 +39,3 @@ const sortFn = (a, b) => {
 
 
 
-//Accordeon Open > show reset button
-//List item check mark toggle only selection
-//List item label select only, or reset if only selected
-//if selected more than one, show button to select all,
-// ALT + underlined letter focus on list
-// up/down arrows navigate
-// space toggle on or off, enter select only
-// hide additional options with button to expand
-// add to url query

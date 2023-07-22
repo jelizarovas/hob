@@ -82,6 +82,13 @@ export const FilterListSelection = ({
   const [selected, setSelected] = React.useState(
     setAllValuesToTrue(currentData)
   );
+
+  React.useEffect(() => {
+    onChange &&
+      onChange(Object.keys(selected).filter((key) => selected[key] === true));
+    return () => {};
+  }, [selected]);
+
   const isFiltered = !areAllValuesTrue(selected);
 
   const toggleSort = (e) => setSortBy((v) => !v);
@@ -90,6 +97,9 @@ export const FilterListSelection = ({
     setSelected((obj) => {
       const updatedObj = { ...obj };
       updatedObj[e.target.name] = !updatedObj[e.target.name];
+      // if (!areAllValuesTrue(updatedObj)) {
+      //   return setAllValuesToTrue(updatedObj);
+      // }
       return updatedObj;
     });
   };
@@ -154,7 +164,12 @@ export const FilterListSelection = ({
                         name={key}
                         value={selected[key]}
                         tabIndex={i}
-                        onChange={toggleSelect}
+                        onChange={
+                          isFiltered
+                            ? toggleSelect
+                            : (e) =>
+                                setSelected(selectOnlyOne(key, currentData))
+                        }
                       />
                       <span className={selected[key] ? "" : "opacity-20"}>
                         {" "}
@@ -173,7 +188,7 @@ export const FilterListSelection = ({
                         selected[key] ? "" : "opacity-20"
                       } w-8 select-none  group/span relative flex justify-center px-2 hover:-m-2 hover:p-2 hover:z-10 rounded-full hover:bg-[rgba(100,100,100,0.3)] active:bg-[rgba(100,100,100,0.7)] transition-all`}
                     >
-                      {data?.[key] || 0}
+                      {currentData?.[key] || 0}
                     </button>
                   </li>
                 ))}
@@ -292,3 +307,16 @@ const handleKeyDown = (e) => {
 };
 
 //bg-gradient-to-r from-slate-50 via-violet-600 to-indigo-600
+
+//Accordeon Open > show reset button
+//List item check mark toggle only selection
+//List item label select only, or reset if only selected
+//if selected more than one, show button to select all,
+// ALT + underlined letter focus on list
+// up/down arrows navigate
+// space toggle on or off, enter select only
+// hide additional options with button to expand
+// add to url query
+//on first click user expects just to ONLY select that one, and continue as regular
+//pass how many should be hidden, just show 80%
+//need tooltips

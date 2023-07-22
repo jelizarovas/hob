@@ -174,46 +174,67 @@ export const Settings = ({
           label="Body"
           data={facets.body}
           currentData={defaultFacets.body}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { body: newValue })
+          }
         />
         <FilterListSelection
           label="Make"
           data={facets.make}
           currentData={defaultFacets.make}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { make: newValue })
+          }
         />
         <FilterListSelection
           label="Trim"
           data={facets.trim}
           currentData={defaultFacets.trim}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { trim: newValue })
+          }
         />
-        <FilterListSelection
+        {/* <FilterListSelection
           label="Type"
           data={facets.type}
           currentData={defaultFacets.type}
-        />
-        <FilterListSelection
+        /> */}
+        {/* <FilterListSelection
           label="Year"
           data={facets.year}
           currentData={defaultFacets.year}
-        />
+        /> */}
         <FilterListSelection
           label="Doors"
           data={facets.doors}
           currentData={defaultFacets.doors}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { doors: newValue })
+          }
         />
         <FilterListSelection
           label="Model"
           data={facets.model}
           currentData={defaultFacets.model}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { model: newValue })
+          }
         />
         <FilterListSelection
           label="Exterior Color"
           data={facets.ext_color}
           currentData={defaultFacets.ext_color}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { ext_color: newValue })
+          }
         />
         <FilterListSelection
           label="Interior Color"
           data={facets.int_color}
           currentData={defaultFacets.int_color}
+          onChange={(newValue) =>
+            updateSettings("UPDATE_SETTINGS", { int_color: newValue })
+          }
         />
         {/* <FilterListSelection label="fuelType" data={facets.fuelType} /> */}
 

@@ -29,6 +29,9 @@ export const Dashboard = () => {
         total={total}
       />
       <div className="flex flex-col md:flex-row items-start px-2">
+        {/* <pre className="text-xs">
+          <code>{JSON.stringify(settings, null, 1)}</code>
+        </pre> */}
         {isSettingsOpen && (
           <Settings
             facets={facets}

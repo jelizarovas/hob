@@ -45,6 +45,14 @@ const initialSettings = {
   features: [[null /*included*/], [null /*excluded*/]],
   fuelType: [[null /*included*/], [null /*excluded*/]],
   transmission: [[null /*included*/], [null /*excluded*/]],
+  location: [],
+  make: [],
+  body: [],
+  trim: [],
+  doors: [],
+  model: [],
+  ext_color: [],
+  int_color: [],
 };
 
 const reducer = (state, { type, payload }) => {

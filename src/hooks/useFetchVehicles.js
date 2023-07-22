@@ -62,6 +62,14 @@ const useFetchVehicles = (settings, updateSettings) => {
         facetFilters: [
           generateTypeNewCertifiedUsed(settings.type),
           generateRangeArray("year", settings.year),
+          generateListArray("location", settings?.location),
+          generateListArray("make", settings?.make),
+          generateListArray("body", settings?.body),
+          generateListArray("trim", settings?.trim),
+          generateListArray("doors", settings?.doors),
+          generateListArray("model", settings?.model),
+          generateListArray("ext_color", settings?.ext_color),
+          generateListArray("int_color", settings?.int_color),
           // ["location:cpo|purchase"],
         ],
         numericFilters: [
@@ -177,6 +185,11 @@ function generateTypeNewCertifiedUsed(type) {
     if (val) return [...acc, "type:" + camelCaseToProperCase(label)];
     return acc;
   }, []);
+}
+function generateListArray(list, data) {
+  console.log({ list, data });
+  if (!data) return [];
+  return data.map((val) => `${list}:${val}`);
 }
 
 function generateLabelArray(label, range, allowedRange) {

@@ -18,7 +18,7 @@ function App() {
       <Router>
         <Route exact path="/dev/test" component={DevPanel} />
         <Route exact path="/:stock" component={VehiclePage} />
-        <Route exact path="/" component={Dashboard} />
+        <Route path="/" component={Dashboard} />
       </Router>
     </ThemeProvider>
   );
