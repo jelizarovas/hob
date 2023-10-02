@@ -5,7 +5,10 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { DevPanel } from "./dev/DevPanel";
 import { SettingsProvider } from "./SettingsContext";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { FilterProvider } from "./FilterContext";
 
+const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
 
 const darkTheme = createTheme({
@@ -17,14 +20,18 @@ const darkTheme = createTheme({
 function App() {
   return (
     <SettingsProvider>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <Router>
-          <Route exact path="/dev/test" component={DevPanel} />
-          <Route exact path="/:stock" component={VehiclePage} />
-          <Route path="/" component={Dashboard} />
-        </Router>
-      </ThemeProvider>
+      <FilterProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <Router>
+              <Route exact path="/dev/test" component={DevPanel} />
+              <Route exact path="/:stock" component={VehiclePage} />
+              <Route exact path="/" component={Dashboard} />
+            </Router>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </FilterProvider>
     </SettingsProvider>
   );
 }

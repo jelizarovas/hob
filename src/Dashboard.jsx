@@ -20,7 +20,6 @@ export const Dashboard = () => {
   } = useSettings();
 
   let displayClass = "";
-
   if (vehicleListDisplayMode === "grid")
     displayClass = "flex-row sm:flex-row gap-2 justify-center flex-wrap md:space-y-0 md:px-4";
   if (vehicleListDisplayMode === "list") displayClass = "flex-col";

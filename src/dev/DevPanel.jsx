@@ -2,6 +2,7 @@ import React from "react";
 import { MdArrowCircleLeft, MdFilterList } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { FilterListSelection } from "./FilterListSelection";
+import { VehicleQuery } from "./VehicleQuery";
 
 export const DevPanel = () => {
   return (
@@ -13,11 +14,8 @@ export const DevPanel = () => {
       >
         <MdArrowCircleLeft />
       </Link>
-      <div className="container mx-auto p-10 border border-white rounded-3xl">
-        <FilterListSelection />
-        <FilterListSelection />
-        <FilterListSelection />
-        <FilterListSelection />
+      <div className="container max-h-screen mx-auto p-10 border border-white rounded-3xl overflow-scroll">
+        <VehicleQuery />
       </div>
     </div>
   );
