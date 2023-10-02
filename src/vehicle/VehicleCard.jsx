@@ -4,9 +4,10 @@ import { parseMileage } from "../utils";
 import { useSettings } from "../SettingsContext";
 import { MdAnchor, MdOutlineHistory } from "react-icons/md";
 import { RxExternalLink } from "react-icons/rx";
-import { formatCurrency } from "./VehiclePage";
+import { formatCurrency } from "../utils";
 
 export const VehicleCard = ({ v, num, ...props }) => {
+  // console.log({ v });
   const backgroundStyle = {
     backgroundImage: `url(${v?.thumbnail})`,
     backgroundSize: "cover",

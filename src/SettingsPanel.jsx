@@ -16,7 +16,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
   };
 
   return (
-    <div className="w-full md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
+    <div className="w-full mx-auto md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
       <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdSettings /> <span>Settings</span>
@@ -41,11 +41,25 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           </Button>
         </ButtonGroup>
         <FormControlLabel
-          control={<Checkbox name="showPrice" value={settings.showPrice} onChange={handleChange} defaultChecked />}
+          control={
+            <Checkbox
+              name="showPrice"
+              value={settings.showPrice}
+              defaultChecked={settings.showPrice}
+              onChange={handleChange}
+            />
+          }
           label="Show Price"
         />
         <FormControlLabel
-          control={<Checkbox name="showCarfax" value={settings.showCarfax} onChange={handleChange} defaultChecked />}
+          control={
+            <Checkbox
+              name="showCarfax"
+              value={settings.showCarfax}
+              defaultChecked={settings.showCarfax}
+              onChange={handleChange}
+            />
+          }
           label="Show Carfax"
         />
       </div>

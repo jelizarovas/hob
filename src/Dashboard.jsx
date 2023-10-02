@@ -25,7 +25,7 @@ export const Dashboard = () => {
   if (vehicleListDisplayMode === "list") displayClass = "flex-col";
 
   return (
-    <div className="relative overflow-y-scroll h-screen">
+    <div className="relative w-full overflow-y-scroll h-screen ">
       <AppBar
         setQuery={(val) => updateSettings("QUERY", val)}
         query={settings.query}
@@ -35,28 +35,30 @@ export const Dashboard = () => {
         filterPanelOpen={isFilterPanelOpen}
         total={total}
       />
-      <div className="flex flex-col md:flex-row items-start px-2">
-        <div className="flex flex-col">
-          {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
-          {/* <pre className="text-xs">
+      <div className="flex flex-col     lg:flex-row items-start lg:px-2">
+        {(isSettingsOpen || isFilterPanelOpen) && (
+          <div className="flex   w-full lg:w-96 mr-4   flex-col">
+            {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
+            {/* <pre className="text-xs">
           <code>{JSON.stringify(settings, null, 1)}</code>
         </pre> */}
 
-          {isFilterPanelOpen && (
-            <FilterPanel
-              facets={facets}
-              facetsStats={facetsStats}
-              total={total}
-              defaultFacets={defaultFacets}
-              defaultFacetsStats={defaultFacetsStats}
-              defaultTotal={defaultTotal}
-              setFilterPanelOpen={setFilterPanelOpen}
-              settings={settings}
-              updateSettings={updateSettings}
-            />
-          )}
-        </div>
-        <div className={`container flex-grow-0 mx-auto flex items-start transition-all ${displayClass}`}>
+            {isFilterPanelOpen && (
+              <FilterPanel
+                facets={facets}
+                facetsStats={facetsStats}
+                total={total}
+                defaultFacets={defaultFacets}
+                defaultFacetsStats={defaultFacetsStats}
+                defaultTotal={defaultTotal}
+                setFilterPanelOpen={setFilterPanelOpen}
+                settings={settings}
+                updateSettings={updateSettings}
+              />
+            )}
+          </div>
+        )}
+        <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
           {isLoading && <div>Loading....</div>}
           {vehicles.map((r, i) => (
             <VehicleCard num={i} key={r?.stock || i} v={r} />

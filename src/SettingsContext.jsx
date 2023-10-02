@@ -3,9 +3,14 @@ import React, { useReducer, useEffect, createContext, useContext } from "react";
 const SettingsContext = createContext();
 
 const initialState = {
-  vehicleListDisplayMode: "grid",
-  showPrice: false,
-  showCarfax: false,
+  vehicleListDisplayMode: "list",
+  showPrice: true,
+  showCarfax: true,
+};
+
+const getInitialSettings = () => {
+  const settingsFromStorage = localStorage.getItem("settings");
+  return settingsFromStorage ? JSON.parse(settingsFromStorage) : initialState;
 };
 
 const settingsReducer = (state, action) => {
@@ -22,7 +27,7 @@ const settingsReducer = (state, action) => {
 
 export const SettingsProvider = ({ children }) => {
   // Initialize state from localStorage or use defaults
-  const initialSettings = JSON.parse(localStorage.getItem("settings")) || initialState;
+  const initialSettings = getInitialSettings();
   const [settings, dispatch] = useReducer(settingsReducer, initialSettings);
 
   useEffect(() => {

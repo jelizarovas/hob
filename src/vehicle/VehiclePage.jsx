@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { MdClear, MdOutlineHistory } from "react-icons/md";
 import { useParams, useHistory, useLocation } from "react-router-dom";
 import { useSettings } from "../SettingsContext";
+import { formatCurrency } from "../utils";
 const api = {
   name: "Rairdon",
   "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
@@ -179,17 +180,17 @@ export const VehiclePage = () => {
           <div>
             <h4>Exterior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.ext_options && v.ext_options.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.ext_options && v.ext_options?.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
           <div>
             <h4>Features</h4>
-            <ul className="px-2 text-xs">{v?.features && v.features.map((option, i) => <li key={i}>{option}</li>)}</ul>
+            <ul className="px-2 text-xs">{v?.features && v.features?.map((option, i) => <li key={i}>{option}</li>)}</ul>
           </div>
           <div>
             <h4>Interior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.int_options && v.int_options.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.int_options && v.int_options?.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
         </div>
@@ -217,6 +218,3 @@ const IframeComponent = ({ url }) => {
   );
 };
 
-export function formatCurrency(num) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(num);
-}
