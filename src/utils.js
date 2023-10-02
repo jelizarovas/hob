@@ -126,3 +126,39 @@ const settingsObj = [
     value: 0,
   },
 ];
+
+const locationArray = [
+  "713 35th St. NE<br/>Auburn, WA 98002",
+  "1615 Iowa St<br/>Bellingham, WA 98229",
+  "12415 Slater NE<br/>Kirkland, WA 98034",
+  "12828 NE 124th St<br/>Kirkland, WA 98034",
+  "14555 1st Avenue South<br/>Burien, WA 98166",
+  "15026 1st Ave S<br/>Burien, WA 98148",
+  "15714 Smokey Point Blvd<br/>Marysville, WA 98271",
+  "16302 Auto Ln<br/>Sumner, WA 98390",
+  "16413 W. Main St. SE<br/>Monroe, WA 98272",
+  "16610 Smokey Point Blvd<br/>Arlington, WA 98223",
+  "cpo|purchase",
+  "cpo|sslp",
+  "cpo|trade",
+  "incoming|trade",
+  "purchase",
+  "purchase|recall6-22",
+  "trade",
+  "transfer",
+  "transfer|uvi-bellingham",
+  "transfer|uvi-marysville",
+  "transfer|uvi-sumner",
+];
+
+const lightningLocationsMetaLocation = [
+  "Dodge Chrysler Jeep Ram of Bellingham",
+  "Dodge Chrysler Jeep Ram of Kirkland",
+  "Dodge Chrysler Jeep Ram of Monroe",
+  "Honda of Burien",
+  "Honda of Marysville",
+  "Honda of Sumner",
+  "Hyundai of Bellingham",
+  "Rairdon's Dodge Chrysler Jeep Ram of Marysville",
+  "Subaru of Auburn",
+];

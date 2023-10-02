@@ -41,25 +41,11 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           </Button>
         </ButtonGroup>
         <FormControlLabel
-          control={
-            <Checkbox
-              name="showPrice"
-              value={settings.showPrice}
-              defaultChecked={settings.showPrice}
-              onChange={handleChange}
-            />
-          }
+          control={<Checkbox name="showPrice" value={settings.showPrice} onChange={handleChange} />}
           label="Show Price"
         />
         <FormControlLabel
-          control={
-            <Checkbox
-              name="showCarfax"
-              value={settings.showCarfax}
-              defaultChecked={settings.showCarfax}
-              onChange={handleChange}
-            />
-          }
+          control={<Checkbox name="showCarfax" value={settings.showCarfax} onChange={handleChange} />}
           label="Show Carfax"
         />
       </div>

@@ -11,6 +11,7 @@ export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
   const [isSettingsOpen, setSettingsOpen] = React.useState(false);
   const [isFilterPanelOpen, setFilterPanelOpen] = React.useState(false);
+  const [activeActionBarId, setActiveActionBarId] = React.useState(null);
   const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
     useFetchVehicles(settings);
 
@@ -61,7 +62,7 @@ export const Dashboard = () => {
         <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
           {isLoading && <div>Loading....</div>}
           {vehicles.map((r, i) => (
-            <VehicleCard num={i} key={r?.stock || i} v={r} />
+            <VehicleCard num={i} key={r?.stock || i} v={r} activeActionBarId={activeActionBarId} setActiveActionBarId={setActiveActionBarId} />
           ))}
         </div>
       </div>
