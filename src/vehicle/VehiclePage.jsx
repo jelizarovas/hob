@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { MdClear } from "react-icons/md";
+import { MdClear, MdOutlineHistory } from "react-icons/md";
 import { useParams, useHistory, useLocation } from "react-router-dom";
-
+import { useSettings } from "../SettingsContext";
 const api = {
   name: "Rairdon",
   "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
@@ -10,20 +10,17 @@ const api = {
 };
 
 function getVehicleDataByStockNumber(stock) {
-  return fetch(
-    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
-    {
-      headers: {
-        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-      },
-      method: "POST",
-      body: JSON.stringify({
-        hitsPerPage: 1,
-        query: stock,
-      }),
-    }
-  )
+  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
+    headers: {
+      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+    },
+    method: "POST",
+    body: JSON.stringify({
+      hitsPerPage: 1,
+      query: stock,
+    }),
+  })
     .then((response) => response.json())
     .then((data) => {
       return data.hits[0];
@@ -34,6 +31,10 @@ export const VehiclePage = () => {
   const { stock } = useParams();
   const { state } = useLocation();
   const history = useHistory();
+
+  const {
+    settings: { vehicleListDisplayMode, showPrice, showCarfax },
+  } = useSettings();
 
   const [v, setV] = React.useState(state);
   useEffect(() => {
@@ -84,18 +85,34 @@ export const VehiclePage = () => {
   return (
     <div className="modal z-10 absolute top-0 left-0 w-full h-screen overflow-auto bg-gray-800">
       <div className="container mx-auto">
-        <div className="flex justify-between">
+        <div className="flex items-center justify-between text-2xl">
           <span
-            className="whitespace-pre-wrap text-2xl py-4 px-4 "
+            className="whitespace-pre-wrap  py-4 px-4 "
             // href={v?.link}
             // target="_blank"
           >
-            {`${v?.year} ${v?.make} ${v?.model}`}{" "}
-            <span className="opacity-40">{v?.trim}</span>
+            {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
           </span>
-          <button className="text-2xl p-4" onClick={handleModalClose}>
-            <MdClear />
-          </button>
+          <div className="flex items-center">
+            {showCarfax && v?.our_price && (
+              <a
+                href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
+                target="_blank"
+                aria-describedby="audioeye_new_window_message"
+                className="rounded-full border p-2 border-white border-opacity-25 hover:bg-white hover:bg-opacity-20"
+              >
+                <MdOutlineHistory />
+              </a>
+            )}
+            {showPrice && v?.our_price && (
+              <span className="px-2 bg-white bg-opacity-10" onClick={() => console.log(v)}>
+                {formatCurrency(v.our_price)}
+              </span>
+            )}
+            <button className="text-2xl p-4" onClick={handleModalClose}>
+              <MdClear />
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col space-x-4 lg:flex-row">
@@ -162,22 +179,17 @@ export const VehiclePage = () => {
           <div>
             <h4>Exterior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.ext_options &&
-                v.ext_options.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.ext_options && v.ext_options.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
           <div>
             <h4>Features</h4>
-            <ul className="px-2 text-xs">
-              {v?.features &&
-                v.features.map((option, i) => <li key={i}>{option}</li>)}
-            </ul>
+            <ul className="px-2 text-xs">{v?.features && v.features.map((option, i) => <li key={i}>{option}</li>)}</ul>
           </div>
           <div>
             <h4>Interior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.int_options &&
-                v.int_options.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.int_options && v.int_options.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
         </div>
@@ -191,9 +203,7 @@ export const VehiclePage = () => {
   );
 };
 
-const Label = ({ text }) => (
-  <label className="opacity-70 uppercase text-xs mr-2">{text}</label>
-);
+const Label = ({ text }) => <label className="opacity-70 uppercase text-xs mr-2">{text}</label>;
 
 const IframeComponent = ({ url }) => {
   return (
@@ -206,3 +216,7 @@ const IframeComponent = ({ url }) => {
     />
   );
 };
+
+export function formatCurrency(num) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(num);
+}

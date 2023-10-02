@@ -1,5 +1,5 @@
 import React from "react";
-import { MdBugReport, MdClear, MdFilterList, MdSearch } from "react-icons/md";
+import { MdBugReport, MdClear, MdFilterList, MdGridView, MdList, MdSearch, MdSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 export const AppBar = ({
   setQuery,
@@ -7,6 +7,8 @@ export const AppBar = ({
   total,
   settingsOpen,
   setSettingsOpen,
+  setFilterPanelOpen,
+  filterPanelOpen,
 }) => {
   function handleChange(event) {
     setQuery(event.target.value);
@@ -40,18 +42,25 @@ export const AppBar = ({
         <div className="flex items-center">
           <button
             type="button"
-            onClick={() => setSettingsOpen((v) => !v)}
+            onClick={() => setFilterPanelOpen((v) => !v)}
             className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
           >
             <MdFilterList />
           </button>
-          <Link
+          {/* <Link
             to="/dev/test"
             type="button"
             className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
           >
-            <MdBugReport />
-          </Link>
+            <MdList />
+          </Link> */}
+          <button
+            type="button"
+            onClick={() => setSettingsOpen((v) => !v)}
+            className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
+          >
+            <MdSettings />
+          </button>
         </div>
       </div>
     </div>

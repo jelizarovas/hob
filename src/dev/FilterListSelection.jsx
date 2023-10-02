@@ -79,13 +79,10 @@ export const FilterListSelection = ({
   const [isOpen, setOpen] = React.useState(openByDefault);
   const [showAll, setShowAll] = React.useState(showAllByDefault);
   const [sortBy, setSortBy] = React.useState(sortByAlphabetByDefault); //true - alphabetically, false - by count
-  const [selected, setSelected] = React.useState(
-    setAllValuesToTrue(currentData)
-  );
+  const [selected, setSelected] = React.useState(setAllValuesToTrue(currentData));
 
   React.useEffect(() => {
-    onChange &&
-      onChange(Object.keys(selected).filter((key) => selected[key] === true));
+    onChange && onChange(Object.keys(selected).filter((key) => selected[key] === true));
     return () => {};
   }, [selected]);
 
@@ -131,22 +128,12 @@ export const FilterListSelection = ({
             className=" w-full  flex items-center justify-between active:ring-2 select-none hover:bg-white rounded hover:bg-opacity-10 cursor-pointer"
           >
             <div className="flex items-center space-x-1 px-2">
-              <TitleButton
-                Icon={MdOutlineFilterAltOff}
-                onClick={reset}
-                disabled={!isFiltered}
-              />
+              <TitleButton Icon={MdOutlineFilterAltOff} onClick={reset} disabled={!isFiltered} />
               <label className="uppercase text-xs p-1"> {label}</label>
             </div>
             <div className="flex items-center space-x-4">
-              <TitleButton
-                Icon={sortBy ? MdOutlineSortByAlpha : MdSort}
-                onClick={toggleSort}
-              />
-              <TitleButton
-                Icon={MdKeyboardArrowUp}
-                onClick={() => setOpen(false)}
-              />
+              <TitleButton Icon={sortBy ? MdOutlineSortByAlpha : MdSort} onClick={toggleSort} />
+              <TitleButton Icon={MdKeyboardArrowUp} onClick={() => setOpen(false)} />
             </div>
           </div>
           <ul className="text-xs leading-2 px-4">
@@ -164,17 +151,9 @@ export const FilterListSelection = ({
                         name={key}
                         value={selected[key]}
                         tabIndex={i}
-                        onChange={
-                          isFiltered
-                            ? toggleSelect
-                            : (e) =>
-                                setSelected(selectOnlyOne(key, currentData))
-                        }
+                        onChange={isFiltered ? toggleSelect : (e) => setSelected(selectOnlyOne(key, currentData))}
                       />
-                      <span className={selected[key] ? "" : "opacity-20"}>
-                        {" "}
-                        {key.replace("<br/>", ", ")}
-                      </span>
+                      <span className={selected[key] ? "" : "opacity-20"}> {key.replace("<br/>", ", ")}</span>
                     </label>
                     <button
                       tabIndex={i + dataArray.length - 1}
@@ -197,11 +176,7 @@ export const FilterListSelection = ({
                 className="w-full flex justify-center hover:bg-white hover:bg-opacity-5 py-1 rounded transition-all"
                 onClick={() => setShowAll((v) => !v)}
               >
-                <MdKeyboardDoubleArrowUp
-                  className={`transition-all ${
-                    showAll ? "rotate-0" : "rotate-180"
-                  }`}
-                />
+                <MdKeyboardDoubleArrowUp className={`transition-all ${showAll ? "rotate-0" : "rotate-180"}`} />
               </button>
             )}
           </ul>
@@ -217,20 +192,14 @@ const Checkbox = ({ name, value, onChange }) => {
       type="checkbox"
       className="ml-1 my-0.5 mr-2 accent-slate-400 cursor-pointer"
       name={name}
-      checked={value}
+      checked={value || false}
       value={value}
       onChange={onChange}
     />
   );
 };
 
-const TitleButton = ({
-  Icon,
-  onClick,
-  className = "",
-  disabled = false,
-  ...props
-}) => {
+const TitleButton = ({ Icon, onClick, className = "", disabled = false, ...props }) => {
   return (
     <button
       type="button"

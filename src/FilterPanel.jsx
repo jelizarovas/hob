@@ -1,10 +1,10 @@
-import { MdClear, MdSettings } from "react-icons/md";
+import { MdClear, MdFilter, MdFilterAlt, MdSettings } from "react-icons/md";
 import { SettingsSlider } from "./settings/SettingsSlider";
 // import { FilterListSelection } from "./settings/FilterListSelection";
 import { FilterListSelection } from "./dev/FilterListSelection";
 
-export const Settings = ({
-  setSettingsOpen,
+export const FilterPanel = ({
+  setFilterPanelOpen,
   settings,
   updateSettings,
   facets,
@@ -23,13 +23,9 @@ export const Settings = ({
     <div className="w-full md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
       <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
-          <MdSettings /> <span>Settings</span>
+          <MdFilterAlt /> <span>Filters</span>
         </div>
-        <button
-          type="button"
-          className="flex"
-          onClick={() => setSettingsOpen(false)}
-        >
+        <button type="button" className="flex" onClick={() => setFilterPanelOpen(false)}>
           <MdClear />
         </button>
       </div>
@@ -67,12 +63,7 @@ export const Settings = ({
             <input
               type="checkbox"
               checked={settings.type.certifiedUsed}
-              onChange={() =>
-                handleCheckboxChange(
-                  "certifiedUsed",
-                  settings.type.certifiedUsed
-                )
-              }
+              onChange={() => handleCheckboxChange("certifiedUsed", settings.type.certifiedUsed)}
             />
             Certified
           </label>
@@ -121,9 +112,7 @@ export const Settings = ({
           currentMinValue={facetsStats?.our_price.min || 0}
           currentMaxValue={facetsStats?.our_price.max || 100000}
           value={settings.price}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { price: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { price: newValue })}
         />
         {/* <SettingsSlider
           label={"MSRP"}
@@ -139,18 +128,14 @@ export const Settings = ({
           minValue={defaultFacetsStats?.miles.min || 0}
           maxValue={defaultFacetsStats?.miles.max || 100000}
           value={settings.mileage}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { mileage: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { mileage: newValue })}
         />
         <SettingsSlider
           label={"Days in Stock"}
           minValue={defaultFacetsStats?.days_in_stock?.min || 0}
           maxValue={defaultFacetsStats?.days_in_stock?.max || 100000}
           value={settings.days_in_stock}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { days_in_stock: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { days_in_stock: newValue })}
         />
         <SettingsSlider
           label={"Cars Per Page"}
@@ -158,41 +143,31 @@ export const Settings = ({
           currentMaxValue={total || 50}
           maxValue={defaultTotal || 100}
           value={settings.hitsPerPage}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { hitsPerPage: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { hitsPerPage: newValue })}
         />
         <FilterListSelection
           label="Locations"
           data={facets.location}
           currentData={defaultFacets.location}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { location: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { location: newValue })}
         />
         <FilterListSelection
           label="Body"
           data={facets.body}
           currentData={defaultFacets.body}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { body: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { body: newValue })}
         />
         <FilterListSelection
           label="Make"
           data={facets.make}
           currentData={defaultFacets.make}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { make: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { make: newValue })}
         />
         <FilterListSelection
           label="Trim"
           data={facets.trim}
           currentData={defaultFacets.trim}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { trim: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { trim: newValue })}
         />
         {/* <FilterListSelection
           label="Type"
@@ -208,33 +183,25 @@ export const Settings = ({
           label="Doors"
           data={facets.doors}
           currentData={defaultFacets.doors}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { doors: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { doors: newValue })}
         />
         <FilterListSelection
           label="Model"
           data={facets.model}
           currentData={defaultFacets.model}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { model: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { model: newValue })}
         />
         <FilterListSelection
           label="Exterior Color"
           data={facets.ext_color}
           currentData={defaultFacets.ext_color}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { ext_color: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { ext_color: newValue })}
         />
         <FilterListSelection
           label="Interior Color"
           data={facets.int_color}
           currentData={defaultFacets.int_color}
-          onChange={(newValue) =>
-            updateSettings("UPDATE_SETTINGS", { int_color: newValue })
-          }
+          onChange={(newValue) => updateSettings("UPDATE_SETTINGS", { int_color: newValue })}
         />
         {/* <FilterListSelection label="fuelType" data={facets.fuelType} /> */}
 
@@ -357,8 +324,7 @@ const settingsObj = [
         name: "Burien",
         "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
         "X-Algolia-Application-Id": "SEWJN80HTN",
-        index:
-          "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+        index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
       },
       {
         name: "Rairdon",
@@ -367,8 +333,7 @@ const settingsObj = [
         index: "rairdonautomotivegroup_production_inventory_low_to_high",
       },
     ],
-    description:
-      "Choose a preferred store for searching within a specific dealership.",
+    description: "Choose a preferred store for searching within a specific dealership.",
     value: 0,
   },
 ];
