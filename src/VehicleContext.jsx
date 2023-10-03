@@ -1,5 +1,15 @@
 import React, { createContext, useContext, useState, useReducer, useRef } from "react";
-import { burienAPI, initialFilters, rairdonAPI } from "./utils";
+import {
+  burienAPI,
+  initialFilters,
+  rairdonAPI,
+  camelCaseToProperCase,
+  debounce,
+  defaultFacetKeys,
+  generateLabelArray,
+  generateTypeNewCertifiedUsed,
+  generateRangeArray,
+} from "./utils";
 import { useInfiniteQuery } from "react-query";
 
 const VehicleContext = createContext();
@@ -84,8 +94,8 @@ export const VehicleProvider = ({ children }) => {
     };
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
 
-  const updateFilters = (type, payload) => {
-    filtersDispatch({ type: type || "UPDATE_SETTINGS", payload });
+  const updateFilters = (payload) => {
+    filtersDispatch({ type: "UPDATE_SETTINGS", payload });
   };
   const updateQuery = (payload) => {
     filtersDispatch({ type: "QUERY", payload });
@@ -116,16 +126,40 @@ export const VehicleProvider = ({ children }) => {
 
 async function fetchReq({ pageParam = 0, filters }) {
   console.log({ filters });
-  const api = burienAPI;
+
+  const api = filters.api || burienAPI;
   const query = filters.query || "";
-  const hitsPerPage = 10;
+  const hitsPerPage = filters.hitsPerPage || 10;
   const res = await fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
     headers: {
       "X-Algolia-API-Key": api["X-Algolia-API-Key"],
       "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
     },
     method: "POST",
-    body: JSON.stringify({ hitsPerPage, query, page: pageParam }),
+    body: JSON.stringify({
+      hitsPerPage,
+      query,
+      page: pageParam,
+      facetFilters: [
+        generateTypeNewCertifiedUsed(filters.type),
+        // generateRangeArray("year", filters.year),
+        // generateListArray("location", filters?.location),
+        // generateListArray("make", filters?.make),
+        // generateListArray("body", filters?.body),
+        // generateListArray("trim", filters?.trim),
+        // generateListArray("doors", filters?.doors),
+        // generateListArray("model", filters?.model),
+        // generateListArray("ext_color", filters?.ext_color),
+        // generateListArray("int_color", filters?.int_color),
+        // ["location:cpo|purchase"],
+      ],
+      // numericFilters: [
+      //   ...generateLabelArray("days_in_stock", filters.days_in_stock, facetsStats?.days_in_stock),
+      //   ...generateLabelArray("miles", filters.mileage, facetsStats?.miles),
+      //   ...generateLabelArray("our_price", filters.price, facetsStats?.our_price),
+      // ],
+      facets: defaultFacetKeys,
+    }),
   });
   if (!res.ok) throw new Error("Network response was not ok");
   return res.json();

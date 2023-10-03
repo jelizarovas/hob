@@ -13,8 +13,8 @@ export const Dashboard = () => {
   const [isSettingsOpen, setSettingsOpen] = React.useState(false);
   const [isFilterPanelOpen, setFilterPanelOpen] = React.useState(false);
   const [activeActionBarId, setActiveActionBarId] = React.useState(null);
-  const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
-    useFetchVehicles(settings);
+  // const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
+  //   useFetchVehicles(settings);
 
   const {
     settings: { vehicleListDisplayMode, showPrice, showCarfax },
@@ -43,39 +43,39 @@ export const Dashboard = () => {
     <div className="relative w-full overflow-y-scroll h-screen ">
       <AppBar
         setQuery={(val) => updateSettings("QUERY", val)}
-        query={settings.query}
+        query={filters.query}
         setSettingsOpen={setSettingsOpen}
         settingsOpen={isSettingsOpen}
         setFilterPanelOpen={setFilterPanelOpen}
         filterPanelOpen={isFilterPanelOpen}
-        total={total}
+        // total={total}
       />
+      {/* <pre className="text-xs">
+          <code>{JSON.stringify(filters, null, 1)}</code>
+        </pre> */}
       <div className="flex flex-col     lg:flex-row items-start lg:px-2">
         {(isSettingsOpen || isFilterPanelOpen) && (
           <div className="flex   w-full lg:w-96 mr-4   flex-col">
             {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
-            {/* <pre className="text-xs">
-          <code>{JSON.stringify(settings, null, 1)}</code>
-        </pre> */}
 
             {isFilterPanelOpen && (
               <FilterPanel
-                facets={facets}
-                facetsStats={facetsStats}
-                total={total}
-                defaultFacets={defaultFacets}
-                defaultFacetsStats={defaultFacetsStats}
-                defaultTotal={defaultTotal}
+                // facets={facets}
+                // facetsStats={facetsStats}
+                // total={total}
+                // defaultFacets={defaultFacets}
+                // defaultFacetsStats={defaultFacetsStats}
+                // defaultTotal={defaultTotal}
                 setFilterPanelOpen={setFilterPanelOpen}
-                settings={settings}
-                updateSettings={updateSettings}
+                // settings={settings}
+                // updateSettings={updateSettings}
               />
             )}
           </div>
         )}
 
         {status === "loading" ? (
-          <p>Loading...</p>
+          <p className="mx-auto">Loading...</p>
         ) : status === "error" ? (
           <p>Error: {error.message}</p>
         ) : (
