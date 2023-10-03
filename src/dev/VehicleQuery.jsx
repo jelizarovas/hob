@@ -1,10 +1,10 @@
 import React from "react";
-import { useInfiniteQuery } from "react-query";
+
 import { VehicleCard } from "../vehicle/VehicleCard";
 
 export const VehicleQuery = () => {
   const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
-    ["vehicles", filters],
+    ["vehicles"],
     fetchReq,
     {
       getNextPageParam: (lastPage, pages) => {

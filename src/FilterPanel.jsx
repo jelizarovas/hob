@@ -2,6 +2,7 @@ import { MdClear, MdFilter, MdFilterAlt, MdSettings } from "react-icons/md";
 import { SettingsSlider } from "./settings/SettingsSlider";
 // import { FilterListSelection } from "./settings/FilterListSelection";
 import { FilterListSelection } from "./dev/FilterListSelection";
+import { useVehicles } from "./VehicleContext";
 
 export const FilterPanel = ({
   setFilterPanelOpen,
@@ -18,6 +19,10 @@ export const FilterPanel = ({
   const handleCheckboxChange = (option, value) => {
     updateSettings("UPDATE_TYPE", { [option]: !value });
   };
+
+  const { filters, updateFilters } = useVehicles();
+
+  console.log("filterPanel", { filters });
 
   return (
     <div className="w-full md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
@@ -232,4 +237,3 @@ export const FilterPanel = ({
     </div>
   );
 };
-

@@ -1,6 +1,7 @@
 import React from "react";
 import { MdBugReport, MdClear, MdFilterList, MdGridView, MdList, MdSearch, MdSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useVehicles } from "./VehicleContext";
 export const AppBar = ({
   setQuery,
   query,
@@ -10,8 +11,11 @@ export const AppBar = ({
   setFilterPanelOpen,
   filterPanelOpen,
 }) => {
+  const { filters, updateQuery } = useVehicles();
+
   function handleChange(event) {
-    setQuery(event.target.value);
+    // setQuery(event.target.value);
+    updateQuery(event.target.value);
   }
 
   return (
@@ -26,14 +30,17 @@ export const AppBar = ({
           </div>
           <input
             className="bg-transparent px-2 py-1 w-full outline-none"
-            value={query}
+            value={filters.query}
             onChange={handleChange}
             placeholder="Search Inventory...."
           />
-          {query.length > 0 && (
+          {filters.query.length > 0 && (
             <button
               className="border rounded-full p-0.5 bg-white bg-opacity-0 hover:bg-opacity-20 transition-all"
-              onClick={() => setQuery("")}
+              onClick={() => {
+                // setQuery("");
+                updateQuery("");
+              }}
             >
               <MdClear />
             </button>

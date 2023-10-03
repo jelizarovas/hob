@@ -6,6 +6,7 @@ import { FilterPanel } from "./FilterPanel";
 import { AppBar } from "./Appbar";
 import { SettingsPanel } from "./SettingsPanel";
 import { useSettings } from "./SettingsContext";
+import { useVehicles } from "./VehicleContext";
 
 export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
@@ -18,6 +19,20 @@ export const Dashboard = () => {
   const {
     settings: { vehicleListDisplayMode, showPrice, showCarfax },
   } = useSettings();
+
+  const {
+    filters,
+    updateFilters,
+    filtersDispatch,
+    data,
+    error,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+    loadMoreRef,
+    updateQuery,
+  } = useVehicles();
 
   let displayClass = "";
   if (vehicleListDisplayMode === "grid")
@@ -58,12 +73,49 @@ export const Dashboard = () => {
             )}
           </div>
         )}
-        <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
+
+        {status === "loading" ? (
+          <p>Loading...</p>
+        ) : status === "error" ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
+            {data.pages.map((group, i) => (
+              <React.Fragment key={i}>
+                {group.hits.map((v) => (
+                  <VehicleCard
+                    num={i}
+                    key={v?.stock || i}
+                    v={v}
+                    activeActionBarId={activeActionBarId}
+                    setActiveActionBarId={setActiveActionBarId}
+                  />
+                  // <VehicleCard num={i} key={v?.vin || i} v={v} />
+                ))}
+              </React.Fragment>
+            ))}
+            <div>
+              <button onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
+                {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
+              </button>
+            </div>
+            <div ref={loadMoreRef}></div>
+            <div>{isFetching && !isFetchingNextPage ? "Fetching..." : null}</div>
+          </div>
+        )}
+
+        {/* <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
           {isLoading && <div>Loading....</div>}
           {vehicles.map((r, i) => (
-            <VehicleCard num={i} key={r?.stock || i} v={r} activeActionBarId={activeActionBarId} setActiveActionBarId={setActiveActionBarId} />
+            <VehicleCard
+              num={i}
+              key={r?.stock || i}
+              v={r}
+              activeActionBarId={activeActionBarId}
+              setActiveActionBarId={setActiveActionBarId}
+            />
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

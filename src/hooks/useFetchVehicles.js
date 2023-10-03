@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { camelCaseToProperCase, debounce } from "../utils";
+import { camelCaseToProperCase, debounce, defaultFacetKeys, generateLabelArray, generateTypeNewCertifiedUsed } from "../utils";
 
-const initialFacets = {
-  price: [0, 100000],
-  msrp: [0, 100000],
-  year: [1990, 2024],
-  mileage: [0, 300000],
-  city_mpg: [0, 65],
-  hw_mpg: [0, 65],
-  cylinders: [0, 12],
-  doors: [0, 10],
-  days_in_stock: [0, 120],
-  hitsPerPage: [0, 100],
-};
 
 async function fetchReq(api, body) {
   return fetch(
@@ -112,111 +100,8 @@ const useFetchVehicles = (settings, updateSettings) => {
   };
 };
 
-const defaultFacetKeys = [
-  "features",
-  "our_price",
-  "lightning.lease_monthly_payment",
-  "lightning.finance_monthly_payment",
-  "type",
-  "api_id",
-  "year",
-  "make",
-  "model",
-  "model_number",
-  "trim",
-  "body",
-  "doors",
-  "miles",
-  "ext_color_generic",
-  "features",
-  "lightning.isSpecial",
-  "lightning.locations",
-  "lightning.status",
-  "lightning.class",
-  "fueltype",
-  "engine_description",
-  "transmission_description",
-  "metal_flags",
-  "city_mpg",
-  "hw_mpg",
-  "days_in_stock",
-  "ford_SpecialVehicle",
-  "lightning.locations.meta_location",
-  "ext_color",
-  "title_vrp",
-  "int_color",
-  "certified",
-  "lightning",
-  "location",
-  "drivetrain",
-  "int_options",
-  "ext_options",
-  "cylinders",
-  "vin",
-  "stock",
-  "msrp",
-  "our_price_label",
-  "finance_details",
-  "lease_details",
-  "thumbnail",
-  "link",
-  "objectID",
-  "algolia_sort_order",
-  "date_modified",
-  "hash",
-  "vdp",
-  "gallery",
-  "vdp_gallery",
-];
 
-function generateRangeArray(label, range, allowedRange) {
-  const minYear = range[0] || 1990;
-  const maxYear = range[1] || 2023;
-  const arr = [];
 
-  for (let i = minYear; i <= maxYear; i++) {
-    arr.push(`${label}:${i}`);
-  }
-  return arr;
-}
-
-function generateTypeNewCertifiedUsed(type) {
-  return Object.entries(type).reduce((acc, [label, val]) => {
-    if (val) return [...acc, "type:" + camelCaseToProperCase(label)];
-    return acc;
-  }, []);
-}
-function generateListArray(list, data) {
-  console.log({ list, data });
-  if (!data) return [];
-  return data.map((val) => `${list}:${val}`);
-}
-
-function generateLabelArray(label, range, allowedRange) {
-  if (!range || !allowedRange) return [];
-  console.log(label, range, allowedRange);
-  const labelArray = [];
-  if (allowedRange?.min && range?.[0] && range[0] >= allowedRange?.min) {
-    labelArray.push(`${label}>=${range[0]}`);
-  }
-
-  if (allowedRange?.max && range?.[1] && range[1] <= allowedRange.max) {
-    labelArray.push(`${label}<=${range[1]}`);
-  }
-  console.log(labelArray);
-  return labelArray;
-}
 
 export default useFetchVehicles;
 
-const facetStats = {
-  city_mpg: { min: 0, max: 124, avg: 29, sum: 4472 },
-  cylinders: { min: 0, max: 8, avg: 4, sum: 693 },
-  days_in_stock: { min: 1, max: 66, avg: 21, sum: 3313 },
-  doors: { min: 2, max: 4, avg: 3, sum: 602 },
-  hw_mpg: { min: 0, max: 101, avg: 34, sum: 5307 },
-  miles: { min: 4225, max: 149795, avg: 60801, sum: 9363393 },
-  msrp: { min: 0, max: 0, avg: 0, sum: 0 },
-  our_price: { min: 8888, max: 68888, avg: 24226, sum: 3682381 },
-  year: { min: 2004, max: 2022, avg: 2017, sum: 310713 },
-};

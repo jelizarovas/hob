@@ -6,7 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { DevPanel } from "./dev/DevPanel";
 import { SettingsProvider } from "./SettingsContext";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
-import { FilterProvider } from "./FilterContext";
+import { VehicleProvider } from "./VehicleContext";
 
 const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
@@ -20,8 +20,8 @@ const darkTheme = createTheme({
 function App() {
   return (
     <SettingsProvider>
-      <FilterProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <VehicleProvider>
           <ThemeProvider theme={darkTheme}>
             <CssBaseline />
             <Router>
@@ -30,8 +30,8 @@ function App() {
               <Route exact path="/" component={Dashboard} />
             </Router>
           </ThemeProvider>
-        </QueryClientProvider>
-      </FilterProvider>
+        </VehicleProvider>
+      </QueryClientProvider>
     </SettingsProvider>
   );
 }
