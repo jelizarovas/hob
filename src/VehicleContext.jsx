@@ -11,6 +11,7 @@ import {
   generateRangeArray,
 } from "./utils";
 import { useInfiniteQuery } from "react-query";
+import { throttle } from "lodash";
 
 const VehicleContext = createContext();
 
@@ -34,7 +35,7 @@ const reducer = (state, { type, payload }) => {
     case "UPDATE_TYPE":
       return { ...state, type: { ...state.type, ...payload } };
     case "UPDATE_FACET_STATS":
-      console.log(payload);
+      // console.log(payload);
       return {
         ...state,
         price: [payload["our_price"]["min"], payload["our_price"]["max"]],
@@ -56,7 +57,7 @@ export const VehicleProvider = ({ children }) => {
 
   const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
     ["vehicles", filters],
-    ({ pageParam = 0 }) => fetchReq({ pageParam, filters }),
+    ({ pageParam = 0 }) => throttledFetchReq({ pageParam, filters }),
     {
       getNextPageParam: (lastPage, pages) => {
         const nextPage = (lastPage.page ?? -1) + 1;
@@ -101,7 +102,7 @@ export const VehicleProvider = ({ children }) => {
     filtersDispatch({ type: "QUERY", payload });
   };
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <VehicleContext.Provider
@@ -124,8 +125,11 @@ export const VehicleProvider = ({ children }) => {
   );
 };
 
+const throttledFetchReq = throttle(fetchReq, 1000);
+
 async function fetchReq({ pageParam = 0, filters }) {
-  console.log({ filters });
+  // console.log({ filters });
+  console.log("fetchReq called!");
 
   const api = filters.api || burienAPI;
   const query = filters.query || "";

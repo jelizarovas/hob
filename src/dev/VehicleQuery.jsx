@@ -68,6 +68,8 @@ export const VehicleQuery = () => {
   );
 };
 
+
+
 async function fetchReq({ pageParam = 0, filters = {} }) {
   const api = burienAPI;
   const query = filters.query || "";

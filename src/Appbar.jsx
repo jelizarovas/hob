@@ -2,19 +2,10 @@ import React from "react";
 import { MdBugReport, MdClear, MdFilterList, MdGridView, MdList, MdSearch, MdSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useVehicles } from "./VehicleContext";
-export const AppBar = ({
-  setQuery,
-  query,
-  total,
-  settingsOpen,
-  setSettingsOpen,
-  setFilterPanelOpen,
-  filterPanelOpen,
-}) => {
+export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
   const { filters, updateQuery } = useVehicles();
 
   function handleChange(event) {
-    // setQuery(event.target.value);
     updateQuery(event.target.value);
   }
 
@@ -37,23 +28,13 @@ export const AppBar = ({
           {filters.query.length > 0 && (
             <button
               className="border rounded-full p-0.5 bg-white bg-opacity-0 hover:bg-opacity-20 transition-all"
-              onClick={() => {
-                // setQuery("");
-                updateQuery("");
-              }}
+              onClick={() => updateQuery("")}
             >
               <MdClear />
             </button>
           )}
         </div>
         <div className="flex items-center">
-          <button
-            type="button"
-            onClick={() => setFilterPanelOpen((v) => !v)}
-            className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
-          >
-            <MdFilterList />
-          </button>
           {/* <Link
             to="/dev/test"
             type="button"
@@ -61,15 +42,24 @@ export const AppBar = ({
           >
             <MdList />
           </Link> */}
-          <button
-            type="button"
-            onClick={() => setSettingsOpen((v) => !v)}
-            className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
-          >
-            <MdSettings />
-          </button>
+          <AppBarButton toggle={setFilterPanelOpen} Icon={MdFilterList} isActive={filterPanelOpen} />
+          <AppBarButton toggle={setSettingsOpen} Icon={MdSettings} isActive={settingsOpen} />
         </div>
       </div>
     </div>
+  );
+};
+
+const AppBarButton = ({ Icon, toggle, isActive, ...props }) => {
+  return (
+    <button
+      type="button"
+      onClick={() => toggle((v) => !v)}
+      className={`border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white  hover:bg-opacity-20 transition-all ${
+        isActive ? "bg-opacity-90 text-black hover:text-white" : "bg-opacity-0 text-white"
+      } `}
+    >
+      <Icon />
+    </button>
   );
 };

@@ -6,6 +6,8 @@ import { SettingsProvider, useSettings } from "./SettingsContext";
 export const SettingsPanel = ({ setSettingsOpen }) => {
   const { settings, setSetting } = useSettings();
 
+  console.log({ settings });
+
   const handleChange = (e) => {
     const { name, checked } = e.target;
     setSetting(name, checked);
@@ -41,11 +43,11 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           </Button>
         </ButtonGroup>
         <FormControlLabel
-          control={<Checkbox name="showPrice" value={settings.showPrice} onChange={handleChange} />}
+          control={<Checkbox name="showPrice" checked={settings?.showPrice} onChange={handleChange} />}
           label="Show Price"
         />
         <FormControlLabel
-          control={<Checkbox name="showCarfax" value={settings.showCarfax} onChange={handleChange} />}
+          control={<Checkbox name="showCarfax" checked={settings?.showCarfax} onChange={handleChange} />}
           label="Show Carfax"
         />
       </div>
