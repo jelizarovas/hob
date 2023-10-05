@@ -3,7 +3,11 @@ import { MdBugReport, MdClear, MdFilterList, MdGridView, MdList, MdSearch, MdSet
 import { Link } from "react-router-dom";
 import { useVehicles } from "./VehicleContext";
 export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
-  const { filters, updateQuery } = useVehicles();
+  const {
+    filters,
+    data,
+    updateQuery,
+  } = useVehicles();
 
   function handleChange(event) {
     updateQuery(event.target.value);
@@ -16,7 +20,7 @@ export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpe
           <div className="flex relative  justify-center items-cetner">
             <MdSearch />
             <span className="absolute leading-none text-[8px] h-3 flex p-0.5  -right-2 -top-1 bg-blue-700  rounded">
-              {total}
+              {data?.pages?.[0]?.nbHits || 0}
             </span>
           </div>
           <input

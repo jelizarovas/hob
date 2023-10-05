@@ -23,7 +23,7 @@ export const FilterPanel = ({
 
   const { filters, updateFilters, filtersDispatch } = useVehicles();
 
-  console.log("filterPanel", { filters });
+  // console.log("filterPanel", { filters });
 
   return (
     <div className="w-full md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">

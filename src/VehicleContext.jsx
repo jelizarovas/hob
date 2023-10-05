@@ -57,7 +57,7 @@ export const VehicleProvider = ({ children }) => {
 
   const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
     ["vehicles", filters],
-    ({ pageParam = 0 }) => throttledFetchReq({ pageParam, filters }),
+    ({ pageParam = 0 }) => fetchReq({ pageParam, filters }),
     {
       getNextPageParam: (lastPage, pages) => {
         const nextPage = (lastPage.page ?? -1) + 1;
@@ -102,7 +102,7 @@ export const VehicleProvider = ({ children }) => {
     filtersDispatch({ type: "QUERY", payload });
   };
 
-  // console.log(data);
+  // console.log({ data });
 
   return (
     <VehicleContext.Provider
@@ -110,6 +110,7 @@ export const VehicleProvider = ({ children }) => {
         filters,
         updateFilters,
         filtersDispatch,
+        fetchNextPage,
         data,
         error,
         hasNextPage,
@@ -124,12 +125,12 @@ export const VehicleProvider = ({ children }) => {
     </VehicleContext.Provider>
   );
 };
-
-const throttledFetchReq = throttle(fetchReq, 1000);
+//seems to not work at all ----> debug
+// const throttledFetchReq = throttle(fetchReq, 1000);
 
 async function fetchReq({ pageParam = 0, filters }) {
   // console.log({ filters });
-  console.log("fetchReq called!");
+  // console.log("fetchReq called!");
 
   const api = filters.api || burienAPI;
   const query = filters.query || "";

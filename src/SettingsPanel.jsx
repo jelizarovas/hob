@@ -6,8 +6,6 @@ import { SettingsProvider, useSettings } from "./SettingsContext";
 export const SettingsPanel = ({ setSettingsOpen }) => {
   const { settings, setSetting } = useSettings();
 
-  console.log({ settings });
-
   const handleChange = (e) => {
     const { name, checked } = e.target;
     setSetting(name, checked);

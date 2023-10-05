@@ -32,6 +32,7 @@ export const Dashboard = () => {
     status,
     loadMoreRef,
     updateQuery,
+    fetchNextPage,
   } = useVehicles();
 
   let displayClass = "";
