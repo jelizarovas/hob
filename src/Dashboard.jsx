@@ -41,7 +41,7 @@ export const Dashboard = () => {
   if (vehicleListDisplayMode === "list") displayClass = "flex-col";
 
   return (
-    <div className="relative w-full overflow-y-scroll max-h-screen  ">
+    <div className="relative w-full  ">
       <AppBar
         setQuery={(val) => updateSettings("QUERY", val)}
         query={filters.query}
@@ -55,7 +55,11 @@ export const Dashboard = () => {
           <code>{JSON.stringify(filters, null, 1)}</code>
         </pre> */}
 
-      <div className={`container mx-auto overflow-hidden transition-all duration-500 ease-in-out ${isFilterPanelOpen ? "h-8" : "h-0"} `}>
+      <div
+        className={`container mx-auto overflow-hidden transition-all duration-500 ease-in-out ${
+          isFilterPanelOpen ? "h-8" : "h-0"
+        } `}
+      >
         {isFilterPanelOpen && (
           <FilterPanel
             // facets={facets}
@@ -87,7 +91,7 @@ export const Dashboard = () => {
         ) : status === "error" ? (
           <p>Error: {error.message}</p>
         ) : (
-          <div className={`container h-full flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
+          <div className={`container  flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
             {data.pages.map((group, i) => (
               <React.Fragment key={i}>
                 {group.hits.map((v) => (
@@ -98,16 +102,11 @@ export const Dashboard = () => {
                     activeActionBarId={activeActionBarId}
                     setActiveActionBarId={setActiveActionBarId}
                   />
-                  // <VehicleCard num={i} key={v?.vin || i} v={v} />
                 ))}
               </React.Fragment>
             ))}
-            <div className="py-5 flex items-center justify-center w-full">
-              <button
-                className="w-full text-center  py-2  transition-all opacity-30"
-                onClick={() => fetchNextPage()}
-                disabled={!hasNextPage || isFetchingNextPage}
-              >
+            <div>
+              <button onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
                 {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
               </button>
             </div>
@@ -115,19 +114,6 @@ export const Dashboard = () => {
             <div>{isFetching && !isFetchingNextPage ? "Fetching..." : null}</div>
           </div>
         )}
-
-        {/* <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
-          {isLoading && <div>Loading....</div>}
-          {vehicles.map((r, i) => (
-            <VehicleCard
-              num={i}
-              key={r?.stock || i}
-              v={r}
-              activeActionBarId={activeActionBarId}
-              setActiveActionBarId={setActiveActionBarId}
-            />
-          ))}
-        </div> */}
       </div>
     </div>
   );

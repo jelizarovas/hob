@@ -324,7 +324,7 @@ export const initialFilters = {
   query: "",
   api: burienAPI,
   totalFound: 0,
-  hitsPerPage: 15,
+  hitsPerPage: 10,
   type: { new: true, certifiedUsed: true, used: true },
   price: [null /*min*/, null /*max*/],
   msrp: [null /*min*/, null /*max*/],
@@ -526,10 +526,7 @@ export const levenshteinDistance = (a, b) => {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1];
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
-        );
+        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
       }
     }
   }
@@ -563,10 +560,7 @@ export const parseAddress = (inputAddress) => {
   let bestMatch = null;
 
   for (let key in rairdonDealerships) {
-    const score = calculateSimilarity(
-      normalizedInput,
-      normalizeAddress(rairdonDealerships[key].address)
-    );
+    const score = calculateSimilarity(normalizedInput, normalizeAddress(rairdonDealerships[key].address));
 
     if (score > highestScore) {
       highestScore = score;
