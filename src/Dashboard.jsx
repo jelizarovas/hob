@@ -11,7 +11,7 @@ import { useVehicles } from "./VehicleContext";
 export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
   const [isSettingsOpen, setSettingsOpen] = React.useState(false);
-  const [isFilterPanelOpen, setFilterPanelOpen] = React.useState(false);
+  const [isFilterPanelOpen, setFilterPanelOpen] = React.useState(true);
   const [activeActionBarId, setActiveActionBarId] = React.useState(null);
   // const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
   //   useFetchVehicles(settings);
@@ -41,7 +41,7 @@ export const Dashboard = () => {
   if (vehicleListDisplayMode === "list") displayClass = "flex-col";
 
   return (
-    <div className="relative w-full overflow-y-scroll h-screen ">
+    <div className="relative w-full overflow-y-scroll max-h-screen  ">
       <AppBar
         setQuery={(val) => updateSettings("QUERY", val)}
         query={filters.query}
@@ -54,24 +54,31 @@ export const Dashboard = () => {
       {/* <pre className="text-xs">
           <code>{JSON.stringify(filters, null, 1)}</code>
         </pre> */}
-      <div className="flex flex-col     lg:flex-row items-start lg:px-2">
-        {(isSettingsOpen || isFilterPanelOpen) && (
-          <div className="flex   w-full lg:w-96 mr-4   flex-col">
-            {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
 
-            {isFilterPanelOpen && (
-              <FilterPanel
-                // facets={facets}
-                // facetsStats={facetsStats}
-                // total={total}
-                // defaultFacets={defaultFacets}
-                // defaultFacetsStats={defaultFacetsStats}
-                // defaultTotal={defaultTotal}
-                setFilterPanelOpen={setFilterPanelOpen}
-                // settings={settings}
-                // updateSettings={updateSettings}
-              />
-            )}
+      <div className={`container mx-auto overflow-hidden transition-all duration-500 ease-in-out ${isFilterPanelOpen ? "h-8" : "h-0"} `}>
+        {isFilterPanelOpen && (
+          <FilterPanel
+            // facets={facets}
+            // facetsStats={facetsStats}
+            // total={total}
+            // defaultFacets={defaultFacets}
+            // defaultFacetsStats={defaultFacetsStats}
+            // defaultTotal={defaultTotal}
+            setFilterPanelOpen={setFilterPanelOpen}
+            // settings={settings}
+            // updateSettings={updateSettings}
+          />
+        )}
+      </div>
+
+      <div className="flex flex-col  container mx-auto   lg:flex-row items-start lg:px-2">
+        {(isSettingsOpen || isFilterPanelOpen) && (
+          <div
+            className={`flex   w-full lg:w-96 mr-4   flex-col transition-all duration-200 ease-in-out ${
+              isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
+            } overflow-hidden`}
+          >
+            {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
           </div>
         )}
 
@@ -80,7 +87,7 @@ export const Dashboard = () => {
         ) : status === "error" ? (
           <p>Error: {error.message}</p>
         ) : (
-          <div className={`container flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
+          <div className={`container h-full flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
             {data.pages.map((group, i) => (
               <React.Fragment key={i}>
                 {group.hits.map((v) => (
@@ -95,8 +102,12 @@ export const Dashboard = () => {
                 ))}
               </React.Fragment>
             ))}
-            <div>
-              <button onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
+            <div className="py-5 flex items-center justify-center w-full">
+              <button
+                className="w-full text-center  py-2  transition-all opacity-30"
+                onClick={() => fetchNextPage()}
+                disabled={!hasNextPage || isFetchingNextPage}
+              >
                 {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
               </button>
             </div>

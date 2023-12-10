@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { parseMileage } from "../utils";
+import { getColorNameByCode, getGenericColor, parseAddress, parseMileage } from "../utils";
 import { useSettings } from "../SettingsContext";
 import {
   MdAddCircle,
@@ -15,13 +15,14 @@ import {
 import { RxExternalLink } from "react-icons/rx";
 import { BsPinFill } from "react-icons/bs";
 import { formatCurrency } from "../utils";
+import { isNumber } from "lodash";
 
 export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, ...props }) => {
   // console.log({ v });
   const backgroundStyle = {
     backgroundImage: `url(${v?.thumbnail})`,
     backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundPosition: "center right",
   };
 
   const {
@@ -34,62 +35,106 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, .
         className="flex flex-col lg:flex-row w-full items-center lg:space-x-4 my-0.5"
         onClick={() => setActiveActionBarId(activeActionBarId === v?.vin ? null : v?.vin)}
       >
-        <div className="w-full max-w-full flex    border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded  ">
+        <div
+          className={`w-full max-w-full flex  flex-row    border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded ${
+            activeActionBarId === v?.vin ? "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100" : ""
+          }  `}
+        >
           <Link
             to={{
               pathname: `/${v?.stock}`,
               state: v,
             }}
             style={backgroundStyle}
-            className="w-24 h-16    flex-shrink-0 overflow-hidden hover:scale-95 transition-all "
-          ></Link>
-          <div className="flex flex-col justify-between items-start flex-grow truncate px-1">
-            <div className="flex w-full justify-between">
-              <div className="whitespace-pre-wrap text-sm ">
-                {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
-                {v?.certified > 0 && (
-                  <span className="mx-2 border rounded text-xs px-1 py-0 bg-blue-600 bg-opacity-50">CPO</span>
-                )}
+            className="w-24 h-16  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
+          >
+            <div className="text-[10px] px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
+              <span
+                className={`${v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""}`}
+              >
+                {" "}
+                {v?.days_in_stock} days
+              </span>
+              <span>{parseMileage(v.miles)}</span>
+            </div>
+            {!!v?.miles && parseMileage(v.miles) && (
+              <div
+                title={v.miles}
+                className="text-[10px] px-1 py-0.5 absolute bg-black bg-opacity-80 right-0   bottom-0  leading-none"
+              >
+                {" "}
               </div>
-              <div className="flex items-center space-x-4">
-                {/* <a
-                  href={v?.link}
-                  target="_blank"
-                  aria-describedby="audioeye_new_window_message"
-                  className="rounded-full    border-opacity-25 hover:bg-white hover:bg-opacity-20"
+            )}
+          </Link>
+          <div className="flex flex-row justify-between items-start flex-grow  truncate px-1">
+            <div className="flex flex-col flex-shrink w-full  h-full justify-between px-1">
+              <div className="flex flex-col   text-sm">
+                <span className="text-[8px] leading-none pt-0.5 opacity-50 select-none text-left  ">{v?.type}</span>
+                <span
+                  title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
+                  className="leading-none  whitespace-normal cursor-pointer"
                 >
-                  <RxExternalLink />
-                </a>
+                  {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+                </span>
+              </div>
+              <div className="flex space-x-2 flex-grow text-[8px]  pt-1 opacity-50 ">
+                <span className="leading-none truncate">
+                  <span title={v?.ext_color_generic}>{getGenericColor(getColorNameByCode(v?.ext_color_generic))}</span>{" "}
+                  <span title={v.ext_color}>{v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}</span>{" "}
+                  {v?.int_color && `   w/ ${v.int_color} interior`}
+                </span>
+              </div>
 
-                {showCarfax && (
-                  <a
-                    href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
-                    target="_blank"
-                    aria-describedby="audioeye_new_window_message"
-                    className="rounded-full    border-opacity-25 hover:bg-white hover:bg-opacity-20"
-                  >
-                    <MdOutlineHistory />
-                  </a>
-                )} */}
-                {showPrice && v?.our_price && (
-                  <span className="px-2 " onClick={() => console.log(v)}>
-                    {formatCurrency(v.our_price)}
-                  </span>
-                )}
+              <div className="flex items-center  justify-between">
+                <div className="flex justify-between text-xs w-full ">
+                  <div className="text-sm leading-none">
+                    <VINComponent vin={v?.vin} />
+                    {/* {v?.vin && "#" + v.vin.slice(-8)} */}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="flex justify-between text-xs w-full ">
-              <div className="text-sm ">
-                <VINComponent vin={v?.vin} />
-                {/* {v?.vin && "#" + v.vin.slice(-8)} */}
-              </div>
-              <div className="text-xs">{v?.miles && parseMileage(v.miles)}</div>
-            </div>
+
             {/* <div className="flex justify-between text-xs w-full ">
         <div className="text-sm ">{v?.doors}</div>
         <div className="text-xs">{v?.city_mpg} {v?.hw_mpg}</div>
       </div> */}
           </div>
+          {showPrice && v?.our_price && (
+            <div
+              className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 pb-1"
+              onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
+            >
+              {v.msrp != 0 && (
+                <div className="flex flex-col justify-between text-right  text-sm">
+                  <span className="text-[8px] leading-none pt-0.5 opacity-50 select-none text-left ml-1 ">MSRP</span>
+                  <span className="leading-none cursor-pointer">{formatCurrency(v.msrp)}</span>
+                </div>
+              )}
+              <div className="flex flex-col text-right   text-sm">
+                {v?.our_price != v?.msrp && (
+                  <>
+                    <span className="text-[8px] leading-none pt-0.5 opacity-50 select-none text-left ml-1  ">
+                      {v.our_price_label}
+                    </span>
+
+                    <span className="leading-none cursor-pointer "> {determinePrice(v.our_price)}</span>
+                  </>
+                )}
+              </div>
+              <div className="flex flex-col text-right   text-sm">
+                {v?.location && (
+                  <span
+                    tite={v.location}
+                    onClick={() => console.log(parseAddress(v.location))}
+                    className="leading-none cursor-pointer truncate text-[8px]"
+                  >
+                    {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         {activeActionBarId === v?.vin && <ActionBar v={v} />}
       </div>
@@ -144,7 +189,8 @@ const ActionBar = ({ v, ...props }) => {
         Icon={MdShare}
         onClick={() => {
           navigator.clipboard.writeText(v?.link);
-          window.alert("URL Copied!");
+          console.log("Copied", v?.link);
+          // window.alert("URL Copied!");
         }}
       />
       <ActionButton label="Note" Icon={MdAddCircle} disabled />
@@ -221,3 +267,24 @@ export const VINComponent = ({ vin }) => {
     </div>
   );
 };
+
+function determinePrice(ourPrice) {
+  // Check for undefined or null
+  if (ourPrice === undefined || ourPrice === null) {
+    return "OTHER";
+  }
+
+  // Check if ourPrice is a string that contains 'call'
+  if (typeof ourPrice === "string" && ourPrice.toLowerCase().includes("call")) {
+    return "Call";
+  }
+
+  // Check if ourPrice is a string that can be converted to a number
+  const parsedPrice = parseFloat(ourPrice);
+  if (!isNaN(parsedPrice)) {
+    return formatCurrency(parsedPrice);
+  }
+
+  // Default case
+  return "OTHER";
+}

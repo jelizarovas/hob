@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  --main-color: #000;
+  --secondary-color: rgb(30, 30, 30);
+  scrollbar-color: var(--secondary-color) var(--main-color) ;
+  scrollbar-width: thin;
+}
+
 body {
   background-color: black;
   color: white;
@@ -10,3 +17,22 @@ body {
   height: 100vh;
   max-height: 100vh;
 }
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  /* border: 1px solid var(--secondary-color); */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--main-color);
+}
+
+/* ::selection {
+  background: #007c64;
+  color: #fff;
+} */

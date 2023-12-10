@@ -4,8 +4,7 @@ const burienAPI = {
   name: "Burien",
   "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
   "X-Algolia-Application-Id": "SEWJN80HTN",
-  index:
-    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+  index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
 };
 
 const rairdonAPI = {
@@ -17,8 +16,7 @@ const rairdonAPI = {
   index3: "rairdonautomotivegroup_production_inventory_specials_price",
   index4: "rairdonautomotivegroup_production_inventory_mileage_low_to_high",
   index5: "rairdonautomotivegroup_production_inventory_mileage_high_to_low",
-  index6:
-    "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
+  index6: "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
 };
 
 const initialSettings = {
@@ -26,7 +24,7 @@ const initialSettings = {
   api: burienAPI,
   totalFound: 0,
   hitsPerPage: 10,
-  type: { new: false, certifiedUsed: true, used: true },
+  type: { new: true, certifiedUsed: true, used: true },
   price: [null /*min*/, null /*max*/],
   msrp: [null /*min*/, null /*max*/],
   year: [1995 /*min*/, 2024 /*max*/],
@@ -99,4 +97,3 @@ const useSearchSettings = () => {
 };
 
 export default useSearchSettings;
-

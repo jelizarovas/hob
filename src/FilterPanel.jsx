@@ -1,4 +1,12 @@
-import { MdClear, MdFilter, MdFilterAlt, MdSettings } from "react-icons/md";
+import {
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdClear,
+  MdFilter,
+  MdFilterAlt,
+  MdKeyboardArrowDown,
+  MdSettings,
+} from "react-icons/md";
 import { SettingsSlider } from "./settings/SettingsSlider";
 // import { FilterListSelection } from "./settings/FilterListSelection";
 import { FilterListSelection } from "./dev/FilterListSelection";
@@ -26,65 +34,62 @@ export const FilterPanel = ({
   // console.log("filterPanel", { filters });
 
   return (
-    <div className="w-full md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
-      <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
+    <div className="w-full md:w-96 md:mx-2 mb-4 rounded   px-2">
+      {/* <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdFilterAlt /> <span>Filters</span>
         </div>
         <button type="button" className="flex" onClick={() => setFilterPanelOpen(false)}>
           <MdClear />
         </button>
-      </div>
-      <div className="flex text-xs">
-        <button
-          className={`py-2 px-4 m-2 border border-white border-opacity-20 rounded-xl ${
-            filters.api.name === "Burien" ? "bg-blue-500" : ""
-          }`}
-          onClick={() => filtersDispatch({ type: "UPDATE_API", payload: "burienApi" })}
-        >
-          Burien
-        </button>
-        <button
-          className={`py-2 px-4 m-2 border border-white border-opacity-20 rounded-xl ${
-            filters.api.name === "Rairdon" ? "bg-red-500" : ""
-          }`}
-          onClick={() => filtersDispatch({ type: "UPDATE_API", payload: "rairdonApi" })}
-        >
-          Rairdon
-        </button>
-        {/* <div className="p-2 m-2">Total results: {total.toString()}</div> */}
-      </div>
-      <div>
-        <div className="flex space-x-2 px-2 py-2">
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.type.new}
-              onChange={() => handleTypeChange("new", filters.type.new)}
-            />
-            New
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.type.certifiedUsed}
-              onChange={() => handleTypeChange("certifiedUsed", filters.type.certifiedUsed)}
-            />
-            Certified
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={filters.type.used}
-              onChange={() => handleTypeChange("used", filters.type.used)}
-            />
-            Pre-Owned
-          </label>
+      </div> */}
+      <div className="flex justify-between space-x-2">
+        <div className="flex text-xs border border-opacity-20 border-white rounded overflow-hidden">
+          {[
+            { label: "Burien", payload: "burienApi", bg: "bg-blue-800" },
+            { label: "Rairdon", payload: "rairdonApi", bg: "bg-red-800" },
+          ].map(({ label, payload, bg }, i) => (
+            <button
+              key={i}
+              className={`px-2 p-1 bg-opacity-0   transition-all  ${
+                filters.api.name === label ? `${bg} bg-opacity-90 hover:bg-opacity-100` : "bg-white hover:bg-opacity-20"
+              }`}
+              onClick={() => filtersDispatch({ type: "UPDATE_API", payload })}
+            >
+              {label}
+            </button>
+          ))}
         </div>
+        <div className="flex items-center   text-xs border border-opacity-20 border-white rounded overflow-hidden">
+          {[
+            { label: "New", bg: "bg-indigo-900", value: "new" },
+            { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
+            { label: "Used", bg: "bg-orange-900", value: "used" },
+          ].map(({ label, value, bg }, i) => (
+            <button
+              key={i}
+              className={`flex items-center cursor-pointer py-1 px-2  transition-all ${bg} ${
+                filters.type[value] ? `bg-opacity-100 hover:bg-opacity-50  ` : "bg-opacity-0  hover:bg-opacity-20 "
+              } `}
+              onClick={() => handleTypeChange(value, filters.type[value])}
+            >
+              {/* <input
+                type="checkbox"
+                className="cursor-pointer text-lime-500"
+                checked={filters.type[value]}
+                onChange={() => handleTypeChange(value, filters.type[value])}
+              /> */}
+              <span>{filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}</span>
+              <span className="pl-1 upper">{label}</span>
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setFilterPanelOpen(false)} className="px-2 rotate-180">
+          <MdKeyboardArrowDown />
+        </button>
+      </div>
 
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"Year"}
           minValue={defaultFacetsStats?.year.min || 1990}
           maxValue={defaultFacetsStats?.year.max || 2024}
@@ -93,7 +98,7 @@ export const FilterPanel = ({
           value={filters.year}
           onChange={(newValue) => updateFilters("UPDATE_YEAR", newValue)}
         /> */}
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"City MPG"}
           minValue={0}
           maxValue={65}
@@ -102,7 +107,7 @@ export const FilterPanel = ({
             updateFilters({ city_mpg: newValue })
           }
         /> */}
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"Highway MPG"}
           minValue={0}
           maxValue={65}
@@ -111,7 +116,7 @@ export const FilterPanel = ({
             updateFilters({ hw_mpg: newValue })
           }
         /> */}
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"Price"}
           minValue={defaultFacetsStats?.our_price.min || 0}
           maxValue={defaultFacetsStats?.our_price.max || 100000}
@@ -120,7 +125,7 @@ export const FilterPanel = ({
           value={filters.price}
           onChange={(newValue) => updateFilters({ price: newValue })}
         /> */}
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"MSRP"}
           minValue={0}
           maxValue={100000}
@@ -129,7 +134,7 @@ export const FilterPanel = ({
             updateFilters({ msrp: newValue })
           }
         /> */}
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"Mileage"}
           minValue={defaultFacetsStats?.miles.min || 0}
           maxValue={defaultFacetsStats?.miles.max || 100000}
@@ -175,17 +180,17 @@ export const FilterPanel = ({
           currentData={defaultFacets?.trim}
           onChange={(newValue) => updateFilters({ trim: newValue })}
         /> */}
-        {/* <FilterListSelection
+      {/* <FilterListSelection
           label="Type"
           data={facets.type}
           currentData={defaultFacets.type}
         /> */}
-        {/* <FilterListSelection
+      {/* <FilterListSelection
           label="Year"
           data={facets.year}
           currentData={defaultFacets.year}
         /> */}
-        {/* <FilterListSelection
+      {/* <FilterListSelection
           label="Doors"
           data={facets?.doors}
           currentData={defaultFacets?.doors}
@@ -209,11 +214,11 @@ export const FilterPanel = ({
           currentData={defaultFacets?.int_color}
           onChange={(newValue) => updateFilters({ int_color: newValue })}
         /> */}
-        {/* <FilterListSelection label="fuelType" data={facets.fuelType} /> */}
+      {/* <FilterListSelection label="fuelType" data={facets.fuelType} /> */}
 
-        {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
+      {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
 
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"Cylinders"}
           minValue={1}
           maxValue={12}
@@ -222,7 +227,7 @@ export const FilterPanel = ({
             updateFilters({ cylinders: newValue })
           }
         /> */}
-        {/* <SettingsSlider
+      {/* <SettingsSlider
           label={"Doors"}
           minValue={0}
           maxValue={10}
@@ -231,10 +236,9 @@ export const FilterPanel = ({
             updateFilters({ doors: newValue })
           }
         /> */}
-        {/* <pre className="text-[6px]">{JSON.stringify(settings, null, 2)}</pre> */}
-        {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
-        {/* <pre className="text-[6px]">{JSON.stringify(facetsStats, null, 2)}</pre> */}
-      </div>
+      {/* <pre className="text-[6px]">{JSON.stringify(settings, null, 2)}</pre> */}
+      {/* <pre className="text-[6px]">{JSON.stringify(facets, null, 2)}</pre> */}
+      {/* <pre className="text-[6px]">{JSON.stringify(facetsStats, null, 2)}</pre> */}
     </div>
   );
 };
