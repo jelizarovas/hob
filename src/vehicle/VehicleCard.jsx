@@ -17,7 +17,7 @@ import { BsPinFill } from "react-icons/bs";
 import { formatCurrency } from "../utils";
 import { isNumber } from "lodash";
 
-export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, ...props }) => {
+export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, addPinnedCar, ...props }) => {
   // console.log({ v });
   const backgroundStyle = {
     backgroundImage: `url(${v?.thumbnail})`,
@@ -136,7 +136,7 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, .
             </div>
           )}
         </div>
-        {activeActionBarId === v?.vin && <ActionBar v={v} />}
+        {activeActionBarId === v?.vin && <ActionBar v={v} addPinnedCar={addPinnedCar} />}
       </div>
     );
 
@@ -169,7 +169,22 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, .
   );
 };
 
-const ActionBar = ({ v, ...props }) => {
+const togglePinCar = (vehicle) => {
+  let pinnedCars = JSON.parse(localStorage.getItem("pinnedCars")) || [];
+
+  if (pinnedCars.some((car) => car.vin === vehicle.vin)) {
+    // Unpin if already pinned
+    pinnedCars = pinnedCars.filter((car) => car.vin !== vehicle.vin);
+  } else {
+    // Pin the car
+    pinnedCars.push(vehicle);
+  }
+
+  localStorage.setItem("pinnedCars", JSON.stringify(pinnedCars));
+  // Update state or UI as needed
+};
+
+const ActionBar = ({ v, addPinnedCar, ...props }) => {
   const {
     settings: { vehicleListDisplayMode, showPrice, showCarfax },
   } = useSettings();
@@ -194,7 +209,7 @@ const ActionBar = ({ v, ...props }) => {
         }}
       />
       <ActionButton label="Note" Icon={MdAddCircle} disabled />
-      <ActionButton label="Pin" Icon={BsPinFill} disabled />
+      <ActionButton label="Pin" Icon={BsPinFill} onClick={() => addPinnedCar(v)} />
       <ActionButton label="Quote" Icon={MdRequestQuote} disabled />
       <ActionButton label="Hide" Icon={MdVisibilityOff} disabled />
     </div>

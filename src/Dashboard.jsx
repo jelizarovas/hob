@@ -7,6 +7,8 @@ import { AppBar } from "./Appbar";
 import { SettingsPanel } from "./SettingsPanel";
 import { useSettings } from "./SettingsContext";
 import { useVehicles } from "./VehicleContext";
+import { PinnedInventory } from "./PinnedInventory";
+import useLocalStorage from "./useLocalStorage";
 
 export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
@@ -15,6 +17,11 @@ export const Dashboard = () => {
   const [activeActionBarId, setActiveActionBarId] = React.useState(null);
   // const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
   //   useFetchVehicles(settings);
+
+  const [pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar] = useLocalStorage(
+    "pinnedCars",
+    []
+  );
 
   const {
     settings: { vehicleListDisplayMode, showPrice, showCarfax },
@@ -86,13 +93,17 @@ export const Dashboard = () => {
           </div>
         )}
 
+        <PinnedInventory
+          {...[pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar]}
+        />
+
         {status === "loading" ? (
           <p className="mx-auto">Loading...</p>
         ) : status === "error" ? (
           <p>Error: {error.message}</p>
         ) : (
           <div className={`container  flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
-            {data.pages.map((group, i) => (
+            {filterSearchResults(data.pages).map((group, i) => (
               <React.Fragment key={i}>
                 {group.hits.map((v) => (
                   <VehicleCard
@@ -101,6 +112,7 @@ export const Dashboard = () => {
                     v={v}
                     activeActionBarId={activeActionBarId}
                     setActiveActionBarId={setActiveActionBarId}
+                    addPinnedCar={addPinnedCar}
                   />
                 ))}
               </React.Fragment>
@@ -117,4 +129,9 @@ export const Dashboard = () => {
       </div>
     </div>
   );
+};
+
+const filterSearchResults = (searchResults) => {
+  const pinnedCars = JSON.parse(localStorage.getItem("pinnedCars")) || [];
+  return searchResults.filter((car) => !pinnedCars.some((pinnedCar) => pinnedCar.vin === car.vin));
 };
