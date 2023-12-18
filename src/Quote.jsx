@@ -1,7 +1,15 @@
 import React, { useReducer } from "react";
 import { useHistory } from "react-router-dom";
 import cuid from "cuid";
-import { MdAdd, MdAddCircleOutline, MdCheckBox, MdCheckCircle, MdDelete } from "react-icons/md";
+import {
+  MdAdd,
+  MdAddCircleOutline,
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdCheckCircle,
+  MdDelete,
+  MdIndeterminateCheckBox,
+} from "react-icons/md";
 import { formatCurrency } from "./utils";
 import { Link } from "react-router-dom";
 
@@ -58,12 +66,13 @@ function reducer(state, action) {
     case "SET_FIELD":
       return { ...state, [action.field]: action.value };
     case "SET_NESTED_FIELD":
-      const { field, key, subfield, value } = action;
+      const { field, key, subfield, value, include } = action;
       return {
         ...state,
         [field]: {
           ...state[field],
           [key]: {
+            include: true,
             ...state[field][key],
             [subfield]: value,
           },
@@ -78,6 +87,37 @@ function reducer(state, action) {
       }
 
       return newState;
+
+    case "TOGGLE_INCLUDE":
+      return {
+        ...state,
+        [action.field]: {
+          ...state[action.field],
+          [action.key]: {
+            ...state[action.field][action.key],
+            include: !state[action.field][action.key].include,
+          },
+        },
+      };
+
+    case "TOGGLE_ALL_INCLUDES":
+      const fieldToUpdate = state[action.field];
+      let updatedField;
+
+      if (action.state === "check" || action.state === "intermediate") {
+        updatedField = Object.fromEntries(
+          Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: true }])
+        );
+      } else if (action.state === "uncheck") {
+        updatedField = Object.fromEntries(
+          Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: false }])
+        );
+      }
+
+      return {
+        ...state,
+        [action.field]: updatedField,
+      };
 
     default:
       return state;
@@ -115,6 +155,27 @@ export const Quote = () => {
     dispatch({ type: "DELETE_NESTED_FIELD", field, key });
   };
 
+  const toggleInclude = (field, key) => {
+    dispatch({
+      type: "TOGGLE_INCLUDE",
+      field,
+      key,
+    });
+  };
+
+  function determineCheckboxState(items) {
+    const allChecked = Object.values(items).every((item) => item.include);
+    const someChecked = Object.values(items).some((item) => item.include);
+
+    if (allChecked) {
+      return "uncheck";
+    } else if (someChecked) {
+      return "intermediate";
+    } else {
+      return "check";
+    }
+  }
+
   const [total, salesTax] = calculateTotal(state);
 
   // Use the state as needed
@@ -131,19 +192,43 @@ export const Quote = () => {
         <div>
           <div className="flex items-center space-x-2 my-2">
             <button
+              onClick={() => {
+                const currentState = determineCheckboxState(state.packages);
+
+                dispatch({
+                  type: "TOGGLE_ALL_INCLUDES",
+                  field: "packages",
+                  state: currentState,
+                });
+              }}
+              className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
+            >
+              {determineCheckboxState(state.packages) === "check" ? (
+                <MdCheckBoxOutlineBlank />
+              ) : determineCheckboxState(state.packages) === "intermediate" ? (
+                <MdIndeterminateCheckBox />
+              ) : (
+                <MdCheckBox />
+              )}
+            </button>
+            <span>Packages</span>
+            <button
               onClick={handleAddField("packages")}
               className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
             >
               <MdAddCircleOutline />
             </button>
-
-            <span>Packages</span>
           </div>
           {state?.packages &&
             Object.entries(state.packages).map(([key, value], i) => (
               <div key={key} className="flex space-x-2 my-1 items-center ">
-                <button className="px-2 py-1 rounded-lg  " onClick={() => {}}>
-                  <MdCheckBox />
+                <button
+                  className="px-2 py-1 rounded-lg  "
+                  onClick={() => {
+                    toggleInclude("packages", key);
+                  }}
+                >
+                  {value.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
                 </button>
                 <Input
                   name={`packages.${key}.label`}
@@ -232,9 +317,9 @@ export const Quote = () => {
         </div>
       </div>
       <div>
-        Sales Tax ({state.salesTaxRate}%): {formatCurrency(salesTax)}
+        Sales Tax ({state?.salesTaxRate}%): {salesTax && formatCurrency(salesTax)}
       </div>
-      <div>Total: {formatCurrency(total)}</div>
+      <div>Total: {total && formatCurrency(total)}</div>
     </div>
   );
 };
@@ -259,9 +344,16 @@ const Input = ({ name, value, label, Icon, onChange, type = "number", className 
 
 const calculateTotal = (state) => {
   const sumValues = (items) => {
+    if (!items || typeof items !== "object") {
+      return 0;
+    }
+
     return Object.values(items).reduce((sum, item) => {
-      const itemValue = parseFloat(item.value) || 0;
-      return sum + itemValue;
+      if (item.include) {
+        const itemValue = parseFloat(item.value) || 0;
+        return sum + itemValue;
+      }
+      return sum;
     }, 0);
   };
 
