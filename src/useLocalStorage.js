@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function useLocalStorage(key, initialValue) {
+function useLocalStorage(key, initialValue, identifierKey) {
   // Initialize the state
   const [state, setState] = useState(() => {
     try {
@@ -23,12 +23,13 @@ function useLocalStorage(key, initialValue) {
 
   // Function to add an item
   const addItem = (item) => {
+    console.log({ item });
     setState((prev) => (Array.isArray(prev) ? [...prev, item] : [item]));
   };
 
   // Function to remove an item
   const removeItem = (itemId) => {
-    setState((prev) => (Array.isArray(prev) ? prev.filter((i) => i.id !== itemId) : []));
+    setState((prev) => (Array.isArray(prev) ? prev.filter((i) => i[identifierKey] !== itemId) : []));
   };
 
   // Function to clear all items
@@ -39,8 +40,8 @@ function useLocalStorage(key, initialValue) {
   // Function to toggle an item
   const toggleItem = (item) => {
     setState((prev) => {
-      if (Array.isArray(prev) && prev.some((i) => i.id === item.id)) {
-        return prev.filter((i) => i.id !== item.id);
+      if (Array.isArray(prev) && prev.some((i) => i[identifierKey] === item[identifierKey])) {
+        return prev.filter((i) => i[identifierKey] !== item[identifierKey]);
       } else {
         return [...prev, item];
       }

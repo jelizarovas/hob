@@ -15,9 +15,18 @@ import {
 import { RxExternalLink } from "react-icons/rx";
 import { BsPinFill } from "react-icons/bs";
 import { formatCurrency } from "../utils";
+import QRCode from "react-qr-code";
 import { isNumber } from "lodash";
 
-export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, addPinnedCar, ...props }) => {
+export const VehicleCard = ({
+  v,
+  num,
+  activeActionBarId,
+  setActiveActionBarId,
+  togglePinnedCar,
+  isPinned = false,
+  ...props
+}) => {
   // console.log({ v });
   const backgroundStyle = {
     backgroundImage: `url(${v?.thumbnail})`,
@@ -32,11 +41,11 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
   if (vehicleListDisplayMode === "list")
     return (
       <div
-        className="flex flex-col lg:flex-row w-full items-center lg:space-x-4 my-0.5"
+        className="flex flex-col lg:flex-row w-full items-center lg:space-x-4 first:mt-0 last:mb-0 mt-0.5 mb-0.5"
         onClick={() => setActiveActionBarId(activeActionBarId === v?.vin ? null : v?.vin)}
       >
         <div
-          className={`w-full max-w-full flex  flex-row    border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded ${
+          className={`w-full max-w-full flex  flex-row print:border-black print:my-1 print:px-2 print:py-1   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded ${
             activeActionBarId === v?.vin ? "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100" : ""
           }  `}
         >
@@ -46,9 +55,10 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
               state: v,
             }}
             style={backgroundStyle}
-            className="w-24 h-16  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
+            className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
           >
-            <div className="text-[10px] px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
+            <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
+            <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
               <span
                 className={`${v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""}`}
               >
@@ -60,7 +70,7 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
             {!!v?.miles && parseMileage(v.miles) && (
               <div
                 title={v.miles}
-                className="text-[10px] px-1 py-0.5 absolute bg-black bg-opacity-80 right-0   bottom-0  leading-none"
+                className="text-[10px]  print:text-sm px-1 py-0.5 absolute bg-black bg-opacity-80 right-0   bottom-0  leading-none"
               >
                 {" "}
               </div>
@@ -69,7 +79,9 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
           <div className="flex flex-row justify-between items-start flex-grow  truncate px-1">
             <div className="flex flex-col flex-shrink w-full  h-full justify-between px-1">
               <div className="flex flex-col   text-sm">
-                <span className="text-[8px] leading-none pt-0.5 opacity-50 select-none text-left  ">{v?.type}</span>
+                <span className="text-[8px]  print:text-sm leading-none pt-0.5 opacity-50 select-none text-left  ">
+                  {v?.type}
+                </span>
                 <span
                   title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
                   className="leading-none  whitespace-normal cursor-pointer"
@@ -77,7 +89,7 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
                   {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
                 </span>
               </div>
-              <div className="flex space-x-2 flex-grow text-[8px]  pt-1 opacity-50 ">
+              <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
                 <span className="leading-none truncate">
                   <span title={v?.ext_color_generic}>{getGenericColor(getColorNameByCode(v?.ext_color_generic))}</span>{" "}
                   <span title={v.ext_color}>{v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}</span>{" "}
@@ -100,21 +112,26 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
         <div className="text-xs">{v?.city_mpg} {v?.hw_mpg}</div>
       </div> */}
           </div>
+          <div className="hidden print:block mx-4">
+            <QRCode className="w-16 h-16" value={v.link} />
+          </div>
           {showPrice && v?.our_price && (
             <div
-              className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 pb-1"
+              className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 print:w-32 pb-1"
               onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
             >
               {v.msrp != 0 && (
-                <div className="flex flex-col justify-between text-right  text-sm">
-                  <span className="text-[8px] leading-none pt-0.5 opacity-50 select-none text-left ml-1 ">MSRP</span>
-                  <span className="leading-none cursor-pointer">{formatCurrency(v.msrp)}</span>
+                <div className="flex flex-col  print:space-x-2   justify-between text-right  text-sm">
+                  <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
+                    MSRP
+                  </span>
+                  <span className="leading-none print:leading-normal cursor-pointer">{formatCurrency(v.msrp)}</span>
                 </div>
               )}
-              <div className="flex flex-col text-right   text-sm">
+              <div className="flex flex-col  text-right  print:space-x-2   text-sm">
                 {v?.our_price != v?.msrp && (
                   <>
-                    <span className="text-[8px] leading-none pt-0.5 opacity-50 select-none text-left ml-1  ">
+                    <span className="text-[8px] print:text-sm leading-none print:leading-normal pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1  ">
                       {v.our_price_label}
                     </span>
 
@@ -127,7 +144,7 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
                   <span
                     tite={v.location}
                     onClick={() => console.log(parseAddress(v.location))}
-                    className="leading-none cursor-pointer truncate text-[8px]"
+                    className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
                   >
                     {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
                   </span>
@@ -136,7 +153,7 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
             </div>
           )}
         </div>
-        {activeActionBarId === v?.vin && <ActionBar v={v} addPinnedCar={addPinnedCar} />}
+        {activeActionBarId === v?.vin && <ActionBar v={v} togglePinnedCar={togglePinnedCar} isPinned={isPinned} />}
       </div>
     );
 
@@ -146,7 +163,7 @@ export const VehicleCard = ({ v, num, activeActionBarId, setActiveActionBarId, a
         pathname: `/${v?.stock}`,
         state: v,
       }}
-      className="w-2/5 sm:w-1/3 flex-grow-0  md:w-72 max-w-full flex flex-col   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 md:rounded "
+      className="w-2/5 sm:w-1/3 flex-grow-0  md:w-72 max-w-full flex flex-col print:border-none   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-0 md:rounded "
     >
       <div
         style={backgroundStyle}
@@ -184,13 +201,13 @@ const togglePinCar = (vehicle) => {
   // Update state or UI as needed
 };
 
-const ActionBar = ({ v, addPinnedCar, ...props }) => {
+const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
   const {
     settings: { vehicleListDisplayMode, showPrice, showCarfax },
   } = useSettings();
 
   return (
-    <div className="w-full flex items-center justify-around rounded-b-lg lg:rounded border mb-4">
+    <div className="w-full flex items-center justify-around rounded-b-lg lg:rounded border mb-4 print:hidden">
       {showCarfax && (
         <ActionButton
           label="History"
@@ -208,29 +225,43 @@ const ActionBar = ({ v, addPinnedCar, ...props }) => {
           // window.alert("URL Copied!");
         }}
       />
-      <ActionButton label="Note" Icon={MdAddCircle} disabled />
-      <ActionButton label="Pin" Icon={BsPinFill} onClick={() => addPinnedCar(v)} />
-      <ActionButton label="Quote" Icon={MdRequestQuote} disabled />
-      <ActionButton label="Hide" Icon={MdVisibilityOff} disabled />
+      {/* <ActionButton label="Note" Icon={MdAddCircle} disabled /> */}
+      <ActionButton
+        label={isPinned ? "Unpin" : "Pin"}
+        Icon={BsPinFill}
+        onClick={() => {
+          togglePinnedCar(v);
+        }}
+        iconClassName={isPinned ? "rotate-45" : ""}
+      />
+      <ActionButton label="Quote" Icon={MdRequestQuote} to={`quote/${v?.vin}`} state={{ key: "value" }} />
+      {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
     </div>
   );
 };
 
-const ActionButton = ({ label, Icon, href, ...props }) => {
+const ActionButton = ({ label, Icon, href, iconClassName = "", to, state, ...props }) => {
   const className =
     "p-0 flex px-2 flex-col hover:bg-white hover:bg-opacity-20 transition-all justify-center items-center disabled:opacity-60 disabled:hover:bg-transparent  w-full py-1";
 
   const Content = () => (
     <>
-      {Icon && <Icon className="text-2xl" />} <span className="text-xs">{label}</span>
+      {Icon && <Icon className={`text-2xl ${iconClassName}`} />} <span className="text-xs">{label}</span>
     </>
   );
 
   if (href)
     return (
-      <a href={href} className={className} target="_blank" {...props} disabled>
+      <a href={href} className={className} target="_blank" {...props}>
         <Content />
       </a>
+    );
+
+  if (to)
+    return (
+      <Link to={to} state={{ key: "value" }} className={className} {...props}>
+        <Content />
+      </Link>
     );
 
   return (
@@ -263,15 +294,15 @@ export const VINComponent = ({ vin }) => {
 
   return (
     <div
-      className="flex space-x-1 group cursor-copy"
+      className="flex space-x-1 print:space-x-0 group cursor-copy"
       onClick={(e) => {
         e.stopPropagation();
         handleCopy(vin);
       }}
     >
-      <span className="opacity-30 group-hover:opacity-70 transition-all">{regularVIN}</span>
+      <span className="opacity-30 print:opacity-100 group-hover:opacity-70 transition-all">{regularVIN}</span>
       <span
-        className="opacity-70 transition-all group-hover:opacity-100 hover:text-indigo-400 "
+        className="opacity-70 print:opacity-100 print:font-bold transition-all group-hover:opacity-100 hover:text-indigo-400 "
         onClick={(e) => {
           e.stopPropagation();
           handleCopy(boldStockNumber);

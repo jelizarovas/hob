@@ -20,7 +20,8 @@ export const Dashboard = () => {
 
   const [pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar] = useLocalStorage(
     "pinnedCars",
-    []
+    [],
+    "vin"
   );
 
   const {
@@ -63,7 +64,7 @@ export const Dashboard = () => {
         </pre> */}
 
       <div
-        className={`container mx-auto overflow-hidden transition-all duration-500 ease-in-out ${
+        className={`container mx-auto print:hidden overflow-hidden transition-all duration-500 ease-in-out ${
           isFilterPanelOpen ? "h-8" : "h-0"
         } `}
       >
@@ -85,39 +86,51 @@ export const Dashboard = () => {
       <div className="flex flex-col  container mx-auto   lg:flex-row items-start lg:px-2">
         {(isSettingsOpen || isFilterPanelOpen) && (
           <div
-            className={`flex   w-full lg:w-96 mr-4   flex-col transition-all duration-200 ease-in-out ${
+            className={`flex   w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
               isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
             } overflow-hidden`}
           >
             {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
           </div>
         )}
-
-        <PinnedInventory
-          {...[pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar]}
-        />
+        <div className="flex container mx-auto items-start transition-all ">
+          <PinnedInventory
+            {...{
+              pinnedCars,
+              setPinnedCars,
+              addPinnedCar,
+              removePinnedCar,
+              clearPinnedCars,
+              togglePinnedCar,
+              activeActionBarId,
+              setActiveActionBarId,
+            }}
+          />
+        </div>
 
         {status === "loading" ? (
           <p className="mx-auto">Loading...</p>
         ) : status === "error" ? (
           <p>Error: {error.message}</p>
         ) : (
-          <div className={`container  flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}>
-            {filterSearchResults(data.pages).map((group, i) => (
+          <div
+            className={`container print:hidden flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}
+          >
+            {data.pages.map((group, i) => (
               <React.Fragment key={i}>
-                {group.hits.map((v) => (
+                {filterSearchResults(pinnedCars, group.hits).map((v) => (
                   <VehicleCard
                     num={i}
                     key={v?.stock || i}
                     v={v}
                     activeActionBarId={activeActionBarId}
                     setActiveActionBarId={setActiveActionBarId}
-                    addPinnedCar={addPinnedCar}
+                    togglePinnedCar={togglePinnedCar}
                   />
                 ))}
               </React.Fragment>
             ))}
-            <div>
+            <div className="print:hidden">
               <button onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
                 {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
               </button>
@@ -131,7 +144,6 @@ export const Dashboard = () => {
   );
 };
 
-const filterSearchResults = (searchResults) => {
-  const pinnedCars = JSON.parse(localStorage.getItem("pinnedCars")) || [];
+const filterSearchResults = (pinnedCars, searchResults) => {
   return searchResults.filter((car) => !pinnedCars.some((pinnedCar) => pinnedCar.vin === car.vin));
 };
