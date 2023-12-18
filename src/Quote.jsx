@@ -176,7 +176,7 @@ export const Quote = () => {
     }
   }
 
-  const [total, salesTax] = calculateTotal(state);
+  const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] = calculateTotal(state);
 
   // Use the state as needed
   return (
@@ -190,7 +190,7 @@ export const Quote = () => {
         </div>
 
         <div>
-          <div className="flex items-center space-x-2 my-2">
+          <div className="flex items-center space-x-2 my-2 w-96">
             <button
               onClick={() => {
                 const currentState = determineCheckboxState(state.packages);
@@ -211,43 +211,50 @@ export const Quote = () => {
                 <MdCheckBox />
               )}
             </button>
-            <span>Packages</span>
-            <button
-              onClick={handleAddField("packages")}
-              className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
-            >
-              <MdAddCircleOutline />
-            </button>
+            <div className="flex-grow flex justify-between w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none">
+              <span className=" w-full">Packages</span>
+              <span className="">{formatCurrency(sumPackages)}</span>
+            </div>
+            <div>
+              <button
+                onClick={handleAddField("packages")}
+                className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
+              >
+                <MdAddCircleOutline />
+              </button>
+            </div>
           </div>
-          {state?.packages &&
-            Object.entries(state.packages).map(([key, value], i) => (
-              <div key={key} className="flex space-x-2 my-1 items-center ">
-                <button
-                  className="px-2 py-1 rounded-lg  "
-                  onClick={() => {
-                    toggleInclude("packages", key);
-                  }}
-                >
-                  {value.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
-                </button>
-                <Input
-                  name={`packages.${key}.label`}
-                  value={state.packages[key].label}
-                  onChange={handleChange}
-                  type="text"
-                  className=""
-                />
-                <Input
-                  className="w-1/3"
-                  name={`packages.${key}.value`}
-                  value={state.packages[key].value}
-                  onChange={handleChange}
-                />
-                <button className="px-2 py-1 rounded-lg " onClick={() => handleDeleteAddon(`packages.${key}`)}>
-                  <MdDelete />
-                </button>
-              </div>
-            ))}
+          <div className="w-96">
+            {state?.packages &&
+              Object.entries(state.packages).map(([key, value], i) => (
+                <div key={key} className="flex space-x-2 my-1 items-center ">
+                  <button
+                    className="px-2 py-1 rounded-lg  "
+                    onClick={() => {
+                      toggleInclude("packages", key);
+                    }}
+                  >
+                    {value.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
+                  </button>
+                  <Input
+                    name={`packages.${key}.label`}
+                    value={state.packages[key].label}
+                    onChange={handleChange}
+                    type="text"
+                    className=""
+                  />
+                  <Input
+                    className="w-1/3"
+                    name={`packages.${key}.value`}
+                    value={state.packages[key].value}
+                    onChange={handleChange}
+                  />
+                  <button className="px-2 py-1 rounded-lg " onClick={() => handleDeleteAddon(`packages.${key}`)}>
+                    <MdDelete />
+                  </button>
+                </div>
+              ))}
+          </div>
         </div>
         <div className="flex flex-col">
           <div className="flex items-center space-x-2">
@@ -369,5 +376,12 @@ const calculateTotal = (state) => {
 
   const total = sellingPrice + sumPackages + sumAccessories + salesTax + sumFees;
 
-  return [total.toFixed(2), salesTax.toFixed(2)]; // Formatting the total to two decimal places
+  return [
+    total.toFixed(2),
+    salesTax.toFixed(2),
+    sumPackages.toFixed(2),
+    sumAccessories.toFixed(2),
+    sumTradeIns.toFixed(2),
+    sumFees.toFixed(2),
+  ]; // Formatting the total to two decimal places
 };
