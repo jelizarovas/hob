@@ -13,6 +13,10 @@ import {
 import { formatCurrency } from "./utils";
 import { Link } from "react-router-dom";
 
+const useQueryParams = () => {
+  return new URLSearchParams(window.location.search);
+};
+
 const initialState = {
   listedPrice: 32040,
   discount: 500,
@@ -59,12 +63,20 @@ const initialState = {
       include: true,
     },
   },
+  downPayment: 0,
+  apr: 3.99, // Annual Percentage Rate as a percentage (e.g., 3.99%)
+  term: 60, // Term in months (e.g., 60 months)
+  amountFinanced: 0, // Placeholder for now
+  totalAmountPaid: 0, // Placeholder for now
+  monthlyPayment: 0, // Placeholder for now
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case "SET_FIELD":
       return { ...state, [action.field]: action.value };
+    case "UPDATE_PARAM":
+      return { ...state, [action.payload.key]: action.payload.value };
     case "SET_NESTED_FIELD":
       const { field, key, subfield, value, include } = action;
       return {
@@ -126,6 +138,35 @@ function reducer(state, action) {
 
 export const Quote = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const queryParams = useQueryParams();
+
+  React.useEffect(() => {
+    queryParams.forEach((value, key) => {
+      // Check if the value is the string 'undefined'
+      if (value !== "undefined") {
+        const decodedValue = decodeURIComponent(value);
+        dispatch({ type: "UPDATE_PARAM", payload: { key, value: decodedValue } });
+      } else {
+        // Optionally handle the case when the value is 'undefined'
+        // For example, you might want to set it to a default value or just ignore it
+        // dispatch({ type: 'UPDATE_PARAM', payload: { key, value: '' } }); // If you want to reset it
+      }
+    });
+  }, [queryParams]);
+
+  React.useEffect(() => {
+    // Convert to numbers for calculation
+    const listedPrice = parseFloat(state.listedPrice) || 0;
+    const discount = parseFloat(state.discount) || 0;
+
+    // Calculate the new selling price
+    const newSellingPrice = listedPrice - discount;
+
+    // Update the sellingPrice in the state if it has changed
+    if (state.sellingPrice !== newSellingPrice) {
+      dispatch({ type: "SET_FIELD", field: "sellingPrice", value: newSellingPrice.toString() });
+    }
+  }, [state.listedPrice, state.discount]);
 
   let history = useHistory();
 
@@ -176,7 +217,17 @@ export const Quote = () => {
     }
   }
 
-  const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] = calculateTotal(state);
+  const [
+    total,
+    salesTax,
+    sumPackages,
+    sumAccessories,
+    sumTradeIns,
+    sumFees,
+    amountFinanced,
+    totalAmountPaid,
+    monthlyPayment,
+  ] = calculateTotal(state);
 
   // Use the state as needed
   return (
@@ -327,6 +378,16 @@ export const Quote = () => {
         Sales Tax ({state?.salesTaxRate}%): {salesTax && formatCurrency(salesTax)}
       </div>
       <div>Total: {total && formatCurrency(total)}</div>
+      <div className="w-96 ">
+        <Input name="downPayment" value={state.downPayment} onChange={handleChange} label="Downpayment" />
+        <Input name="apr" value={state.apr} onChange={handleChange} label="APR" />
+        <Input name="term" value={state.term} onChange={handleChange} label="Term In Months" />
+      </div>
+      <div>
+        <div>Amount Financed: {formatCurrency(amountFinanced)}</div>
+        <div>Total Amount Paid: {formatCurrency(totalAmountPaid)}</div>
+        <div>Monthly Payment: {formatCurrency(monthlyPayment)}</div>
+      </div>
     </div>
   );
 };
@@ -375,6 +436,8 @@ const calculateTotal = (state) => {
   const salesTax = (salesTaxRate / 100) * taxableAmount;
 
   const total = sellingPrice + sumPackages + sumAccessories + salesTax + sumFees;
+  const downPayment = parseFloat(state.downPayment) || 0;
+  const fin = calculateLoanDetails(total - downPayment || 0, state?.apr || 0, state?.term || 0);
 
   return [
     total.toFixed(2),
@@ -383,5 +446,21 @@ const calculateTotal = (state) => {
     sumAccessories.toFixed(2),
     sumTradeIns.toFixed(2),
     sumFees.toFixed(2),
+    fin.amountFinanced,
+    fin.totalAmountPaid,
+    fin.monthlyPayment,
   ]; // Formatting the total to two decimal places
+};
+
+const calculateLoanDetails = (amountFinanced, apr, term) => {
+  const monthlyRate = apr / 100 / 12;
+  const monthlyPayment =
+    monthlyRate !== 0 ? (amountFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term)) : amountFinanced / term;
+  const totalAmountPaid = monthlyPayment * term;
+
+  return {
+    amountFinanced: amountFinanced.toFixed(2),
+    totalAmountPaid: totalAmountPaid.toFixed(2),
+    monthlyPayment: monthlyPayment.toFixed(2),
+  };
 };

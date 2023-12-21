@@ -234,7 +234,12 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         }}
         iconClassName={isPinned ? "rotate-45" : ""}
       />
-      <ActionButton label="Quote" Icon={MdRequestQuote} to={`quote/${v?.vin}`} state={{ key: "value" }} />
+      <ActionButton
+        label="Quote"
+        Icon={MdRequestQuote}
+        to={`quote/${v?.vin}/?listPrice=${v?.v?.msrp}&sellingPrice=${v?.our_price}`}
+        state={{ key: "value" }}
+      />
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
     </div>
   );
