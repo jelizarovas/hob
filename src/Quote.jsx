@@ -1,5 +1,4 @@
 import React, { useReducer } from "react";
-import { useHistory } from "react-router-dom";
 import cuid from "cuid";
 import {
   MdAdd,
@@ -11,11 +10,7 @@ import {
   MdIndeterminateCheckBox,
 } from "react-icons/md";
 import { formatCurrency } from "./utils";
-import { Link } from "react-router-dom";
-
-const useQueryParams = () => {
-  return new URLSearchParams(window.location.search);
-};
+import { Link, useHistory, useLocation } from "react-router-dom";
 
 const initialState = {
   listedPrice: 32040,
@@ -126,6 +121,24 @@ function reducer(state, action) {
         );
       }
 
+    case "UPDATE_PRICES":
+      const delta = action.payload.listPrice - action.payload.sellingPrice;
+      if (delta === 0) {
+        return {
+          ...state,
+          listedPrice: action.payload.listPrice,
+          sellingPrice: action.payload.sellingPrice,
+          discount: 0,
+        };
+      } else {
+        return {
+          ...state,
+          listedPrice: action.payload.listPrice,
+          sellingPrice: action.payload.sellingPrice,
+          discount: delta,
+        };
+      }
+
       return {
         ...state,
         [action.field]: updatedField,
@@ -138,31 +151,32 @@ function reducer(state, action) {
 
 export const Quote = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const queryParams = useQueryParams();
+  const { search } = useLocation();
+
+  const parsePrice = (price) => {
+    if (price === "call") return "Call for Price";
+    const value = parseFloat(price);
+    return isNaN(value) ? null : value;
+  };
+
+  const queryParams = new URLSearchParams(search);
+  const listPrice = parsePrice(queryParams.get("listPrice"));
+  const sellingPrice = parsePrice(queryParams.get("sellingPrice"));
+  React.useEffect(() => {
+    if (listPrice !== null && sellingPrice !== null) {
+      dispatch({
+        type: "UPDATE_PRICES",
+        payload: { listPrice, sellingPrice },
+      });
+    }
+  }, [listPrice, sellingPrice]);
 
   React.useEffect(() => {
-    queryParams.forEach((value, key) => {
-      // Check if the value is the string 'undefined'
-      if (value !== "undefined") {
-        const decodedValue = decodeURIComponent(value);
-        dispatch({ type: "UPDATE_PARAM", payload: { key, value: decodedValue } });
-      } else {
-        // Optionally handle the case when the value is 'undefined'
-        // For example, you might want to set it to a default value or just ignore it
-        // dispatch({ type: 'UPDATE_PARAM', payload: { key, value: '' } }); // If you want to reset it
-      }
-    });
-  }, [queryParams]);
-
-  React.useEffect(() => {
-    // Convert to numbers for calculation
     const listedPrice = parseFloat(state.listedPrice) || 0;
     const discount = parseFloat(state.discount) || 0;
 
-    // Calculate the new selling price
     const newSellingPrice = listedPrice - discount;
 
-    // Update the sellingPrice in the state if it has changed
     if (state.sellingPrice !== newSellingPrice) {
       dispatch({ type: "SET_FIELD", field: "sellingPrice", value: newSellingPrice.toString() });
     }
@@ -463,4 +477,76 @@ const calculateLoanDetails = (amountFinanced, apr, term) => {
     totalAmountPaid: totalAmountPaid.toFixed(2),
     monthlyPayment: monthlyPayment.toFixed(2),
   };
+};
+
+const Group = ({ group }) => {
+  return (
+    <div>
+      <div className="flex items-center space-x-2 my-2 w-96">
+        <button
+          onClick={() => {
+            const currentState = determineCheckboxState(group);
+
+            dispatch({
+              type: "TOGGLE_ALL_INCLUDES",
+              field: "packages",
+              state: currentState,
+            });
+          }}
+          className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
+        >
+          {determineCheckboxState(group) === "check" ? (
+            <MdCheckBoxOutlineBlank />
+          ) : determineCheckboxState(group) === "intermediate" ? (
+            <MdIndeterminateCheckBox />
+          ) : (
+            <MdCheckBox />
+          )}
+        </button>
+        <div className="flex-grow flex justify-between w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none">
+          <span className=" w-full">Packages</span>
+          <span className="">{formatCurrency(sumPackages)}</span>
+        </div>
+        <div>
+          <button
+            onClick={handleAddField("packages")}
+            className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
+          >
+            <MdAddCircleOutline />
+          </button>
+        </div>
+      </div>
+      <div className="w-96">
+        {state?.packages &&
+          Object.entries(group).map(([key, value], i) => (
+            <div key={key} className="flex space-x-2 my-1 items-center ">
+              <button
+                className="px-2 py-1 rounded-lg  "
+                onClick={() => {
+                  toggleInclude("packages", key);
+                }}
+              >
+                {value.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
+              </button>
+              <Input
+                name={`packages.${key}.label`}
+                value={group[key].label}
+                onChange={handleChange}
+                type="text"
+                className=""
+              />
+              <Input
+                className="w-1/3"
+                name={`packages.${key}.value`}
+                value={group[key].value}
+                onChange={handleChange}
+              />
+              <button className="px-2 py-1 rounded-lg " onClick={() => handleDeleteAddon(`packages.${key}`)}>
+                <MdDelete />
+              </button>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
 };

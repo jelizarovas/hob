@@ -82,9 +82,7 @@ export const Dashboard = () => {
           />
         )}
       </div>
-
-      <div className="flex flex-col  container mx-auto   lg:flex-row items-start lg:px-2">
-        {(isSettingsOpen || isFilterPanelOpen) && (
+      {(isSettingsOpen || isFilterPanelOpen) && (
           <div
             className={`flex   w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
               isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
@@ -93,6 +91,8 @@ export const Dashboard = () => {
             {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
           </div>
         )}
+      <div className="flex flex-col  container mx-auto   lg:flex-row items-start lg:px-2 lg:space-x-10">
+      
         <div className="flex container mx-auto items-start transition-all ">
           <PinnedInventory
             {...{

@@ -41,7 +41,7 @@ export const VehicleCard = ({
   if (vehicleListDisplayMode === "list")
     return (
       <div
-        className="flex flex-col lg:flex-row w-full items-center lg:space-x-4 first:mt-0 last:mb-0 mt-0.5 mb-0.5"
+        className="flex flex-col  w-full items-center  first:mt-0 last:mb-0 mt-0.5 mb-0.5"
         onClick={() => setActiveActionBarId(activeActionBarId === v?.vin ? null : v?.vin)}
       >
         <div
@@ -237,8 +237,8 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
       <ActionButton
         label="Quote"
         Icon={MdRequestQuote}
-        to={`quote/${v?.vin}/?listPrice=${v?.v?.msrp}&sellingPrice=${v?.our_price}`}
-        state={{ key: "value" }}
+        to={`quote/${v?.vin}/?listPrice=${v?.msrp}&sellingPrice=${v?.our_price}`}
+        state={{ key: "value", ...v }}
       />
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
     </div>
@@ -264,7 +264,7 @@ const ActionButton = ({ label, Icon, href, iconClassName = "", to, state, ...pro
 
   if (to)
     return (
-      <Link to={to} state={{ key: "value" }} className={className} {...props}>
+      <Link to={to} state={state} className={className} {...props}>
         <Content />
       </Link>
     );
