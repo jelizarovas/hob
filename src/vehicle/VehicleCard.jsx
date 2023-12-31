@@ -237,7 +237,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
       <ActionButton
         label="Quote"
         Icon={MdRequestQuote}
-        to={`quote/${v?.vin}/?listPrice=${v?.msrp}&sellingPrice=${v?.our_price}`}
+        to={`quote/${v?.vin}/?listPrice=${v?.msrp && v.msrp > 0 ? v?.msrp : v?.our_price}&sellingPrice=${v?.our_price}`}
         state={{ key: "value", ...v }}
       />
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
@@ -319,7 +319,7 @@ export const VINComponent = ({ vin }) => {
   );
 };
 
-function determinePrice(ourPrice) {
+export function determinePrice(ourPrice) {
   // Check for undefined or null
   if (ourPrice === undefined || ourPrice === null) {
     return "OTHER";

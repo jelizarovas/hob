@@ -7,10 +7,12 @@ import {
   MdCheckBoxOutlineBlank,
   MdCheckCircle,
   MdDelete,
+  MdEdit,
   MdIndeterminateCheckBox,
 } from "react-icons/md";
-import { formatCurrency } from "./utils";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { formatCurrency, getColorNameByCode, getGenericColor, parseAddress, parseMileage } from "./utils";
+import { Link, useHistory, useLocation, useParams } from "react-router-dom";
+import { VINComponent, determinePrice } from "./vehicle/VehicleCard";
 
 const initialState = {
   listedPrice: 32040,
@@ -58,9 +60,9 @@ const initialState = {
       include: true,
     },
   },
-  downPayment: 0,
-  apr: 3.99, // Annual Percentage Rate as a percentage (e.g., 3.99%)
-  term: 60, // Term in months (e.g., 60 months)
+  downPayment: 2000,
+  apr: 8.99, // Annual Percentage Rate as a percentage (e.g., 3.99%)
+  term: 72, // Term in months (e.g., 60 months)
   amountFinanced: 0, // Placeholder for now
   totalAmountPaid: 0, // Placeholder for now
   monthlyPayment: 0, // Placeholder for now
@@ -120,6 +122,10 @@ function reducer(state, action) {
           Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: false }])
         );
       }
+      return {
+        ...state,
+        [action.field]: updatedField,
+      };
 
     case "UPDATE_PRICES":
       const delta = action.payload.listPrice - action.payload.sellingPrice;
@@ -138,11 +144,6 @@ function reducer(state, action) {
           discount: delta,
         };
       }
-
-      return {
-        ...state,
-        [action.field]: updatedField,
-      };
 
     default:
       return state;
@@ -247,160 +248,148 @@ export const Quote = () => {
   return (
     <div className="container mx-auto py-2 flex space-y-2 flex-col ">
       <Link to="/">Go to Main</Link>
-      <div>
-        <div className="w-96 ">
-          <Input name="listedPrice" value={state.listedPrice} onChange={handleChange} label="Listed Price" />
-          <Input name="discount" value={state.discount} onChange={handleChange} label="Discount" />
-          <Input name="sellingPrice" value={state.sellingPrice} onChange={handleChange} label="Selling Price" />
+      <VehiclePrice />
+      <div className="w-96">
+        <div className="bg-white bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+          <Input
+            name="listedPrice"
+            value={state.listedPrice}
+            onChange={handleChange}
+            label="List / MSRP"
+            className="w-28 text-right"
+          />
+          <Input
+            name="discount"
+            value={state.discount}
+            onChange={handleChange}
+            label="Discount"
+            className="w-28 text-right"
+          />
+          <Input
+            name="sellingPrice"
+            value={state.sellingPrice}
+            onChange={handleChange}
+            label="Selling"
+            className="w-28 text-right"
+          />
         </div>
 
-        <div>
-          <div className="flex items-center space-x-2 my-2 w-96">
-            <button
-              onClick={() => {
-                const currentState = determineCheckboxState(state.packages);
+        <QuoteGroup
+          data={state.packages}
+          groupName="packages"
+          groupLabel="Packages"
+          groupSum={sumPackages}
+          determineCheckboxState={determineCheckboxState}
+          handleAddField={handleAddField}
+          toggleInclude={toggleInclude}
+          handleDeleteAddon={handleDeleteAddon}
+          handleChange={handleChange}
+          dispatch={dispatch}
+        />
+        <QuoteGroup
+          data={state.accessories}
+          groupName="accessories"
+          groupLabel="Accessories"
+          groupSum={sumAccessories}
+          determineCheckboxState={determineCheckboxState}
+          handleAddField={handleAddField}
+          toggleInclude={toggleInclude}
+          handleDeleteAddon={handleDeleteAddon}
+          handleChange={handleChange}
+          dispatch={dispatch}
+        />
+        <QuoteGroup
+          data={state.fees}
+          groupName="fees"
+          groupLabel="Fees"
+          groupSum={sumFees}
+          determineCheckboxState={determineCheckboxState}
+          handleAddField={handleAddField}
+          toggleInclude={toggleInclude}
+          handleDeleteAddon={handleDeleteAddon}
+          handleChange={handleChange}
+          dispatch={dispatch}
+        />
 
-                dispatch({
-                  type: "TOGGLE_ALL_INCLUDES",
-                  field: "packages",
-                  state: currentState,
-                });
-              }}
-              className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
-            >
-              {determineCheckboxState(state.packages) === "check" ? (
-                <MdCheckBoxOutlineBlank />
-              ) : determineCheckboxState(state.packages) === "intermediate" ? (
-                <MdIndeterminateCheckBox />
-              ) : (
-                <MdCheckBox />
-              )}
-            </button>
-            <div className="flex-grow flex justify-between w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none">
-              <span className=" w-full">Packages</span>
-              <span className="">{formatCurrency(sumPackages)}</span>
+        <div className="rounded-lg bg-white bg-opacity-20   my-2 flex items-center flex-row">
+          <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5">
+            <MdCheckBox />
+          </button>
+          <div className="w-full flex items-center space-x-2 px-2">
+            <span className="whitespace-nowrap  flex-grow">Sales Tax </span>
+            <Input name="salesTaxRate" value={state.salesTaxRate} onChange={handleChange} className="w-16 text-right" />
+            <span className="opacity-50">%</span>
+          </div>
+          <span className="whitespace-nowrap px-2 w-32 text-right">{salesTax && formatCurrency(salesTax)} </span>
+          <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5">
+            <MdEdit />
+          </button>
+        </div>
+        <div className="rounded-lg bg-white bg-opacity-10 py-2   my-2 flex items-center flex-row font-bold">
+          <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+            <MdCheckBox />
+          </div>
+          <span className="whitespace-nowrap px-2 flex-grow">Total OTD</span>
+
+          <span className="whitespace-nowrap px-2 w-32 text-right">{total && formatCurrency(total)} </span>
+          <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+            <MdEdit />
+          </div>
+        </div>
+
+        <div className="bg-white bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+          <Input
+            name="downPayment"
+            value={state.downPayment}
+            onChange={handleChange}
+            label="Downpayment"
+            className="w-28 text-right"
+          />
+          <Input name="apr" value={state.apr} onChange={handleChange} label="APR" className="w-28 text-right" />
+          <Input
+            name="term"
+            value={state.term}
+            onChange={handleChange}
+            label="Term In Months"
+            className="w-28 text-right"
+          />
+        </div>
+
+        <div className="rounded-lg bg-white bg-opacity-10 py-2   my-2 flex  flex-col font-bold">
+          <div className="w-full flex">
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+              <MdCheckBox />
             </div>
-            <div>
-              <button
-                onClick={handleAddField("packages")}
-                className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
-              >
-                <MdAddCircleOutline />
-              </button>
+            <span className="whitespace-nowrap px-2 flex-grow">Amount Financed</span>
+
+            <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(amountFinanced)} </span>
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+              <MdEdit />
             </div>
           </div>
-          <div className="w-96">
-            {state?.packages &&
-              Object.entries(state.packages).map(([key, value], i) => (
-                <div key={key} className="flex space-x-2 my-1 items-center ">
-                  <button
-                    className="px-2 py-1 rounded-lg  "
-                    onClick={() => {
-                      toggleInclude("packages", key);
-                    }}
-                  >
-                    {value.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
-                  </button>
-                  <Input
-                    name={`packages.${key}.label`}
-                    value={state.packages[key].label}
-                    onChange={handleChange}
-                    type="text"
-                    className=""
-                  />
-                  <Input
-                    className="w-1/3"
-                    name={`packages.${key}.value`}
-                    value={state.packages[key].value}
-                    onChange={handleChange}
-                  />
-                  <button className="px-2 py-1 rounded-lg " onClick={() => handleDeleteAddon(`packages.${key}`)}>
-                    <MdDelete />
-                  </button>
-                </div>
-              ))}
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center space-x-2">
-            <button onClick={handleAddField("accessories")} className="">
-              <MdAddCircleOutline />
-            </button>
+          <div className="w-full flex">
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+              <MdCheckBox />
+            </div>
+            <span className="whitespace-nowrap px-2 flex-grow">Monthly Payment</span>
 
-            <span>Accessories</span>
+            <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(monthlyPayment)} </span>
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+              <MdEdit />
+            </div>
           </div>
-          {state?.accessories &&
-            Object.entries(state.accessories).map(([key, value], i) => (
-              <div key={key} className="flex space-x-2 my-1 items-center ">
-                <button className="px-2 py-1 rounded-lg  " onClick={() => {}}>
-                  <MdCheckBox />
-                </button>
-                <Input
-                  name={`accessories.${key}.label`}
-                  value={state.accessories[key].label}
-                  onChange={handleChange}
-                  type="text"
-                  className=""
-                />
-                <Input
-                  className="w-1/3"
-                  name={`accessories.${key}.value`}
-                  value={state.accessories[key].value}
-                  onChange={handleChange}
-                />
-                <button className="w-16" onClick={() => handleDeleteAddon(`accessories.${key}`)}>
-                  <MdDelete />
-                </button>
-              </div>
-            ))}
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center space-x-2">
-            <button onClick={handleAddField("fees")} className="">
-              <MdAddCircleOutline />
-            </button>
+          <div className="w-full flex">
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+              <MdCheckBox />
+            </div>
+            <span className="whitespace-nowrap px-2 flex-grow">Total Amount Paid</span>
 
-            <span>Fees</span>
+            <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(totalAmountPaid)} </span>
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+              <MdEdit />
+            </div>
           </div>
-          {state?.fees &&
-            Object.entries(state.fees).map(([key, value], i) => (
-              <div key={key} className="flex space-x-2 my-1 items-center ">
-                <button className="px-2 py-1 rounded-lg  " onClick={() => {}}>
-                  <MdCheckBox />
-                </button>
-                <Input
-                  name={`fees.${key}.label`}
-                  value={state.fees[key].label}
-                  onChange={handleChange}
-                  type="text"
-                  className=""
-                />
-                <Input
-                  className="w-1/3"
-                  name={`fees.${key}.value`}
-                  value={state.fees[key].value}
-                  onChange={handleChange}
-                />
-                <button className="w-16" onClick={() => handleDeleteAddon(`fees.${key}`)}>
-                  <MdDelete />
-                </button>
-              </div>
-            ))}
         </div>
-      </div>
-      <div>
-        Sales Tax ({state?.salesTaxRate}%): {salesTax && formatCurrency(salesTax)}
-      </div>
-      <div>Total: {total && formatCurrency(total)}</div>
-      <div className="w-96 ">
-        <Input name="downPayment" value={state.downPayment} onChange={handleChange} label="Downpayment" />
-        <Input name="apr" value={state.apr} onChange={handleChange} label="APR" />
-        <Input name="term" value={state.term} onChange={handleChange} label="Term In Months" />
-      </div>
-      <div>
-        <div>Amount Financed: {formatCurrency(amountFinanced)}</div>
-        <div>Total Amount Paid: {formatCurrency(totalAmountPaid)}</div>
-        <div>Monthly Payment: {formatCurrency(monthlyPayment)}</div>
       </div>
     </div>
   );
@@ -410,11 +399,11 @@ const Input = ({ name, value, label, Icon, onChange, type = "number", className 
   return (
     <label className="flex flex-col text-left">
       <span className="text-[10px]">{label}</span>
-      <div className="bg-white flex flex-row">
+      <div className="bg-white bg-opacity-5 hover:bg-opacity-50 transition-all rounded-md text-sm flex flex-row">
         {Icon && <span>{Icon}</span>}
         <input
           name={name}
-          className={`bg-transparent px-2 py-0.5 text-black flex-grow outline-none ${className}`}
+          className={`bg-transparent px-2 py-1 text-white flex-grow outline-none  ${className} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           type={type}
           onChange={onChange}
           value={value || ""}
@@ -479,69 +468,88 @@ const calculateLoanDetails = (amountFinanced, apr, term) => {
   };
 };
 
-const Group = ({ group }) => {
+const QuoteGroup = ({
+  data,
+  groupName,
+  groupLabel,
+  groupSum,
+  determineCheckboxState,
+  handleAddField,
+  toggleInclude,
+  handleDeleteAddon,
+  handleChange,
+  dispatch,
+}) => {
+  const [isOpen, setOpen] = React.useState(true);
+  const isChecked = determineCheckboxState(data);
+
   return (
-    <div>
-      <div className="flex items-center space-x-2 my-2 w-96">
+    <div className="w-96 flex flex-col">
+      <div className="flex items-center space-x-2 mt-2  bg-white bg-opacity-20 rounded-lg">
         <button
           onClick={() => {
-            const currentState = determineCheckboxState(group);
-
             dispatch({
               type: "TOGGLE_ALL_INCLUDES",
-              field: "packages",
-              state: currentState,
+              field: groupName,
+              state: isChecked,
             });
           }}
           className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
         >
-          {determineCheckboxState(group) === "check" ? (
+          {isChecked === "check" ? (
             <MdCheckBoxOutlineBlank />
-          ) : determineCheckboxState(group) === "intermediate" ? (
+          ) : isChecked === "intermediate" ? (
             <MdIndeterminateCheckBox />
           ) : (
             <MdCheckBox />
           )}
         </button>
-        <div className="flex-grow flex justify-between w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none">
-          <span className=" w-full">Packages</span>
-          <span className="">{formatCurrency(sumPackages)}</span>
+        <div
+          onClick={() => setOpen((v) => !v)}
+          className="flex-grow flex justify-between w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none"
+        >
+          <span className=" w-full">{groupLabel}</span>
+          <span className="">{formatCurrency(groupSum)}</span>
         </div>
         <div>
           <button
-            onClick={handleAddField("packages")}
+            onClick={handleAddField(groupName)}
             className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
           >
             <MdAddCircleOutline />
           </button>
         </div>
       </div>
-      <div className="w-96">
-        {state?.packages &&
-          Object.entries(group).map(([key, value], i) => (
-            <div key={key} className="flex space-x-2 my-1 items-center ">
+      <div className="mx-2 bg-white bg-opacity-10 rounded-b-lg ">
+        {data &&
+          isOpen &&
+          Object.entries(data).map(([key, value], i) => (
+            <div key={key} className="flex space-x-2 px-2 my-1 items-center bg-white bg-opacity-0 hover:bg-opacity-5 ">
               <button
-                className="px-2 py-1 rounded-lg  "
+                className="px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20   "
                 onClick={() => {
-                  toggleInclude("packages", key);
+                  toggleInclude(groupName, key);
                 }}
               >
                 {value.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
               </button>
               <Input
-                name={`packages.${key}.label`}
-                value={group[key].label}
+                name={`${groupName}.${key}.label`}
+                value={data[key].label}
                 onChange={handleChange}
                 type="text"
                 className=""
               />
               <Input
-                className="w-1/3"
-                name={`packages.${key}.value`}
-                value={group[key].value}
+                className="w-1/4 text-right"
+                name={`${groupName}.${key}.value`}
+                value={data[key].value}
                 onChange={handleChange}
               />
-              <button className="px-2 py-1 rounded-lg " onClick={() => handleDeleteAddon(`packages.${key}`)}>
+              <button
+                className="px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20   "
+                onClick={() => handleDeleteAddon(`${groupName}.${key}`)}
+              >
                 <MdDelete />
               </button>
             </div>
@@ -550,3 +558,171 @@ const Group = ({ group }) => {
     </div>
   );
 };
+
+const api = {
+  name: "Rairdon",
+  "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
+  "X-Algolia-Application-Id": "V3ZOVI2QFZ",
+  index: "rairdonautomotivegroup_production_inventory_low_to_high",
+};
+
+function getVehicleDataByVINNumber(vin) {
+  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
+    headers: {
+      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+    },
+    method: "POST",
+    body: JSON.stringify({
+      hitsPerPage: 1,
+      query: vin,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data.hits[0];
+    });
+}
+
+const VehiclePrice = (props) => {
+  const { vin } = useParams();
+  const [v, setV] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getVehicleDataByVINNumber(vin);
+        setV(data);
+      } catch (error) {
+        // Handle error if the data fetching fails
+        console.error("Error fetching vehicle data:", error);
+      }
+    };
+
+    if (isObjectEmpty(v)) {
+      fetchData();
+    }
+  }, [vin, v]);
+
+  const backgroundStyle = {
+    backgroundImage: `url(${v?.thumbnail})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center right",
+  };
+
+  return (
+    <div className="w-96">
+      <div
+        className={`w-full max-w-full flex  flex-row print:border-black print:my-1 print:px-2 print:py-1   border border-white  hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded 
+           "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100" 
+        `}
+      >
+        <div
+          style={backgroundStyle}
+          className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
+        >
+          <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
+          <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
+            <span
+              className={`${v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""}`}
+            >
+              {" "}
+              {v?.days_in_stock} days
+            </span>
+            <span>{!!v?.miles && parseMileage(v?.miles)}</span>
+          </div>
+          {!!v?.miles && parseMileage(v.miles) && (
+            <div
+              title={v.miles}
+              className="text-[10px]  print:text-sm px-1 py-0.5 absolute bg-black bg-opacity-80 right-0   bottom-0  leading-none"
+            >
+              {" "}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-row justify-between items-start flex-grow  truncate px-1">
+          <div className="flex flex-col flex-shrink w-full  h-full justify-between px-1">
+            <div className="flex flex-col   text-sm">
+              <span className="text-[8px]  print:text-sm leading-none pt-0.5 opacity-50 select-none text-left  ">
+                {v?.type}
+              </span>
+              <span
+                title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
+                className="leading-none  whitespace-normal cursor-pointer"
+              >
+                {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+              </span>
+            </div>
+            {/* <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
+              <span className="leading-none truncate">
+                <span title={v?.ext_color_generic}>{getGenericColor(getColorNameByCode(v?.ext_color_generic))}</span>{" "}
+                <span title={v.ext_color}>{v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}</span>{" "}
+                {v?.int_color && `   w/ ${v.int_color} interior`}
+              </span>
+            </div> */}
+
+            <div className="flex items-center  justify-between">
+              <div className="flex justify-between text-xs w-full ">
+                <div className="text-sm leading-none">
+                  {v?.vin && <VINComponent vin={v?.vin} />}
+                  {/* {v?.vin && "#" + v.vin.slice(-8)} */}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* <div className="flex justify-between text-xs w-full ">
+        <div className="text-sm ">{v?.doors}</div>
+        <div className="text-xs">{v?.city_mpg} {v?.hw_mpg}</div>
+      </div> */}
+        </div>
+
+        {v?.our_price && (
+          <div
+            className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 print:w-32 pb-1"
+            onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
+          >
+            {v.msrp != 0 && (
+              <div className="flex flex-col  print:space-x-2   justify-between text-right  text-sm">
+                <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
+                  MSRP
+                </span>
+                <span className="leading-none print:leading-normal cursor-pointer">{formatCurrency(v.msrp)}</span>
+              </div>
+            )}
+            <div className="flex flex-col  text-right  print:space-x-2   text-sm">
+              {v?.our_price != v?.msrp && (
+                <>
+                  <span className="text-[8px] print:text-sm leading-none print:leading-normal pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1  ">
+                    {v.our_price_label}
+                  </span>
+
+                  <span className="leading-none cursor-pointer "> {determinePrice(v.our_price)}</span>
+                </>
+              )}
+            </div>
+            <div className="flex flex-col text-right   text-sm">
+              {v?.location && (
+                <span
+                  tite={v.location}
+                  onClick={() => console.log(parseAddress(v.location))}
+                  className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
+                >
+                  {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+function isObjectEmpty(obj) {
+  if (typeof obj !== "object" || obj === null) {
+    return true; // Treat non-object values as empty
+  }
+
+  return Object.keys(obj).length === 0;
+}
