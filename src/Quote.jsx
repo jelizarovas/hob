@@ -10,7 +10,13 @@ import {
   MdEdit,
   MdIndeterminateCheckBox,
 } from "react-icons/md";
-import { formatCurrency, getColorNameByCode, getGenericColor, parseAddress, parseMileage } from "./utils";
+import {
+  formatCurrency,
+  getColorNameByCode,
+  getGenericColor,
+  parseAddress,
+  parseMileage,
+} from "./utils";
 import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { VINComponent, determinePrice } from "./vehicle/VehicleCard";
 
@@ -91,7 +97,10 @@ function reducer(state, action) {
       const newState = { ...state };
 
       // Check if the field exists and is an object
-      if (newState[action.field] && typeof newState[action.field] === "object") {
+      if (
+        newState[action.field] &&
+        typeof newState[action.field] === "object"
+      ) {
         delete newState[action.field][action.key];
       }
 
@@ -115,11 +124,17 @@ function reducer(state, action) {
 
       if (action.state === "check" || action.state === "intermediate") {
         updatedField = Object.fromEntries(
-          Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: true }])
+          Object.entries(fieldToUpdate).map(([key, item]) => [
+            key,
+            { ...item, include: true },
+          ])
         );
       } else if (action.state === "uncheck") {
         updatedField = Object.fromEntries(
-          Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: false }])
+          Object.entries(fieldToUpdate).map(([key, item]) => [
+            key,
+            { ...item, include: false },
+          ])
         );
       }
       return {
@@ -179,7 +194,11 @@ export const Quote = () => {
     const newSellingPrice = listedPrice - discount;
 
     if (state.sellingPrice !== newSellingPrice) {
-      dispatch({ type: "SET_FIELD", field: "sellingPrice", value: newSellingPrice.toString() });
+      dispatch({
+        type: "SET_FIELD",
+        field: "sellingPrice",
+        value: newSellingPrice.toString(),
+      });
     }
   }, [state.listedPrice, state.discount]);
 
@@ -247,9 +266,14 @@ export const Quote = () => {
   // Use the state as needed
   return (
     <div className="container mx-auto py-2 flex space-y-2 flex-col ">
-      <Link to="/">Go to Main</Link>
+      <Link
+        to="/"
+        className="uppercase text-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+      >
+        Go to Main
+      </Link>
       <VehiclePrice />
-      <div className="w-96">
+      <div className=" w-96 mx-auto">
         <div className="bg-white bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
           <Input
             name="listedPrice"
@@ -317,10 +341,17 @@ export const Quote = () => {
           </button>
           <div className="w-full flex items-center space-x-2 px-2">
             <span className="whitespace-nowrap  flex-grow">Sales Tax </span>
-            <Input name="salesTaxRate" value={state.salesTaxRate} onChange={handleChange} className="w-16 text-right" />
+            <Input
+              name="salesTaxRate"
+              value={state.salesTaxRate}
+              onChange={handleChange}
+              className="w-16 text-right"
+            />
             <span className="opacity-50">%</span>
           </div>
-          <span className="whitespace-nowrap px-2 w-32 text-right">{salesTax && formatCurrency(salesTax)} </span>
+          <span className="whitespace-nowrap px-2 w-32 text-right">
+            {salesTax && formatCurrency(salesTax)}{" "}
+          </span>
           <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5">
             <MdEdit />
           </button>
@@ -331,7 +362,9 @@ export const Quote = () => {
           </div>
           <span className="whitespace-nowrap px-2 flex-grow">Total OTD</span>
 
-          <span className="whitespace-nowrap px-2 w-32 text-right">{total && formatCurrency(total)} </span>
+          <span className="whitespace-nowrap px-2 w-32 text-right">
+            {total && formatCurrency(total)}{" "}
+          </span>
           <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
             <MdEdit />
           </div>
@@ -345,7 +378,13 @@ export const Quote = () => {
             label="Downpayment"
             className="w-28 text-right"
           />
-          <Input name="apr" value={state.apr} onChange={handleChange} label="APR" className="w-28 text-right" />
+          <Input
+            name="apr"
+            value={state.apr}
+            onChange={handleChange}
+            label="APR"
+            className="w-28 text-right"
+          />
           <Input
             name="term"
             value={state.term}
@@ -355,37 +394,49 @@ export const Quote = () => {
           />
         </div>
 
-        <div className="rounded-lg bg-white bg-opacity-10 py-2   my-2 flex  flex-col font-bold">
-          <div className="w-full flex">
-            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+        <div className="rounded-lg bg-white bg-opacity-10 py-1 text-sm  my-2 flex  flex-col">
+          <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
+            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdCheckBox />
             </div>
-            <span className="whitespace-nowrap px-2 flex-grow">Amount Financed</span>
+            <span className="whitespace-nowrap px-2 flex-grow">
+              Amount Financed
+            </span>
 
-            <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(amountFinanced)} </span>
-            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+            <span className="whitespace-nowrap px-2 w-32 text-right">
+              {formatCurrency(amountFinanced)}{" "}
+            </span>
+            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdEdit />
             </div>
           </div>
-          <div className="w-full flex">
-            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+          <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
+            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdCheckBox />
             </div>
-            <span className="whitespace-nowrap px-2 flex-grow">Monthly Payment</span>
+            <span className="whitespace-nowrap px-2 flex-grow">
+              Monthly Payment
+            </span>
 
-            <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(monthlyPayment)} </span>
-            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+            <span className="whitespace-nowrap px-2 w-32 text-right">
+              {formatCurrency(monthlyPayment)}{" "}
+            </span>
+            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdEdit />
             </div>
           </div>
-          <div className="w-full flex">
-            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+          <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
+            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdCheckBox />
             </div>
-            <span className="whitespace-nowrap px-2 flex-grow">Total Amount Paid</span>
+            <span className="whitespace-nowrap px-2 flex-grow">
+              Total Amount Paid
+            </span>
 
-            <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(totalAmountPaid)} </span>
-            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+            <span className="whitespace-nowrap px-2 w-32 text-right">
+              {formatCurrency(totalAmountPaid)}{" "}
+            </span>
+            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdEdit />
             </div>
           </div>
@@ -395,7 +446,16 @@ export const Quote = () => {
   );
 };
 
-const Input = ({ name, value, label, Icon, onChange, type = "number", className = "", ...props }) => {
+const Input = ({
+  name,
+  value,
+  label,
+  Icon,
+  onChange,
+  type = "number",
+  className = "",
+  ...props
+}) => {
   return (
     <label className="flex flex-col text-left">
       <span className="text-[10px]">{label}</span>
@@ -435,12 +495,18 @@ const calculateTotal = (state) => {
   const sumFees = sumValues(state.fees);
   const salesTaxRate = parseFloat(state.salesTaxRate) || 0;
 
-  const taxableAmount = sellingPrice - sumTradeIns + sumPackages + sumAccessories;
+  const taxableAmount =
+    sellingPrice - sumTradeIns + sumPackages + sumAccessories;
   const salesTax = (salesTaxRate / 100) * taxableAmount;
 
-  const total = sellingPrice + sumPackages + sumAccessories + salesTax + sumFees;
+  const total =
+    sellingPrice + sumPackages + sumAccessories + salesTax + sumFees;
   const downPayment = parseFloat(state.downPayment) || 0;
-  const fin = calculateLoanDetails(total - downPayment || 0, state?.apr || 0, state?.term || 0);
+  const fin = calculateLoanDetails(
+    total - downPayment || 0,
+    state?.apr || 0,
+    state?.term || 0
+  );
 
   return [
     total.toFixed(2),
@@ -458,7 +524,9 @@ const calculateTotal = (state) => {
 const calculateLoanDetails = (amountFinanced, apr, term) => {
   const monthlyRate = apr / 100 / 12;
   const monthlyPayment =
-    monthlyRate !== 0 ? (amountFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term)) : amountFinanced / term;
+    monthlyRate !== 0
+      ? (amountFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term))
+      : amountFinanced / term;
   const totalAmountPaid = monthlyPayment * term;
 
   return {
@@ -484,7 +552,7 @@ const QuoteGroup = ({
   const isChecked = determineCheckboxState(data);
 
   return (
-    <div className="w-96 flex flex-col">
+    <div className=" flex flex-col">
       <div className="flex items-center space-x-2 mt-2  bg-white bg-opacity-20 rounded-lg">
         <button
           onClick={() => {
@@ -524,7 +592,10 @@ const QuoteGroup = ({
         {data &&
           isOpen &&
           Object.entries(data).map(([key, value], i) => (
-            <div key={key} className="flex space-x-2 px-2 my-1 items-center bg-white bg-opacity-0 hover:bg-opacity-5 ">
+            <div
+              key={key}
+              className="flex space-x-2 px-2 my-1 items-center bg-white bg-opacity-0 hover:bg-opacity-5 "
+            >
               <button
                 className="px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20   "
                 onClick={() => {
@@ -567,17 +638,20 @@ const api = {
 };
 
 function getVehicleDataByVINNumber(vin) {
-  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
-    headers: {
-      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-    },
-    method: "POST",
-    body: JSON.stringify({
-      hitsPerPage: 1,
-      query: vin,
-    }),
-  })
+  return fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify({
+        hitsPerPage: 1,
+        query: vin,
+      }),
+    }
+  )
     .then((response) => response.json())
     .then((data) => {
       return data.hits[0];
@@ -611,26 +685,35 @@ const VehiclePrice = (props) => {
   };
 
   return (
-    <div className="w-96">
+    <div className="w-96 mx-auto">
       <div
-        className={`w-full max-w-full flex  flex-row print:border-black print:my-1 print:px-2 print:py-1   border border-white  hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded 
-           "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100" 
-        `}
+        className="w-full max-w-full rounded-lg overflow-hidden px-4 flex  flex-row print:border-black print:my-1 print:px-2 print:py-1   border border-white  hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded 
+         "
       >
         <div
           style={backgroundStyle}
           className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
         >
-          <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
-          <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
+          <img
+            src={v?.thumbnail}
+            alt="car"
+            className="w-48 hidden print:block"
+          />
+          {/* <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
             <span
-              className={`${v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""}`}
+              className={`${
+                v?.days_in_stock > 60
+                  ? "text-red-400"
+                  : v?.days_in_stock > 30
+                  ? "text-orange-400"
+                  : ""
+              }`}
             >
               {" "}
               {v?.days_in_stock} days
             </span>
             <span>{!!v?.miles && parseMileage(v?.miles)}</span>
-          </div>
+          </div> */}
           {!!v?.miles && parseMileage(v.miles) && (
             <div
               title={v.miles}
@@ -650,7 +733,8 @@ const VehiclePrice = (props) => {
                 title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
                 className="leading-none  whitespace-normal cursor-pointer"
               >
-                {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+                {`${v?.year} ${v?.make} ${v?.model}`}{" "}
+                <span className="opacity-40">{v?.trim}</span>
               </span>
             </div>
             {/* <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
@@ -680,14 +764,18 @@ const VehiclePrice = (props) => {
         {v?.our_price && (
           <div
             className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 print:w-32 pb-1"
-            onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
+            onClick={() =>
+              console.log(v?.our_price_label, v?.our_price, v?.msrp)
+            }
           >
             {v.msrp != 0 && (
               <div className="flex flex-col  print:space-x-2   justify-between text-right  text-sm">
                 <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
                   MSRP
                 </span>
-                <span className="leading-none print:leading-normal cursor-pointer">{formatCurrency(v.msrp)}</span>
+                <span className="leading-none print:leading-normal cursor-pointer">
+                  {formatCurrency(v.msrp)}
+                </span>
               </div>
             )}
             <div className="flex flex-col  text-right  print:space-x-2   text-sm">
@@ -697,7 +785,10 @@ const VehiclePrice = (props) => {
                     {v.our_price_label}
                   </span>
 
-                  <span className="leading-none cursor-pointer "> {determinePrice(v.our_price)}</span>
+                  <span className="leading-none cursor-pointer ">
+                    {" "}
+                    {determinePrice(v.our_price)}
+                  </span>
                 </>
               )}
             </div>
@@ -708,7 +799,9 @@ const VehiclePrice = (props) => {
                   onClick={() => console.log(parseAddress(v.location))}
                   className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
                 >
-                  {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
+                  {parseAddress(v.location)?.name ||
+                    parseAddress(v.location)?.value ||
+                    ""}
                 </span>
               )}
             </div>

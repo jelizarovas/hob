@@ -1,6 +1,6 @@
 {
-  "name": "RAO",
-  "short_name": "rao",
+  "name": "HOB",
+  "short_name": "hob",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#5AF",
+  "background_color": "#000",
   "display": "standalone"
 }
