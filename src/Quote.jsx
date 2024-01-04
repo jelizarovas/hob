@@ -297,6 +297,35 @@ export const Quote = () => {
             className="w-28 text-right"
           />
         </div>
+        <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+          <Input
+            name="tradeInAllowance"
+            value={state.tradeInAllowance}
+            onChange={handleChange}
+            label="Trade Allowance"
+            className="w-28 text-right"
+          />
+          <Input
+            name="tradeInPayoff"
+            value={state.tradeInPayoff}
+            onChange={handleChange}
+            label="Payoff"
+            className="w-28 text-right"
+          />
+          <div className="text-sm flex flex-col w-28 text-right">
+            <div className="flex flex-col">
+              <span className="text-[8px] leading-none">Total Trade</span>
+              <span> {sumTradeIns}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[8px] leading-none"> Tax credit:</span>
+              <span>
+                {" "}
+                {(state.tradeInAllowance * state.salesTaxRate) / 100}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <QuoteGroup
           data={state.packages}
@@ -491,7 +520,8 @@ const calculateTotal = (state) => {
   const sellingPrice = parseFloat(state.sellingPrice) || 0;
   const sumPackages = sumValues(state.packages);
   const sumAccessories = sumValues(state.accessories);
-  const sumTradeIns = sumValues(state.tradeIns);
+  const sumTradeIns =
+    Number(state.tradeInAllowance) - Number(state.tradeInPayoff) || 0;
   const sumFees = sumValues(state.fees);
   const salesTaxRate = parseFloat(state.salesTaxRate) || 0;
 
@@ -500,7 +530,12 @@ const calculateTotal = (state) => {
   const salesTax = (salesTaxRate / 100) * taxableAmount;
 
   const total =
-    sellingPrice + sumPackages + sumAccessories + salesTax + sumFees;
+    sellingPrice +
+    sumPackages +
+    sumAccessories +
+    salesTax +
+    sumFees -
+    sumTradeIns;
   const downPayment = parseFloat(state.downPayment) || 0;
   const fin = calculateLoanDetails(
     total - downPayment || 0,
