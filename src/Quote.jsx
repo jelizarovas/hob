@@ -9,6 +9,7 @@ import {
   MdDelete,
   MdEdit,
   MdIndeterminateCheckBox,
+  MdPrint,
 } from "react-icons/md";
 import {
   formatCurrency,
@@ -265,213 +266,226 @@ export const Quote = () => {
 
   // Use the state as needed
   return (
-    <div className="container mx-auto py-2 flex space-y-2 flex-col ">
-      <Link
-        to="/"
-        className="uppercase text-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
-      >
-        Go to Main
-      </Link>
-      <VehiclePrice />
-      <div className=" w-96 mx-auto">
-        <div className="bg-white bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-          <Input
-            name="listedPrice"
-            value={state.listedPrice}
-            onChange={handleChange}
-            label="List / MSRP"
-            className="w-28 text-right"
-          />
-          <Input
-            name="discount"
-            value={state.discount}
-            onChange={handleChange}
-            label="Discount"
-            className="w-28 text-right"
-          />
-          <Input
-            name="sellingPrice"
-            value={state.sellingPrice}
-            onChange={handleChange}
-            label="Selling"
-            className="w-28 text-right"
-          />
-        </div>
-        <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-          <Input
-            name="tradeInAllowance"
-            value={state.tradeInAllowance}
-            onChange={handleChange}
-            label="Trade Allowance"
-            className="w-28 text-right"
-          />
-          <Input
-            name="tradeInPayoff"
-            value={state.tradeInPayoff}
-            onChange={handleChange}
-            label="Payoff"
-            className="w-28 text-right"
-          />
-          <div className="text-sm flex flex-col w-28 text-right">
-            <div className="flex flex-col">
-              <span className="text-[8px] leading-none">Total Trade</span>
-              <span> {sumTradeIns}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[8px] leading-none"> Tax credit:</span>
-              <span>
-                {" "}
-                {(state.tradeInAllowance * state.salesTaxRate) / 100}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <QuoteGroup
-          data={state.packages}
-          groupName="packages"
-          groupLabel="Packages"
-          groupSum={sumPackages}
-          determineCheckboxState={determineCheckboxState}
-          handleAddField={handleAddField}
-          toggleInclude={toggleInclude}
-          handleDeleteAddon={handleDeleteAddon}
-          handleChange={handleChange}
-          dispatch={dispatch}
-        />
-        <QuoteGroup
-          data={state.accessories}
-          groupName="accessories"
-          groupLabel="Accessories"
-          groupSum={sumAccessories}
-          determineCheckboxState={determineCheckboxState}
-          handleAddField={handleAddField}
-          toggleInclude={toggleInclude}
-          handleDeleteAddon={handleDeleteAddon}
-          handleChange={handleChange}
-          dispatch={dispatch}
-        />
-        <QuoteGroup
-          data={state.fees}
-          groupName="fees"
-          groupLabel="Fees"
-          groupSum={sumFees}
-          determineCheckboxState={determineCheckboxState}
-          handleAddField={handleAddField}
-          toggleInclude={toggleInclude}
-          handleDeleteAddon={handleDeleteAddon}
-          handleChange={handleChange}
-          dispatch={dispatch}
-        />
-
-        <div className="rounded-lg bg-white bg-opacity-20   my-2 flex items-center flex-row">
-          <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5">
-            <MdCheckBox />
+    <>
+      <div className="container mx-auto py-2 flex space-y-2 flex-col  print:text-black">
+        <div className="flex w-96 mx-auto space-x-2 print:hidden">
+          <Link
+            to="/"
+            className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+          >
+            Go to Main
+          </Link>
+          <button
+            onClick={() => window.print()}
+            className="flex space-x-1 items-center bg-white bg-opacity-10  px-2 py-1 transition-all  hover:bg-opacity-20 rounded cursor-pointer"
+          >
+            {" "}
+            <MdPrint /> <span>Print</span>
           </button>
-          <div className="w-full flex items-center space-x-2 px-2">
-            <span className="whitespace-nowrap  flex-grow">Sales Tax </span>
+        </div>
+        <VehiclePrice />
+        <div className=" w-96 mx-auto">
+          <div className="bg-white bg-opacity-20 rounded-lg flex print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
             <Input
-              name="salesTaxRate"
-              value={state.salesTaxRate}
+              name="listedPrice"
+              value={state.listedPrice}
               onChange={handleChange}
-              className="w-16 text-right"
+              label="List / MSRP"
+              className="w-28 text-right"
             />
-            <span className="opacity-50">%</span>
+            <Input
+              name="discount"
+              value={state.discount}
+              onChange={handleChange}
+              label="Discount"
+              className="w-28 text-right"
+            />
+            <Input
+              name="sellingPrice"
+              value={state.sellingPrice}
+              onChange={handleChange}
+              label="Selling"
+              className="w-28 text-right"
+            />
           </div>
-          <span className="whitespace-nowrap px-2 w-32 text-right">
-            {salesTax && formatCurrency(salesTax)}{" "}
-          </span>
-          <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5">
-            <MdEdit />
-          </button>
-        </div>
-        <div className="rounded-lg bg-white bg-opacity-10 py-2   my-2 flex items-center flex-row font-bold">
-          <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-            <MdCheckBox />
+          <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+            <Input
+              name="tradeInAllowance"
+              value={state.tradeInAllowance}
+              onChange={handleChange}
+              label="Trade Allowance"
+              className="w-28 text-right"
+            />
+            <Input
+              name="tradeInPayoff"
+              value={state.tradeInPayoff}
+              onChange={handleChange}
+              label="Payoff"
+              className="w-28 text-right"
+            />
+            <div className="text-sm flex flex-col w-28 text-right">
+              <div className="flex flex-col">
+                <span className="text-[8px] leading-none">Total Trade</span>
+                <span> {sumTradeIns}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[8px] leading-none"> Tax credit:</span>
+                <span>
+                  {" "}
+                  {(Number(state.tradeInAllowance || 0) *
+                    Number(state.salesTaxRate || 0)) /
+                    100}
+                </span>
+              </div>
+            </div>
           </div>
-          <span className="whitespace-nowrap px-2 flex-grow">Total OTD</span>
 
-          <span className="whitespace-nowrap px-2 w-32 text-right">
-            {total && formatCurrency(total)}{" "}
-          </span>
-          <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-            <MdEdit />
+          <QuoteGroup
+            data={state.packages}
+            groupName="packages"
+            groupLabel="Packages"
+            groupSum={sumPackages}
+            determineCheckboxState={determineCheckboxState}
+            handleAddField={handleAddField}
+            toggleInclude={toggleInclude}
+            handleDeleteAddon={handleDeleteAddon}
+            handleChange={handleChange}
+            dispatch={dispatch}
+          />
+          <QuoteGroup
+            data={state.accessories}
+            groupName="accessories"
+            groupLabel="Accessories"
+            groupSum={sumAccessories}
+            determineCheckboxState={determineCheckboxState}
+            handleAddField={handleAddField}
+            toggleInclude={toggleInclude}
+            handleDeleteAddon={handleDeleteAddon}
+            handleChange={handleChange}
+            dispatch={dispatch}
+          />
+          <QuoteGroup
+            data={state.fees}
+            groupName="fees"
+            groupLabel="Fees"
+            groupSum={sumFees}
+            determineCheckboxState={determineCheckboxState}
+            handleAddField={handleAddField}
+            toggleInclude={toggleInclude}
+            handleDeleteAddon={handleDeleteAddon}
+            handleChange={handleChange}
+            dispatch={dispatch}
+          />
+
+          <div className="rounded-lg bg-white bg-opacity-20   my-2 flex items-center flex-row">
+            <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5 print:hidden">
+              <MdCheckBox />
+            </button>
+            <div className="w-full flex items-center space-x-2 px-2">
+              <span className="whitespace-nowrap  flex-grow">Sales Tax </span>
+              <Input
+                name="salesTaxRate"
+                value={state.salesTaxRate}
+                onChange={handleChange}
+                className="w-16 text-right"
+              />
+              <span className="opacity-50">%</span>
+            </div>
+            <span className="whitespace-nowrap px-2 w-32 text-right">
+              {salesTax && formatCurrency(salesTax)}{" "}
+            </span>
+            <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5 print:hidden">
+              <MdEdit />
+            </button>
           </div>
-        </div>
-
-        <div className="bg-white bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-          <Input
-            name="downPayment"
-            value={state.downPayment}
-            onChange={handleChange}
-            label="Downpayment"
-            className="w-28 text-right"
-          />
-          <Input
-            name="apr"
-            value={state.apr}
-            onChange={handleChange}
-            label="APR"
-            className="w-28 text-right"
-          />
-          <Input
-            name="term"
-            value={state.term}
-            onChange={handleChange}
-            label="Term In Months"
-            className="w-28 text-right"
-          />
-        </div>
-
-        <div className="rounded-lg bg-white bg-opacity-10 py-1 text-sm  my-2 flex  flex-col">
-          <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
-            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+          <div className="rounded-lg bg-white bg-opacity-10 py-2   my-2 flex items-center flex-row font-bold">
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdCheckBox />
             </div>
-            <span className="whitespace-nowrap px-2 flex-grow">
-              Amount Financed
-            </span>
+            <span className="whitespace-nowrap px-2 flex-grow">Total OTD</span>
 
             <span className="whitespace-nowrap px-2 w-32 text-right">
-              {formatCurrency(amountFinanced)}{" "}
+              {total && formatCurrency(total)}{" "}
             </span>
-            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+            <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdEdit />
             </div>
           </div>
-          <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
-            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-              <MdCheckBox />
-            </div>
-            <span className="whitespace-nowrap px-2 flex-grow">
-              Monthly Payment
-            </span>
 
-            <span className="whitespace-nowrap px-2 w-32 text-right">
-              {formatCurrency(monthlyPayment)}{" "}
-            </span>
-            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-              <MdEdit />
-            </div>
+          <div className="bg-white bg-opacity-20 rounded-lg flex print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+            <Input
+              name="downPayment"
+              value={state.downPayment}
+              onChange={handleChange}
+              label="Downpayment"
+              className="w-28 text-right"
+            />
+            <Input
+              name="apr"
+              value={state.apr}
+              onChange={handleChange}
+              label="APR"
+              className="w-28 text-right"
+            />
+            <Input
+              name="term"
+              value={state.term}
+              onChange={handleChange}
+              label="Term In Months"
+              className="w-28 text-right"
+            />
           </div>
-          <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
-            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-              <MdCheckBox />
-            </div>
-            <span className="whitespace-nowrap px-2 flex-grow">
-              Total Amount Paid
-            </span>
 
-            <span className="whitespace-nowrap px-2 w-32 text-right">
-              {formatCurrency(totalAmountPaid)}{" "}
-            </span>
-            <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-              <MdEdit />
+          <div className="rounded-lg bg-white bg-opacity-10 py-1 text-sm  my-2 flex  flex-col">
+            <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
+              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+                <MdCheckBox />
+              </div>
+              <span className="whitespace-nowrap px-2 flex-grow">
+                Amount Financed
+              </span>
+
+              <span className="whitespace-nowrap px-2 w-32 text-right">
+                {formatCurrency(amountFinanced)}{" "}
+              </span>
+              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+                <MdEdit />
+              </div>
+            </div>
+            <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
+              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+                <MdCheckBox />
+              </div>
+              <span className="whitespace-nowrap px-2 flex-grow">
+                Monthly Payment
+              </span>
+
+              <span className="whitespace-nowrap px-2 w-32 text-right">
+                {formatCurrency(monthlyPayment)}{" "}
+              </span>
+              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+                <MdEdit />
+              </div>
+            </div>
+            <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
+              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+                <MdCheckBox />
+              </div>
+              <span className="whitespace-nowrap px-2 flex-grow">
+                Total Amount Paid
+              </span>
+
+              <span className="whitespace-nowrap px-2 w-32 text-right">
+                {formatCurrency(totalAmountPaid)}{" "}
+              </span>
+              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
+                <MdEdit />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -486,13 +500,13 @@ const Input = ({
   ...props
 }) => {
   return (
-    <label className="flex flex-col text-left">
-      <span className="text-[10px]">{label}</span>
+    <label className="flex flex-col text-left print:text-black print:flex-row">
+      <span className="text-[10px] print:text-sm">{label}</span>
       <div className="bg-white bg-opacity-5 hover:bg-opacity-50 transition-all rounded-md text-sm flex flex-row">
         {Icon && <span>{Icon}</span>}
         <input
           name={name}
-          className={`bg-transparent px-2 py-1 text-white flex-grow outline-none  ${className} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          className={`bg-transparent px-2 py-1 text-white print:text-black flex-grow outline-none  ${className} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
           type={type}
           onChange={onChange}
           value={value || ""}
@@ -585,9 +599,18 @@ const QuoteGroup = ({
 }) => {
   const [isOpen, setOpen] = React.useState(true);
   const isChecked = determineCheckboxState(data);
+  console.log(Object.keys(data).length, { data });
 
   return (
-    <div className=" flex flex-col">
+    <div
+      className={`flex flex-col  ${
+        isChecked === "uncheck" || isChecked === "intermediate"
+          ? Object.keys(data).length === 0
+            ? "print:hidden"
+            : ""
+          : "print:hidden"
+      }`}
+    >
       <div className="flex items-center space-x-2 mt-2  bg-white bg-opacity-20 rounded-lg">
         <button
           onClick={() => {
@@ -597,7 +620,7 @@ const QuoteGroup = ({
               state: isChecked,
             });
           }}
-          className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
+          className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg print:hidden"
         >
           {isChecked === "check" ? (
             <MdCheckBoxOutlineBlank />
@@ -617,7 +640,7 @@ const QuoteGroup = ({
         <div>
           <button
             onClick={handleAddField(groupName)}
-            className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg"
+            className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg print:hidden"
           >
             <MdAddCircleOutline />
           </button>
@@ -629,10 +652,12 @@ const QuoteGroup = ({
           Object.entries(data).map(([key, value], i) => (
             <div
               key={key}
-              className="flex space-x-2 px-2 my-1 items-center bg-white bg-opacity-0 hover:bg-opacity-5 "
+              className={`flex space-x-2 px-2 my-1 items-center bg-white bg-opacity-0 hover:bg-opacity-5 ${
+                value.include ? "" : "print:hidden"
+              }  `}
             >
               <button
-                className="px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20   "
+                className={`px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20 print:hidden  `}
                 onClick={() => {
                   toggleInclude(groupName, key);
                 }}
@@ -653,7 +678,7 @@ const QuoteGroup = ({
                 onChange={handleChange}
               />
               <button
-                className="px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20   "
+                className="px-2 py-2 rounded-lg bg-white bg-opacity-0 transition-all hover:bg-opacity-20   print:hidden"
                 onClick={() => handleDeleteAddon(`${groupName}.${key}`)}
               >
                 <MdDelete />
@@ -720,9 +745,9 @@ const VehiclePrice = (props) => {
   };
 
   return (
-    <div className="w-96 mx-auto">
+    <div className="w-96 print:w-full mx-auto">
       <div
-        className="w-full max-w-full rounded-lg overflow-hidden px-4 flex  flex-row print:border-black print:my-1 print:px-2 print:py-1   border border-white  hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded 
+        className="w-full max-w-full rounded-lg overflow-hidden px-4 flex  flex-row  print:my-1 print:px-2 print:py-1   border border-white  hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded 
          "
       >
         <div
