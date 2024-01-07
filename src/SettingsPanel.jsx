@@ -107,6 +107,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         >
           Take-In Sheet
         </a>
+        <Link to="/check/req">Check Request</Link>
       </div>
     </div>
   );
