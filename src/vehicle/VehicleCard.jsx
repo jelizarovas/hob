@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { getColorNameByCode, getGenericColor, parseAddress, parseMileage } from "../utils";
+import {
+  getColorNameByCode,
+  getGenericColor,
+  parseAddress,
+  parseMileage,
+} from "../utils";
 import { useSettings } from "../SettingsContext";
 import {
   MdAddCircle,
@@ -42,11 +47,15 @@ export const VehicleCard = ({
     return (
       <div
         className="flex flex-col  w-full items-center  first:mt-0 last:mb-0 mt-0.5 mb-0.5"
-        onClick={() => setActiveActionBarId(activeActionBarId === v?.vin ? null : v?.vin)}
+        onClick={() =>
+          setActiveActionBarId(activeActionBarId === v?.vin ? null : v?.vin)
+        }
       >
         <div
           className={`w-full max-w-full flex  flex-row print:border-black print:my-1 print:px-2 print:py-1   border border-white hover:bg-white hover:bg-opacity-20 transition-all border-opacity-20 print:border-opacity-100 md:rounded ${
-            activeActionBarId === v?.vin ? "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100" : ""
+            activeActionBarId === v?.vin
+              ? "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100"
+              : ""
           }  `}
         >
           <Link
@@ -57,10 +66,20 @@ export const VehicleCard = ({
             style={backgroundStyle}
             className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
           >
-            <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
+            <img
+              src={v?.thumbnail}
+              alt="car"
+              className="w-48 hidden print:block"
+            />
             <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
               <span
-                className={`${v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""}`}
+                className={`${
+                  v?.days_in_stock > 60
+                    ? "text-red-400"
+                    : v?.days_in_stock > 30
+                    ? "text-orange-400"
+                    : ""
+                }`}
               >
                 {" "}
                 {v?.days_in_stock} days
@@ -86,13 +105,18 @@ export const VehicleCard = ({
                   title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
                   className="leading-none  whitespace-normal cursor-pointer"
                 >
-                  {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+                  {`${v?.year} ${v?.make} ${v?.model}`}{" "}
+                  <span className="opacity-40">{v?.trim}</span>
                 </span>
               </div>
               <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
                 <span className="leading-none truncate">
-                  <span title={v?.ext_color_generic}>{getGenericColor(getColorNameByCode(v?.ext_color_generic))}</span>{" "}
-                  <span title={v.ext_color}>{v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}</span>{" "}
+                  <span title={v?.ext_color_generic}>
+                    {getGenericColor(getColorNameByCode(v?.ext_color_generic))}
+                  </span>{" "}
+                  <span title={v.ext_color}>
+                    {v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}
+                  </span>{" "}
                   {v?.int_color && `   w/ ${v.int_color} interior`}
                 </span>
               </div>
@@ -118,24 +142,30 @@ export const VehicleCard = ({
           {showPrice && v?.our_price && (
             <div
               className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 print:w-32 pb-1"
-              onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
+              onClick={() =>
+                console.log(v?.our_price_label, v?.our_price, v?.msrp)
+              }
             >
               {v.msrp != 0 && (
                 <div className="flex flex-col  print:space-x-2   justify-between text-right  text-sm">
                   <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
                     MSRP
                   </span>
-                  <span className="leading-none print:leading-normal cursor-pointer">{formatCurrency(v.msrp)}</span>
+                  <span className="leading-none print:leading-normal cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded  ">
+                    <PriceComponent price={formatCurrency(v.msrp, true)} />
+                  </span>
                 </div>
               )}
-              <div className="flex flex-col  text-right  print:space-x-2   text-sm">
+              <div className="flex flex-col  text-right  print:space-x-2   text-sm ">
                 {v?.our_price != v?.msrp && (
                   <>
                     <span className="text-[8px] print:text-sm leading-none print:leading-normal pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1  ">
                       {v.our_price_label}
                     </span>
 
-                    <span className="leading-none cursor-pointer "> {determinePrice(v.our_price)}</span>
+                    <span className="leading-none cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded  ">
+                      <PriceComponent price={determinePrice(v.our_price)} />
+                    </span>
                   </>
                 )}
               </div>
@@ -146,14 +176,22 @@ export const VehicleCard = ({
                     onClick={() => console.log(parseAddress(v.location))}
                     className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
                   >
-                    {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
+                    {parseAddress(v.location)?.name ||
+                      parseAddress(v.location)?.value ||
+                      ""}
                   </span>
                 )}
               </div>
             </div>
           )}
         </div>
-        {activeActionBarId === v?.vin && <ActionBar v={v} togglePinnedCar={togglePinnedCar} isPinned={isPinned} />}
+        {activeActionBarId === v?.vin && (
+          <ActionBar
+            v={v}
+            togglePinnedCar={togglePinnedCar}
+            isPinned={isPinned}
+          />
+        )}
       </div>
     );
 
@@ -171,7 +209,8 @@ export const VehicleCard = ({
       ></div>
       <div className="flex flex-col justify-between items-start flex-grow truncate px-1">
         <span className="whitespace-pre-wrap text-sm ">
-          {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+          {`${v?.year} ${v?.make} ${v?.model}`}{" "}
+          <span className="opacity-40">{v?.trim}</span>
         </span>
         <div className="flex justify-between text-xs w-full ">
           <div className="text-sm ">{v?.vin && "#" + v.vin.slice(-8)}</div>
@@ -215,7 +254,12 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
           href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
         />
       )}
-      <ActionButton label="URL" Icon={RxExternalLink} href={v?.link} disabled={!v?.link} />
+      <ActionButton
+        label="URL"
+        Icon={RxExternalLink}
+        href={v?.link}
+        disabled={!v?.link}
+      />
       <ActionButton
         label="Share"
         Icon={MdShare}
@@ -237,7 +281,9 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
       <ActionButton
         label="Quote"
         Icon={MdRequestQuote}
-        to={`quote/${v?.vin}/?listPrice=${v?.msrp && v.msrp > 0 ? v?.msrp : v?.our_price}&sellingPrice=${v?.our_price}`}
+        to={`quote/${v?.vin}/?listPrice=${
+          v?.msrp && v.msrp > 0 ? v?.msrp : v?.our_price
+        }&sellingPrice=${v?.our_price}`}
         state={{ key: "value", ...v }}
       />
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
@@ -245,13 +291,22 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
   );
 };
 
-const ActionButton = ({ label, Icon, href, iconClassName = "", to, state, ...props }) => {
+const ActionButton = ({
+  label,
+  Icon,
+  href,
+  iconClassName = "",
+  to,
+  state,
+  ...props
+}) => {
   const className =
     "p-0 flex px-2 flex-col hover:bg-white hover:bg-opacity-20 transition-all justify-center items-center disabled:opacity-60 disabled:hover:bg-transparent  w-full py-1";
 
   const Content = () => (
     <>
-      {Icon && <Icon className={`text-2xl ${iconClassName}`} />} <span className="text-xs">{label}</span>
+      {Icon && <Icon className={`text-2xl ${iconClassName}`} />}{" "}
+      <span className="text-xs">{label}</span>
     </>
   );
 
@@ -270,8 +325,46 @@ const ActionButton = ({ label, Icon, href, iconClassName = "", to, state, ...pro
     );
 
   return (
-    <button type="button" onClick={(e) => e.stopPropagation()} className={className} {...props}>
+    <button
+      type="button"
+      onClick={(e) => e.stopPropagation()}
+      className={className}
+      {...props}
+    >
       <Content />
+    </button>
+  );
+};
+
+export const PriceComponent = ({ price }) => {
+  const [isCopying, setIsCopying] = React.useState("");
+
+  const handleCopy = (text) => {
+    setIsCopying(text);
+    navigator.clipboard.writeText(text);
+    setTimeout(() => {
+      setIsCopying("");
+    }, 1000); // Delay of 1 second (1000 milliseconds)
+  };
+
+  if (!!isCopying)
+    return (
+      <div className="bg-lime-500 bg-opacity-60  rounded flex items-center relative">
+       <span className="absolute flex bg-lime-500 text-xs rounded px-1 top-4"> <MdCheck /> Copied</span>
+        <span> {isCopying}</span>
+      </div>
+    );
+
+  return (
+    <button
+      type="button"
+      className="flex space-x-1 print:space-x-0 group cursor-copy"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleCopy(price);
+      }}
+    >
+      {price}
     </button>
   );
 };
@@ -305,7 +398,9 @@ export const VINComponent = ({ vin }) => {
         handleCopy(vin);
       }}
     >
-      <span className="opacity-30 print:opacity-100 group-hover:opacity-70 transition-all">{regularVIN}</span>
+      <span className="opacity-30 print:opacity-100 group-hover:opacity-70 transition-all">
+        {regularVIN}
+      </span>
       <span
         className="opacity-70 print:opacity-100 print:font-bold transition-all group-hover:opacity-100 hover:text-indigo-400 "
         onClick={(e) => {
@@ -333,7 +428,7 @@ export function determinePrice(ourPrice) {
   // Check if ourPrice is a string that can be converted to a number
   const parsedPrice = parseFloat(ourPrice);
   if (!isNaN(parsedPrice)) {
-    return formatCurrency(parsedPrice);
+    return formatCurrency(parsedPrice, true);
   }
 
   // Default case

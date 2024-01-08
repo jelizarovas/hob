@@ -21,7 +21,9 @@ export function parseMileage(mileage) {
   }
 
   // Convert mileage to a number
-  const numericMileage = Math.floor(Number(mileage.toString().replace(/\D/g, "")));
+  const numericMileage = Math.floor(
+    Number(mileage.toString().replace(/\D/g, ""))
+  );
 
   if (numericMileage < 100) {
     return "";
@@ -36,8 +38,15 @@ export function parseMileage(mileage) {
   return Math.floor(numericMileage / 1000) + "k miles";
 }
 
-export function formatCurrency(num) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(num);
+export function formatCurrency(num, noDecimals = false) {
+  let options = { style: "currency", currency: "USD" };
+
+  if (noDecimals) {
+    options.minimumFractionDigits = 0;
+    options.maximumFractionDigits = 0;
+  }
+
+  return new Intl.NumberFormat("en-US", options).format(num);
 }
 
 const settingsObj = [
@@ -131,7 +140,8 @@ const settingsObj = [
         name: "Burien",
         "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
         "X-Algolia-Application-Id": "SEWJN80HTN",
-        index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+        index:
+          "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
       },
       {
         name: "Rairdon",
@@ -140,7 +150,8 @@ const settingsObj = [
         index: "rairdonautomotivegroup_production_inventory_low_to_high",
       },
     ],
-    description: "Choose a preferred store for searching within a specific dealership.",
+    description:
+      "Choose a preferred store for searching within a specific dealership.",
     value: 0,
   },
 ];
@@ -305,7 +316,8 @@ export const burienAPI = {
   name: "Burien",
   "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
   "X-Algolia-Application-Id": "SEWJN80HTN",
-  index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+  index:
+    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
 };
 
 export const rairdonAPI = {
@@ -317,7 +329,8 @@ export const rairdonAPI = {
   index3: "rairdonautomotivegroup_production_inventory_specials_price",
   index4: "rairdonautomotivegroup_production_inventory_mileage_low_to_high",
   index5: "rairdonautomotivegroup_production_inventory_mileage_high_to_low",
-  index6: "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
+  index6:
+    "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
 };
 
 export const initialFilters = {
@@ -526,7 +539,10 @@ export const levenshteinDistance = (a, b) => {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1];
       } else {
-        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
+        );
       }
     }
   }
@@ -560,7 +576,10 @@ export const parseAddress = (inputAddress) => {
   let bestMatch = null;
 
   for (let key in rairdonDealerships) {
-    const score = calculateSimilarity(normalizedInput, normalizeAddress(rairdonDealerships[key].address));
+    const score = calculateSimilarity(
+      normalizedInput,
+      normalizeAddress(rairdonDealerships[key].address)
+    );
 
     if (score > highestScore) {
       highestScore = score;
