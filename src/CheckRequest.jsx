@@ -183,7 +183,7 @@ export const CheckRequest = () => {
       payload: { field: e.target.name, value: e.target.value },
     });
 
-  const modifyPdf = async (data) => {
+  const modifyPdf = async (data, toDownload) => {
     // Fetch your existing PDF
     const baseUrl =
       window.location.origin.toString() + import.meta.env.BASE_URL;
@@ -207,16 +207,50 @@ export const CheckRequest = () => {
 
     // Draw text at specific x, y coordinates
     firstPage.drawText(`${data.amount}`, {
-      x: 50,
-      y: 500,
-      size: 12,
+      x: 170,
+      y: 652,
+      size: 16,
       font: helveticaFont,
       color: rgb(0, 0, 0),
     });
     firstPage.drawText(data.name, {
-      x: 50,
-      y: 485,
-      size: 12,
+      x: 170,
+      y: 620,
+      size: 16,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+
+    function parseAddress(address) {
+      const index = address.indexOf(","); // Find the index of the first comma
+      if (index === -1) {
+        return [address, ""]; // If there's no comma, return the whole address as the first part and an empty string as the second part
+      }
+      const add1 = address.substring(0, index).trim(); // Extract the substring before the comma and trim any whitespace
+      const add2 = address.substring(index + 1).trim(); // Extract the substring after the comma and trim any whitespace
+      return [add1, add2]; // Return the two parts
+    }
+
+    const [add1, add2] = parseAddress(data.address);
+
+    firstPage.drawText(add1, {
+      x: 255,
+      y: 582,
+      size: 16,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(add2, {
+      x: 220,
+      y: 545,
+      size: 16,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(data.explanation, {
+      x: 95,
+      y: 345,
+      size: 16,
       font: helveticaFont,
       color: rgb(0, 0, 0),
     });
@@ -229,6 +263,19 @@ export const CheckRequest = () => {
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const blobUrl = URL.createObjectURL(blob);
     setPdfUrl(blobUrl);
+
+    if (toDownload) {
+      const now = new Date();
+
+      return download(
+        await pdfDoc.save(),
+        `Check Request ${data.name} ${data.amount} ${getFormattedDate(
+          now,
+          " "
+        )}.pdf`,
+        "application/pdf"
+      );
+    }
   };
 
   return (
@@ -270,7 +317,7 @@ export const CheckRequest = () => {
           className="bg-indigo-700 text-white px-4 py-2 rounded my-2"
           onClick={async () => {
             setLoadingPDF(true);
-            await fillPDF(state);
+            await modifyPdf(state, true);
             setLoadingPDF(false);
           }}
         >
@@ -280,7 +327,7 @@ export const CheckRequest = () => {
       <div>
         <button onClick={() => modifyPdf(state)}>Modify PDF</button>
         {pdfUrl && (
-          <iframe src={pdfUrl} style={{ width: "100%", height: "100%" }} />
+          <iframe src={pdfUrl} style={{ width: "100%", height: 500 }} />
         )}
       </div>
     </div>
