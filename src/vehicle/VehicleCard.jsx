@@ -16,6 +16,7 @@ import {
   MdVisibilityOff,
   MdCheck,
   MdCopyAll,
+  MdListAlt,
 } from "react-icons/md";
 import { RxExternalLink } from "react-icons/rx";
 import { BsPinFill } from "react-icons/bs";
@@ -286,6 +287,11 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         }&sellingPrice=${v?.our_price}`}
         state={{ key: "value", ...v }}
       />
+      <ActionButton
+        label="B Guide"
+        Icon={MdListAlt}
+        to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${v?.make}&model=${v?.model}&stock=${v?.stock}`}
+      />
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
     </div>
   );
@@ -350,7 +356,10 @@ export const PriceComponent = ({ price }) => {
   if (!!isCopying)
     return (
       <div className="bg-lime-500 bg-opacity-60  rounded flex items-center relative">
-       <span className="absolute flex bg-lime-500 text-xs rounded px-1 top-4"> <MdCheck /> Copied</span>
+        <span className="absolute flex bg-lime-500 text-xs rounded px-1 top-4">
+          {" "}
+          <MdCheck /> Copied
+        </span>
         <span> {isCopying}</span>
       </div>
     );

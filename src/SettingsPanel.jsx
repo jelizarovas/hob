@@ -119,7 +119,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         </Link>
         <Link
           className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
-          to="/buyers/guide"
+          to="/buyers/guide/"
         >
           Buyers Guide
         </Link>

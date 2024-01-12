@@ -30,7 +30,9 @@ function App() {
             <Router>
               <Route exact path="/dev/test" component={DevPanel} />
               <Route exact path="/check/req" component={CheckRequest} />
-              <Route exact path="/buyers/guide" component={BuyersGuide} />
+              <Route path="/buyers/guide/" component={BuyersGuide} />
+              <Route path="/buyers/guide/:vin" component={BuyersGuide} />
+
               <Route exact path="/:stock" component={VehiclePage} />
               <Route exact path="/quote/:vin" component={Quote} />
               <Route exact path="/" component={Dashboard} />

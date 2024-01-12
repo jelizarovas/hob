@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { PDFDocument, StandardFonts } from "pdf-lib";
+import { useParams } from "react-router-dom";
 
 export const BuyersGuide = () => {
+  const { vin } = useParams();
+
   const [formData, setFormData] = useState({
     year: "",
     make: "",
     model: "",
-    vin: "",
+    vin: vin,
     stock: "",
     customer: "",
     deal: "",
@@ -112,6 +115,7 @@ export const BuyersGuide = () => {
         onChange={handleChange}
         placeholder="VIN"
         label="VIN"
+        autoFocus={true}
       />
       <Input
         type="text"
@@ -176,7 +180,15 @@ export const BuyersGuide = () => {
   );
 };
 
-const Input = ({ name, label, value, onBlur, onChange, placeHolder }) => {
+const Input = ({
+  name,
+  label,
+  value,
+  onBlur,
+  onChange,
+  placeHolder,
+  autoFocus = false,
+}) => {
   return (
     <label htmlFor={name} className="flex flex-col">
       <span className="text-xs text-white leading-none">{label}</span>
@@ -188,6 +200,9 @@ const Input = ({ name, label, value, onBlur, onChange, placeHolder }) => {
         value={value}
         onChange={onChange}
         placeholder={placeHolder}
+        spellCheck={false}
+        autoComplete={false}
+        autoFocus={autoFocus}
       />
     </label>
   );
