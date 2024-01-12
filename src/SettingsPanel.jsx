@@ -5,6 +5,7 @@ import {
   MdFilterAlt,
   MdGridView,
   MdListAlt,
+  MdMenu,
   MdSettings,
 } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -26,7 +27,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
     <div className="container mx-auto md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
       <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
-          <MdSettings /> <span>Settings</span>
+          <MdMenu /> <span>Menu</span>
         </div>
         <button
           type="button"
@@ -88,10 +89,12 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           href="http://jelizarovas.github.io/HondaAccessory/"
           target="_blank"
           rel="noopener noreferrer"
+          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
         >
           Honda Accessory
         </a>
         <a
+          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
           href="http://jelizarovas.github.io/makey/"
           target="_blank"
           rel="noopener noreferrer"
@@ -101,14 +104,25 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         {/* <Link to="/pdi">PDI Templates</Link> */}
         {/* <Link to="/pdi">Perfect Delivery</Link> */}
         <a
+          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
           href="pdf/Take-in Sheet.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >
           Take-In Sheet
         </a>
-        <Link to="/check/req">Check Request</Link>
-        <Link to="/buyers/guide">Buyers Guide</Link>
+        <Link
+          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+          to="/check/req"
+        >
+          Check Request
+        </Link>
+        <Link
+          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+          to="/buyers/guide"
+        >
+          Buyers Guide
+        </Link>
       </div>
     </div>
   );

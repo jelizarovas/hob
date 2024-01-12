@@ -13,6 +13,8 @@ export const BuyersGuide = () => {
     includeDealAndCustomer: false,
   });
 
+  const [lastFetchedVin, setLastFetchedVin] = React.useState("");
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -21,10 +23,42 @@ export const BuyersGuide = () => {
     });
   };
 
-  const handleVinBlur = () => {
-    if (formData.vin.length >= 8) {
-      const stockNumber = formData.vin.slice(-8);
-      setFormData({ ...formData, stock: stockNumber });
+  const handleVinBlur = async () => {
+    const vin = formData.vin;
+
+    if (vin.length === 17 && lastFetchedVin !== vin) {
+      try {
+        const vinData = await fetchVINData(vin);
+        setLastFetchedVin(vin);
+
+        // Check if year, make, or model fields already have data
+        if (formData.year || formData.make || formData.model) {
+          if (
+            window.confirm(
+              "Data already exists for Year, Make, Model. Do you want to overwrite?"
+            )
+          ) {
+            setFormData({
+              ...formData,
+              year: vinData.year,
+              make: vinData.make,
+              model: vinData.model,
+              stock: vin.slice(-8),
+            });
+          }
+        } else {
+          setFormData({
+            ...formData,
+            year: vinData.year,
+            make: vinData.make,
+            model: vinData.model,
+            stock: vin.slice(-8),
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching data for VIN:", vin, error);
+        // Handle the error appropriately (e.g., show a message to the user)
+      }
     }
   };
 
@@ -32,7 +66,9 @@ export const BuyersGuide = () => {
     e.preventDefault();
 
     // Load your PDF document
-    const existingPdfBytes = await fetch("/pdf/Buyers Guide Form.pdf").then((res) => res.arrayBuffer());
+    const existingPdfBytes = await fetch("pdf/Buyers Guide Form.pdf").then(
+      (res) => res.arrayBuffer()
+    );
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
     // Embed a font
@@ -68,20 +104,62 @@ export const BuyersGuide = () => {
 
   return (
     <form className="flex flex-col w-96 text-black" onSubmit={handleSubmit}>
-      <input type="text" name="year" value={formData.year} onChange={handleChange} placeholder="Year" />
-      <input type="text" name="make" value={formData.make} onChange={handleChange} placeholder="Make" />
-      <input type="text" name="model" value={formData.model} onChange={handleChange} placeholder="Model" />
-      <input
+      <Input
         type="text"
         name="vin"
         onBlur={handleVinBlur}
         value={formData.vin}
         onChange={handleChange}
         placeholder="VIN"
+        label="VIN"
       />
-      <input type="text" name="stock" value={formData.stock} onChange={handleChange} placeholder="Stock" />
-      <input type="text" name="customer" value={formData.customer} onChange={handleChange} placeholder="Customer" />
-      <input type="text" name="deal" value={formData.deal} onChange={handleChange} placeholder="Deal" />
+      <Input
+        type="text"
+        name="year"
+        value={formData.year}
+        onChange={handleChange}
+        placeholder="Year"
+        label="Year"
+      />
+      <Input
+        type="text"
+        name="make"
+        value={formData.make}
+        onChange={handleChange}
+        placeholder="Make"
+        label="Make"
+      />
+      <Input
+        type="text"
+        name="model"
+        value={formData.model}
+        onChange={handleChange}
+        placeholder="Model"
+        label="Model"
+      />
+
+      <Input
+        type="text"
+        name="stock"
+        value={formData.stock}
+        onChange={handleChange}
+        placeholder="Stock"
+        label="Stock"
+      />
+      {/* <input
+        type="text"
+        name="customer"
+        value={formData.customer}
+        onChange={handleChange}
+        placeholder="Customer"
+      />
+      <input
+        type="text"
+        name="deal"
+        value={formData.deal}
+        onChange={handleChange}
+        placeholder="Deal"
+      />
       <label className="bg-slate-400">
         Include Deal and Customer
         <input
@@ -90,10 +168,50 @@ export const BuyersGuide = () => {
           checked={formData.includeDealAndCustomer}
           onChange={handleChange}
         />
-      </label>
-      <button className="bg-green-500" type="submit">
+      </label> */}
+      <button className="bg-green-500 w-64 rounded" type="submit">
         Submit
       </button>
     </form>
   );
+};
+
+const Input = ({ name, label, value, onBlur, onChange, placeHolder }) => {
+  return (
+    <label htmlFor={name} className="flex flex-col">
+      <span className="text-xs text-white leading-none">{label}</span>
+      <input
+        type="text"
+        className="px-2 py-1 rounded my-1"
+        name={name}
+        onBlur={onBlur}
+        value={value}
+        onChange={onChange}
+        placeholder={placeHolder}
+      />
+    </label>
+  );
+};
+
+const fetchVINData = async (vin) => {
+  try {
+    const response = await fetch(
+      `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`
+    );
+    const data = await response.json();
+
+    const results = data.Results;
+    const decodedData = {
+      vin,
+      year: results.find((r) => r.Variable === "Model Year")?.Value,
+      make: results.find((r) => r.Variable === "Make")?.Value,
+      model: results.find((r) => r.Variable === "Model")?.Value,
+    };
+
+    return decodedData;
+  } catch (error) {
+    console.error("Error fetching VIN data:", error);
+    // You can throw the error or return a default value depending on how you want to handle errors
+    throw error; // or return a default value/object
+  }
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  MdApps,
   MdBugReport,
   MdClear,
   MdFilterList,
@@ -7,12 +8,19 @@ import {
   MdKeyboardAlt,
   MdKeyboardArrowUp,
   MdList,
+  MdMenu,
   MdSearch,
   MdSettings,
 } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useVehicles } from "./VehicleContext";
-export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
+export const AppBar = ({
+  total,
+  settingsOpen,
+  setSettingsOpen,
+  setFilterPanelOpen,
+  filterPanelOpen,
+}) => {
   const { filters, data, updateQuery } = useVehicles();
 
   function handleChange(event) {
@@ -52,8 +60,16 @@ export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpe
           >
             <MdList />
           </Link> */}
-          <AppBarButton toggle={setFilterPanelOpen} Icon={MdFilterList} isActive={filterPanelOpen} />
-          <AppBarButton toggle={setSettingsOpen} Icon={MdSettings} isActive={settingsOpen} />
+          <AppBarButton
+            toggle={setFilterPanelOpen}
+            Icon={MdFilterList}
+            isActive={filterPanelOpen}
+          />
+          <AppBarButton
+            toggle={setSettingsOpen}
+            Icon={MdMenu}
+            isActive={settingsOpen}
+          />
         </div>
       </div>
     </div>
@@ -65,11 +81,13 @@ const AppBarButton = ({ Icon, toggle, isActive, ...props }) => {
     <button
       type="button"
       onClick={() => toggle((v) => !v)}
-      className={`border group relative rounded-full p-0.5 text-lg mr-3 ml-1 bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
-        isActive ? "bg-opacity-80 text-black hover:text-white" : "bg-opacity-0 text-white"
+      className={` group relative rounded-full p-1 text-lg mr-3 ml-1 bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
+        isActive
+          ? "bg-opacity-80 text-black hover:text-white"
+          : "bg-opacity-0 text-white"
       } `}
     >
-      {isActive ? <MdKeyboardArrowUp /> : <Icon />}
+      {isActive ? <Icon /> : <Icon />}
       {/* {isActive && <span className="absolute -top-1 text-sm -right-1 p-0 bg-green-500 bg-opacity-100 text-green-800  rounded-full "><MdClear /></span>} */}
       {/* {isActive && (
         <span className="absolute -bottom-1 text-sm -right-1 p-0 bg-white bg-opacity-100 text-green-800  rounded-full ">
