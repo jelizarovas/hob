@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { VehicleProvider } from "./VehicleContext";
 import { Quote } from "./Quote";
 import { CheckRequest } from "./CheckRequest";
+import { BuyersGuide } from "./BuyersGuide";
 
 const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
@@ -29,6 +30,7 @@ function App() {
             <Router>
               <Route exact path="/dev/test" component={DevPanel} />
               <Route exact path="/check/req" component={CheckRequest} />
+              <Route exact path="/buyers/guide" component={BuyersGuide} />
               <Route exact path="/:stock" component={VehiclePage} />
               <Route exact path="/quote/:vin" component={Quote} />
               <Route exact path="/" component={Dashboard} />
