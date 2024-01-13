@@ -1,9 +1,29 @@
 import React, { useState } from "react";
 import { PDFDocument, StandardFonts } from "pdf-lib";
-import { useParams } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 export const BuyersGuide = () => {
-  const { vin } = useParams();
+  // const { vin } = useParams();
+  const { search } = useLocation();
+
+  const queryParams = new URLSearchParams(search);
+  const vin = queryParams.get("vin");
+  const year = queryParams.get("year");
+  const make = queryParams.get("make");
+  const model = queryParams.get("model");
+  const stock = queryParams.get("stock");
+
+  React.useEffect(() => {
+    if (
+      vin !== null &&
+      year !== null &&
+      make !== null &&
+      model !== null &&
+      stock !== null
+    ) {
+      setFormData((obj) => ({ ...obj, vin, year, make, model, stock }));
+    }
+  }, [vin, year, make, model, stock]);
 
   const [formData, setFormData] = useState({
     year: "",
@@ -106,51 +126,57 @@ export const BuyersGuide = () => {
   };
 
   return (
-    <form className="flex flex-col w-96 text-black" onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        name="vin"
-        onBlur={handleVinBlur}
-        value={formData.vin}
-        onChange={handleChange}
-        placeholder="VIN"
-        label="VIN"
-        autoFocus={true}
-      />
-      <Input
-        type="text"
-        name="year"
-        value={formData.year}
-        onChange={handleChange}
-        placeholder="Year"
-        label="Year"
-      />
-      <Input
-        type="text"
-        name="make"
-        value={formData.make}
-        onChange={handleChange}
-        placeholder="Make"
-        label="Make"
-      />
-      <Input
-        type="text"
-        name="model"
-        value={formData.model}
-        onChange={handleChange}
-        placeholder="Model"
-        label="Model"
-      />
+    <div className="flex flex-col">
+      <Link
+        to="/"
+        className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+      >
+        Go to Main
+      </Link>
+      <form className="flex flex-col w-96 text-black" onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          name="vin"
+          onBlur={handleVinBlur}
+          value={formData.vin}
+          onChange={handleChange}
+          placeholder="VIN"
+          label="VIN"
+        />
+        <Input
+          type="text"
+          name="year"
+          value={formData.year}
+          onChange={handleChange}
+          placeholder="Year"
+          label="Year"
+        />
+        <Input
+          type="text"
+          name="make"
+          value={formData.make}
+          onChange={handleChange}
+          placeholder="Make"
+          label="Make"
+        />
+        <Input
+          type="text"
+          name="model"
+          value={formData.model}
+          onChange={handleChange}
+          placeholder="Model"
+          label="Model"
+        />
 
-      <Input
-        type="text"
-        name="stock"
-        value={formData.stock}
-        onChange={handleChange}
-        placeholder="Stock"
-        label="Stock"
-      />
-      {/* <input
+        <Input
+          type="text"
+          name="stock"
+          value={formData.stock}
+          onChange={handleChange}
+          placeholder="Stock"
+          label="Stock"
+        />
+        {/* <input
         type="text"
         name="customer"
         value={formData.customer}
@@ -173,10 +199,11 @@ export const BuyersGuide = () => {
           onChange={handleChange}
         />
       </label> */}
-      <button className="bg-green-500 w-64 rounded" type="submit">
-        Submit
-      </button>
-    </form>
+        <button className="bg-green-500 w-64 rounded" type="submit">
+          Get Buyer's Guide
+        </button>
+      </form>
+    </div>
   );
 };
 
@@ -197,11 +224,11 @@ const Input = ({
         className="px-2 py-1 rounded my-1"
         name={name}
         onBlur={onBlur}
-        value={value}
+        value={value || ""}
         onChange={onChange}
         placeholder={placeHolder}
         spellCheck={false}
-        autoComplete={false}
+        autoComplete="false"
         autoFocus={autoFocus}
       />
     </label>

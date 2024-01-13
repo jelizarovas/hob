@@ -290,7 +290,9 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
       <ActionButton
         label="B Guide"
         Icon={MdListAlt}
-        to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${v?.make}&model=${v?.model}&stock=${v?.stock}`}
+        to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${
+          v?.make
+        }&model=${v?.model}&stock=${v?.vin?.slice(-8)}`}
       />
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
     </div>
