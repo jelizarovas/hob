@@ -40,15 +40,15 @@ export const BarCode = () => {
       page.drawImage(barcodeImage, {
         x: 50,
         y: height - barcodeDims.height - 50,
-        width: barcodeDims.width,
-        height: barcodeDims.height,
+        width: barcodeDims.width / 2,
+        height: barcodeDims.height / 2,
       });
 
-      page.drawText(vin, {
-        x: 50,
-        y: height - 100,
-        size: 12,
-      });
+      // page.drawText(vin, {
+      //   x: 50,
+      //   y: height - 100,
+      //   size: 12,
+      // });
     }
 
     const pdfBytes = await pdfDoc.save();
@@ -65,7 +65,7 @@ export const BarCode = () => {
       >
         Go to Main
       </Link>
-      <div>
+      <div className="flex flex-col w-96 mx-auto my-10 bg-slate-800 text-black">
         <input type="text" value={vinInput} onChange={(e) => setVinInput(e.target.value)} placeholder="Enter VIN" />
         <button onClick={addVin}>Add VIN</button>
         <button onClick={generatePdf} disabled={vins.length === 0}>
