@@ -18,6 +18,7 @@
     "@mui/material": "^5.13.6",
     "cuid": "^3.0.0",
     "downloadjs": "^1.4.7",
+    "jsbarcode": "^3.11.6",
     "lodash": "^4.17.21",
     "pdf-lib": "^1.17.1",
     "react": "^18.2.0",

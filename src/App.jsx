@@ -10,6 +10,7 @@ import { VehicleProvider } from "./VehicleContext";
 import { Quote } from "./Quote";
 import { CheckRequest } from "./CheckRequest";
 import { BuyersGuide } from "./BuyersGuide";
+import { BarCode } from "./BarCode";
 
 const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
@@ -31,6 +32,7 @@ function App() {
               <Route exact path="/dev/test" component={DevPanel} />
               <Route exact path="/check/req" component={CheckRequest} />
               <Route path="/buyers/guide/" component={BuyersGuide} />
+              <Route path="/bar/code/" component={BarCode} />
               <Route path="/buyers/guide/:vin" component={BuyersGuide} />
 
               <Route exact path="/:stock" component={VehiclePage} />
