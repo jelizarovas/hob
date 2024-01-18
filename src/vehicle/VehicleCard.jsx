@@ -19,6 +19,7 @@ import { BsPinFill } from "react-icons/bs";
 import { formatCurrency } from "../utils";
 import QRCode from "react-qr-code";
 import { isNumber } from "lodash";
+import { FaBarcode } from "react-icons/fa6";
 
 export const VehicleCard = ({
   v,
@@ -246,12 +247,17 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         to={`quote/${v?.vin}/?listPrice=${v?.msrp && v.msrp > 0 ? v?.msrp : v?.our_price}&sellingPrice=${v?.our_price}`}
         state={{ key: "value", ...v }}
       />
-      <ActionButton
-        label="B Guide"
-        Icon={MdListAlt}
-        to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${v?.make}&model=${v?.model}&stock=${v?.vin?.slice(-8)}`}
-      />
-      <ActionButton label="Barcode" Icon={MdBarcodeReader} to={`bar/code/?vin=${v?.vin}`} />
+      {v?.type === "New" ? (
+        <ActionButton label="Barcode" Icon={FaBarcode} to={`bar/code/?vin=${v?.vin}`} />
+      ) : (
+        <ActionButton
+          label="B Guide"
+          Icon={MdListAlt}
+          to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${v?.make}&model=${v?.model}&stock=${v?.vin?.slice(
+            -8
+          )}`}
+        />
+      )}
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
     </div>
   );

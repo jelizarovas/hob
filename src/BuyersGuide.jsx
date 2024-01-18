@@ -14,13 +14,7 @@ export const BuyersGuide = () => {
   const stock = queryParams.get("stock");
 
   React.useEffect(() => {
-    if (
-      vin !== null &&
-      year !== null &&
-      make !== null &&
-      model !== null &&
-      stock !== null
-    ) {
+    if (vin !== null && year !== null && make !== null && model !== null && stock !== null) {
       setFormData((obj) => ({ ...obj, vin, year, make, model, stock }));
     }
   }, [vin, year, make, model, stock]);
@@ -40,10 +34,26 @@ export const BuyersGuide = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value.toUpperCase(),
-    });
+
+    // Handling specifically for the VIN input
+    if (name === "vin") {
+      const formattedValue = value.toUpperCase();
+      setFormData({
+        ...formData,
+        [name]: formattedValue,
+      });
+
+      // Fetch VIN data if length is 17
+      if (formattedValue.length === 17) {
+        fetchVINData(formattedValue); // Assuming you have a function for fetching VIN data
+      }
+    } else {
+      // Handling for all other inputs
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
   };
 
   const handleVinBlur = async () => {
@@ -56,11 +66,7 @@ export const BuyersGuide = () => {
 
         // Check if year, make, or model fields already have data
         if (formData.year || formData.make || formData.model) {
-          if (
-            window.confirm(
-              "Data already exists for Year, Make, Model. Do you want to overwrite?"
-            )
-          ) {
+          if (window.confirm("Data already exists for Year, Make, Model. Do you want to overwrite?")) {
             setFormData({
               ...formData,
               year: vinData.year,
@@ -85,13 +91,19 @@ export const BuyersGuide = () => {
     }
   };
 
+  // const handlePaste = (e) => {
+  //   const pastedVin = e.clipboardData.getData('text');
+  //   setVin(pastedVin);
+  //   if (pastedVin.length === 17) {
+  //     fetchVINData();
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Load your PDF document
-    const existingPdfBytes = await fetch("pdf/Buyers Guide Form.pdf").then(
-      (res) => res.arrayBuffer()
-    );
+    const existingPdfBytes = await fetch("pdf/Buyers Guide Form.pdf").then((res) => res.arrayBuffer());
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
     // Embed a font
@@ -129,11 +141,14 @@ export const BuyersGuide = () => {
     <div className="flex flex-col">
       <Link
         to="/"
-        className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+        className="uppercase text-center items-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
       >
         Go to Main
       </Link>
-      <form className="flex flex-col w-96 text-black" onSubmit={handleSubmit}>
+      <form
+        className="flex bg-slate-800 py-10 px-4 rounded mx-auto my-10 flex-col w-96 text-black"
+        onSubmit={handleSubmit}
+      >
         <Input
           type="text"
           name="vin"
@@ -143,22 +158,8 @@ export const BuyersGuide = () => {
           placeholder="VIN"
           label="VIN"
         />
-        <Input
-          type="text"
-          name="year"
-          value={formData.year}
-          onChange={handleChange}
-          placeholder="Year"
-          label="Year"
-        />
-        <Input
-          type="text"
-          name="make"
-          value={formData.make}
-          onChange={handleChange}
-          placeholder="Make"
-          label="Make"
-        />
+        <Input type="text" name="year" value={formData.year} onChange={handleChange} placeholder="Year" label="Year" />
+        <Input type="text" name="make" value={formData.make} onChange={handleChange} placeholder="Make" label="Make" />
         <Input
           type="text"
           name="model"
@@ -199,7 +200,7 @@ export const BuyersGuide = () => {
           onChange={handleChange}
         />
       </label> */}
-        <button className="bg-green-500 w-64 rounded" type="submit">
+        <button className="bg-green-500 my-2 w-full py-1 hover:bg-green-400 transition-all rounded" type="submit">
           Get Buyer's Guide
         </button>
       </form>
@@ -207,15 +208,7 @@ export const BuyersGuide = () => {
   );
 };
 
-const Input = ({
-  name,
-  label,
-  value,
-  onBlur,
-  onChange,
-  placeHolder,
-  autoFocus = false,
-}) => {
+const Input = ({ name, label, value, onBlur, onChange, placeHolder, autoFocus = false }) => {
   return (
     <label htmlFor={name} className="flex flex-col">
       <span className="text-xs text-white leading-none">{label}</span>
@@ -237,9 +230,7 @@ const Input = ({
 
 const fetchVINData = async (vin) => {
   try {
-    const response = await fetch(
-      `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`
-    );
+    const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`);
     const data = await response.json();
 
     const results = data.Results;

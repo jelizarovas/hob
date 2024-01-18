@@ -26,29 +26,43 @@ export const BarCode = () => {
   }, [vin]);
 
   const generatePdf = async () => {
-    const pdfDoc = await PDFDocument.create();
+    let vinsToProcess = vins.length > 0 ? vins : [vinInput];
 
-    for (const vin of vins) {
-      const page = pdfDoc.addPage();
-      const { width, height } = page.getSize();
+    const pageWidth = 8.5 * 72;
+    const pageHeight = 11 * 72;
+    const paddingTop = 20;
+
+    const pdfDoc = await PDFDocument.create();
+    let page = pdfDoc.addPage([pageWidth, pageHeight]);
+    const { width, height } = page.getSize();
+
+    const barcodesPerPage = Math.floor((pageHeight - paddingTop * 2) / 71) - 1; // Adjust this number based on your requirements
+    let barcodeCount = 0;
+
+    for (const vin of vinsToProcess) {
+      if (barcodeCount > barcodesPerPage) {
+        page = pdfDoc.addPage(); // Add a new page
+        barcodeCount = 0; // Reset the count for the new page
+      }
+
       const barcodeCanvas = document.createElement("canvas");
       JsBarcode(barcodeCanvas, vin, { format: "CODE39" });
       const barcodeDataUrl = barcodeCanvas.toDataURL("image/png");
       const barcodeImage = await pdfDoc.embedPng(barcodeDataUrl);
-      const barcodeDims = barcodeImage.scale(1);
+      const barcodeDims = barcodeImage.scale(0.5);
+
+      const barcodePositionY = height - paddingTop - barcodeDims.height * (barcodeCount + 1);
+
+      console.log({ width, height, barcodeDims, barcodePositionY });
 
       page.drawImage(barcodeImage, {
         x: 50,
-        y: height - barcodeDims.height - 50,
-        width: barcodeDims.width / 2,
-        height: barcodeDims.height / 2,
+        y: barcodePositionY,
+        width: barcodeDims.width,
+        height: barcodeDims.height,
       });
 
-      // page.drawText(vin, {
-      //   x: 50,
-      //   y: height - 100,
-      //   size: 12,
-      // });
+      barcodeCount++;
     }
 
     const pdfBytes = await pdfDoc.save();
@@ -65,19 +79,41 @@ export const BarCode = () => {
       >
         Go to Main
       </Link>
-      <div className="flex flex-col w-96 mx-auto my-10 bg-slate-800 text-black">
-        <input type="text" value={vinInput} onChange={(e) => setVinInput(e.target.value)} placeholder="Enter VIN" />
-        <button onClick={addVin}>Add VIN</button>
-        <button onClick={generatePdf} disabled={vins.length === 0}>
-          Generate PDF
-        </button>
+      <div className="flex flex-col w-96 mx-auto my-10 bg-slate-800 text-black rounded py-2 px-2">
+        <input
+          type="text"
+          value={vinInput}
+          onChange={(e) => setVinInput(e.target.value)}
+          placeholder="Enter VIN"
+          className="mx-2 px-4 py-1 rounded text-center text-xl my-2"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.ctrlKey) {
+              e.preventDefault(); // Prevent default Enter key behavior (like submitting a form)
+              addVin();
+            } else if (e.key === "Enter" && e.ctrlKey) {
+              e.preventDefault(); // Prevent default Ctrl+Enter key behavior
+              generatePdf();
+            }
+          }}
+        />
+        <div className="flex justify-evenly">
+          <button onClick={generatePdf} className="bg-green-500 hover:bg-lime-500 mx-2 rounded my-2 w-full">
+            Generate Barcode
+          </button>
+          <button onClick={addVin} className="bg-green-500 hover:bg-lime-500 mx-2 rounded my-2 w-full">
+            Add to List
+          </button>
+        </div>
 
         {vins.length > 0 && (
-          <ul>
-            {vins.map((vin, index) => (
-              <li key={index}>{vin}</li>
-            ))}
-          </ul>
+          <div>
+            <span className="px-4 py-2 text-xs text-sky-500">List to Process</span>
+            <ul className="px-4 text-white">
+              {vins.map((vin, index) => (
+                <li key={index}>{vin}</li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>
