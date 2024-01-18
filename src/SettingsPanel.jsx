@@ -1,13 +1,6 @@
 import { Button, ButtonGroup, Checkbox, FormControlLabel } from "@mui/material";
 import React from "react";
-import {
-  MdClear,
-  MdFilterAlt,
-  MdGridView,
-  MdListAlt,
-  MdMenu,
-  MdSettings,
-} from "react-icons/md";
+import { MdClear, MdFilterAlt, MdGridView, MdListAlt, MdMenu, MdSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { SettingsProvider, useSettings } from "./SettingsContext";
 
@@ -29,58 +22,31 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         <div className="flex items-center space-x-2">
           <MdMenu /> <span>Menu</span>
         </div>
-        <button
-          type="button"
-          className="flex"
-          onClick={() => setSettingsOpen(false)}
-        >
+        <button type="button" className="flex" onClick={() => setSettingsOpen(false)}>
           <MdClear />
         </button>
       </div>
       <div className="flex flex-col py-2 px-2">
-        <ButtonGroup
-          variant="contained"
-          aria-label="outlined primary button group"
-        >
+        <ButtonGroup variant="contained" aria-label="outlined primary button group">
           <Button
-            variant={
-              settings.vehicleListDisplayMode === "grid"
-                ? "contained"
-                : "outlined"
-            }
+            variant={settings.vehicleListDisplayMode === "grid" ? "contained" : "outlined"}
             onClick={() => handleViewChange("grid")}
           >
             <MdGridView /> <span className="px-2">Grid</span>
           </Button>
           <Button
-            variant={
-              settings.vehicleListDisplayMode === "list"
-                ? "contained"
-                : "outlined"
-            }
+            variant={settings.vehicleListDisplayMode === "list" ? "contained" : "outlined"}
             onClick={() => handleViewChange("list")}
           >
             <MdListAlt /> <span className="px-2">List</span>
           </Button>
         </ButtonGroup>
         <FormControlLabel
-          control={
-            <Checkbox
-              name="showPrice"
-              checked={settings?.showPrice}
-              onChange={handleChange}
-            />
-          }
+          control={<Checkbox name="showPrice" checked={settings?.showPrice} onChange={handleChange} />}
           label="Show Price"
         />
         <FormControlLabel
-          control={
-            <Checkbox
-              name="showCarfax"
-              checked={settings?.showCarfax}
-              onChange={handleChange}
-            />
-          }
+          control={<Checkbox name="showCarfax" checked={settings?.showCarfax} onChange={handleChange} />}
           label="Show Carfax"
         />
       </div>
@@ -111,17 +77,14 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         >
           Take-In Sheet
         </a>
-        <Link
-          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
-          to="/check/req"
-        >
+        <Link className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/check/req">
           Check Request
         </Link>
-        <Link
-          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
-          to="/buyers/guide/"
-        >
+        <Link className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/buyers/guide/">
           Buyers Guide
+        </Link>
+        <Link className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/bar/code/">
+          Barcode
         </Link>
       </div>
     </div>
