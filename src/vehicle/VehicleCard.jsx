@@ -13,6 +13,7 @@ import {
   MdCopyAll,
   MdListAlt,
   MdBarcodeReader,
+  MdDirectionsCar,
 } from "react-icons/md";
 import { RxExternalLink } from "react-icons/rx";
 import { BsPinFill } from "react-icons/bs";
@@ -52,11 +53,7 @@ export const VehicleCard = ({
             activeActionBarId === v?.vin ? "bg-indigo-800 hover:bg-indigo-600 hover:bg-opacity-100" : ""
           }  `}
         >
-          <Link
-            to={{
-              pathname: `/${v?.stock}`,
-              state: v,
-            }}
+          <div
             style={backgroundStyle}
             className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
           >
@@ -78,19 +75,26 @@ export const VehicleCard = ({
                 {" "}
               </div>
             )}
-          </Link>
+          </div>
           <div className="flex flex-row justify-between items-start flex-grow  truncate px-1">
             <div className="flex flex-col flex-shrink w-full  h-full justify-between px-1">
               <div className="flex flex-col   text-sm">
                 <span className="text-[8px]  print:text-sm leading-none pt-0.5 opacity-50 select-none text-left  ">
                   {v?.type}
                 </span>
-                <span
+                <button
                   title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
-                  className="leading-none  whitespace-normal cursor-pointer"
+                  className="leading-none text-left whitespace-normal cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`);
+                    console.log("Copied", v?.link);
+                    // window.alert("URL Copied!");
+                  }}
                 >
                   {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
-                </span>
+                </button>
               </div>
               <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
                 <span className="leading-none truncate">
@@ -123,7 +127,7 @@ export const VehicleCard = ({
               className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 print:w-32 pb-1"
               onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
             >
-              {v.msrp != 0 && (
+              {v.msrp != 0 && determinePrice(v?.our_price) !== "Call" && (
                 <div className="flex flex-col  print:space-x-2   justify-between text-right  text-sm">
                   <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
                     MSRP
@@ -215,6 +219,14 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
 
   return (
     <div className="w-full flex items-center justify-around rounded-b-lg lg:rounded border mb-4 print:hidden">
+      <ActionButton
+        label="Details"
+        Icon={MdDirectionsCar}
+        to={{
+          pathname: `/${v?.stock}`,
+          state: v,
+        }}
+      />
       {showCarfax && (
         <ActionButton
           label="History"
