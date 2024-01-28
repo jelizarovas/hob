@@ -85,13 +85,13 @@ export const VehicleCard = ({
                 <button
                   title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
                   className="leading-none text-left whitespace-normal cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`);
-                    console.log("Copied", v?.link);
-                    // window.alert("URL Copied!");
-                  }}
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  //   e.stopPropagation();
+                  //   navigator.clipboard.writeText(`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`);
+                  //   console.log("Copied", v?.link);
+                  //   // window.alert("URL Copied!");
+                  // }}
                 >
                   {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
                 </button>
