@@ -84,7 +84,7 @@ export const VehicleCard = ({
                 </span>
                 <button
                   title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
-                  className="leading-none text-left whitespace-normal cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded"
+                  className="leading-none text-left whitespace-normal cursor-pointer bg-white bg-opacity-0  rounded"
                   // onClick={(e) => {
                   //   e.preventDefault();
                   //   e.stopPropagation();
