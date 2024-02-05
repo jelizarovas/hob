@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PDFDocument, StandardFonts } from "pdf-lib";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useHistory, Link } from "react-router-dom";
 
-export const BuyersGuide = () => {
+export const BuyersGuide = ({ data }) => {
   // const { vin } = useParams();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
+  const history = useHistory();
+
+  console.log(state);
 
   const queryParams = new URLSearchParams(search);
   const vin = queryParams.get("vin");
@@ -18,6 +21,17 @@ export const BuyersGuide = () => {
       setFormData((obj) => ({ ...obj, vin, year, make, model, stock }));
     }
   }, [vin, year, make, model, stock]);
+
+  useEffect(() => {
+    const generateAndGoBack = async () => {
+      if (state && state.length > 0) {
+        await batchPDFs(state);
+        history.goBack(); // Navigate back to the previous page
+      }
+    };
+
+    generateAndGoBack();
+  }, [state, history]); // Ensure this runs only when `state` or `history` changes
 
   const [formData, setFormData] = useState({
     year: "",
@@ -136,6 +150,59 @@ export const BuyersGuide = () => {
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
   };
+
+  const batchPDFs = async (formDataArray) => {
+    // Fetch the PDF template once and store it in memory
+    const existingPdfBytes = await fetch("pdf/Buyers Guide Form.pdf").then((res) => res.arrayBuffer());
+
+    // Create a new PDF document for merging
+    const mergedPdfDoc = await PDFDocument.create();
+
+    for (const formData of formDataArray) {
+      // Load the template from the in-memory copy
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+      // Embed a font
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      // Fill in the form fields
+      const form = pdfDoc.getForm();
+      form.getTextField("year").setText(formData.year);
+      form.getTextField("make").setText(formData.make);
+      form.getTextField("model").setText(formData.model);
+      form.getTextField("vin").setText(formData.vin);
+      form.getTextField("stock").setText(formData.stock);
+
+      // Flatten the form fields to make them part of the page content
+      form.flatten();
+
+      // Serialize the filled PDF to bytes (a Uint8Array)
+      const pdfBytes = await pdfDoc.save();
+
+      // Load the filled PDF as a new document to merge
+      const filledPdf = await PDFDocument.load(pdfBytes);
+
+      // Copy all pages from the filled PDF to the merged document
+      const copiedPages = await mergedPdfDoc.copyPages(filledPdf, filledPdf.getPageIndices());
+      copiedPages.forEach((page) => mergedPdfDoc.addPage(page));
+    }
+
+    // Save the merged document
+    const mergedPdfBytes = await mergedPdfDoc.save();
+
+    // Trigger the download
+    const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
+
+  if (state && state.length > 0)
+    return (
+      <div>
+        <button onClick={() => batchPDFs(state)}>Get Batch Buyers Guides</button>
+        {/* <pre className="text-xs">{JSON.stringify(state, null, 2)}</pre> */}
+      </div>
+    );
 
   return (
     <div className="flex flex-col">

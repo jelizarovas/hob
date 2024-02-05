@@ -1,6 +1,7 @@
 import React from "react";
 import { VehicleCard } from "./vehicle/VehicleCard";
-import { MdDeleteForever, MdKeyboardArrowUp, MdMinimize, MdPrint } from "react-icons/md";
+import { MdDeleteForever, MdKeyboardArrowUp, MdMinimize, MdListAlt, MdPrint } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 export const PinnedInventory = ({
   pinnedCars,
@@ -53,6 +54,16 @@ export const PinnedInventory = ({
             </div>
           </div>
           <div className="flex items-center space-x-2 px-2">
+            <Link
+              to={{
+                pathname: "/buyers/guide",
+                state: pinnedCars, // Your state object here
+              }}
+              className="flex space-x-1 items-center  px-2 py-1 transition-all bg-white bg-opacity-0 hover:bg-opacity-20 rounded cursor-pointer"
+            >
+              {" "}
+              <MdListAlt /> <span>Buyers guides</span>
+            </Link>
             <button
               onClick={() => window.print()}
               className="flex space-x-1 items-center  px-2 py-1 transition-all bg-white bg-opacity-0 hover:bg-opacity-20 rounded cursor-pointer"
