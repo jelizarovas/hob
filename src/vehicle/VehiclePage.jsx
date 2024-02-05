@@ -95,18 +95,18 @@ export const VehiclePage = () => {
             {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
           </span>
           <div className="flex items-center">
-            {showCarfax && v?.our_price && (
+            {showCarfax && (
               <a
                 href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
                 target="_blank"
                 aria-describedby="audioeye_new_window_message"
-                className="rounded-full border p-2 border-white border-opacity-25 hover:bg-white hover:bg-opacity-20"
+                className="rounded-full  p-2 border-white border-opacity-25 hover:bg-white hover:bg-opacity-20"
               >
                 <MdOutlineHistory />
               </a>
             )}
             {showPrice && v?.our_price && (
-              <span className="px-2 bg-white bg-opacity-10" onClick={() => console.log(v)}>
+              <span className="px-2 " onClick={() => console.log(v)}>
                 {formatCurrency(v.our_price)}
               </span>
             )}
@@ -121,40 +121,40 @@ export const VehiclePage = () => {
             url={`https://photon360.dealerimagepro.com/v3/vdp?dealer=2835,2843,2838,2836,2837,2839,2842,2841,2840,2845,2844&vin=${v?.vin}&viewer=gallery`}
           />
 
-          <div className="w-64">
+          <div className="w-96">
             <ul>
               <li>
-                <Label text="VIN" /> {v?.vin}
+                <Label text="VIN" /> <span>{v?.vin}</span>
               </li>
               <li>
-                <Label text="Mileage" /> {v?.miles}
+                <Label text="Mileage" /> <span>{v?.miles}</span>
               </li>
               <li>
-                <Label text="Body" /> {v?.body}
+                <Label text="Body" /> <span>{v?.body}</span>
               </li>
               <li>
-                <Label text="Fuel Type" /> {v?.fueltype}
+                <Label text="Fuel Type" /> <span>{v?.fueltype}</span>
               </li>
               <li>
-                <Label text="City MPG" /> {v?.city_mpg}
+                <Label text="City MPG" /> <span>{v?.city_mpg}</span>
               </li>
               <li>
-                <Label text="Highway MPG" /> {v?.hw_mpg}
+                <Label text="Highway MPG" /> <span>{v?.hw_mpg}</span>
               </li>
               <li>
-                <Label text="Transmission" /> {v?.transmission_description}
+                <Label text="Transmission" /> <span>{v?.transmission_description}</span>
               </li>
               <li>
-                <Label text="Drivetrain" /> {v?.drivetrain}
+                <Label text="Drivetrain" /> <span>{v?.drivetrain}</span>
               </li>
               <li>
-                <Label text="Cylinders" /> {v?.cylinders}
+                <Label text="Cylinders" /> <span>{v?.cylinders}</span>
               </li>
               <li>
-                <Label text="Engine" /> {v?.engine_description}
+                <Label text="Engine" /> <span>{v?.engine_description}</span>
               </li>
               <li>
-                <Label text="Doors" /> {v?.doors}
+                <Label text="Doors" /> <span>{v?.doors}</span>
               </li>
               <li>
                 <Label
@@ -204,7 +204,9 @@ export const VehiclePage = () => {
   );
 };
 
-const Label = ({ text }) => <label className="opacity-70 uppercase text-xs mr-2">{text}</label>;
+const Label = ({ text }) => (
+  <span className="opacity-70 uppercase text-xs leading-none mr-2 w-64 tunrcate min-w-64 ">{text}</span>
+);
 
 const IframeComponent = ({ url }) => {
   return (
@@ -217,4 +219,3 @@ const IframeComponent = ({ url }) => {
     />
   );
 };
-

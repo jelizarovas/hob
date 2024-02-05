@@ -486,8 +486,8 @@ export const rairdonDealerships = {
     distanceToHoB: 16.4,
   },
   rao: {
-    name: "Rairdon’s Auto Outlet",
-    address: "14555 1st Ave S, Burien, WA 98166",
+    name: "Auto Outlet",
+    address: "14555 1st Avenue S, Burien, WA 98166",
     distanceToHoB: 0.3,
   },
   hom: {
