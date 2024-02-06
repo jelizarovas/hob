@@ -63,25 +63,7 @@ export const Dashboard = () => {
           <code>{JSON.stringify(filters, null, 1)}</code>
         </pre> */}
 
-      <div
-        className={`container mx-auto print:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-          isFilterPanelOpen ? "h-8" : "h-0"
-        } `}
-      >
-        {isFilterPanelOpen && (
-          <FilterPanel
-            // facets={facets}
-            // facetsStats={facetsStats}
-            // total={total}
-            // defaultFacets={defaultFacets}
-            // defaultFacetsStats={defaultFacetsStats}
-            // defaultTotal={defaultTotal}
-            setFilterPanelOpen={setFilterPanelOpen}
-            // settings={settings}
-            // updateSettings={updateSettings}
-          />
-        )}
-      </div>
+     
       {(isSettingsOpen || isFilterPanelOpen) && (
           <div
             className={`flex   w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${

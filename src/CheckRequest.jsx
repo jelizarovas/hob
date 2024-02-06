@@ -3,6 +3,7 @@ import { PDFDocument, rgb, TextAlignment } from "pdf-lib";
 import download from "downloadjs";
 
 import { MdClear, MdUndo } from "react-icons/md";
+import { useLocation, useHistory, Link } from "react-router-dom";
 
 const pasteHandler = (onChange) => {
   return function (event) {
@@ -81,10 +82,7 @@ export const Input = ({
       }  focus-within:text-green-600 max-w-lg box-border mb-2 transition-all ${containerClassName}`}
     >
       {!!label && type !== "hidden" && (
-        <label
-          htmlFor={name}
-          className="text-xs font-sans   text-justify pl-2 flex justify-between items-center"
-        >
+        <label htmlFor={name} className="text-xs font-sans   text-justify pl-2 flex justify-between items-center">
           {label}{" "}
           {labelAction && (
             <button type="button" onClick={labelAction}>
@@ -142,13 +140,9 @@ export const Input = ({
           // </span>
         )}
       </div>
-      {helperText && (
-        <div className="text-xs text-gray-600 mx-2">{helperText}</div>
-      )}
+      {helperText && <div className="text-xs text-gray-600 mx-2">{helperText}</div>}
       {!!Helper && <Helper />}
-      {meta?.touched && meta?.error && (
-        <span className="text-xs text-red-400 mx-2">{meta.error}</span>
-      )}
+      {meta?.touched && meta?.error && <span className="text-xs text-red-400 mx-2">{meta.error}</span>}
     </div>
   );
 };
@@ -185,8 +179,7 @@ export const CheckRequest = () => {
 
   const modifyPdf = async (data, toDownload) => {
     // Fetch your existing PDF
-    const baseUrl =
-      window.location.origin.toString() + import.meta.env.BASE_URL;
+    const baseUrl = window.location.origin.toString() + import.meta.env.BASE_URL;
 
     const pdf = {
       name: "pdf/CHECK REQUEST.pdf",
@@ -269,10 +262,7 @@ export const CheckRequest = () => {
 
       return download(
         await pdfDoc.save(),
-        `Check Request ${data.name} ${data.amount} ${getFormattedDate(
-          now,
-          " "
-        )}.pdf`,
+        `Check Request ${data.name} ${data.amount} ${getFormattedDate(now, " ")}.pdf`,
         "application/pdf"
       );
     }
@@ -280,7 +270,13 @@ export const CheckRequest = () => {
 
   return (
     <div className="text-black bg-white">
-      CheckRequest
+      <Link
+        to="/"
+        className="uppercase text-center items-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+      >
+        Go to Main
+      </Link>
+      <h1> CheckRequest</h1>
       <div className="flex flex-col text-black bg-white"></div>
       <Input
         label="Amount"
@@ -290,20 +286,8 @@ export const CheckRequest = () => {
         type="number"
         onChange={handleOnChange}
       />
-      <Input
-        label="name"
-        name="name"
-        value={state.name}
-        placeholder="John Doe"
-        onChange={handleOnChange}
-      />
-      <Input
-        label="address"
-        name="address"
-        value={state.address}
-        placeholder="25"
-        onChange={handleOnChange}
-      />
+      <Input label="name" name="name" value={state.name} placeholder="John Doe" onChange={handleOnChange} />
+      <Input label="address" name="address" value={state.address} placeholder="25" onChange={handleOnChange} />
       <Input
         label="explanation"
         name="explanation"
@@ -326,9 +310,7 @@ export const CheckRequest = () => {
       </div>
       <div>
         <button onClick={() => modifyPdf(state)}>Modify PDF</button>
-        {pdfUrl && (
-          <iframe src={pdfUrl} style={{ width: "100%", height: 500 }} />
-        )}
+        {pdfUrl && <iframe src={pdfUrl} style={{ width: "100%", height: 500 }} />}
       </div>
     </div>
   );
@@ -350,10 +332,7 @@ async function fillPDF(data) {
 
   return download(
     await pdfDoc.save(),
-    `Check Request ${data.name} ${data.amount} ${getFormattedDate(
-      now,
-      " "
-    )}.pdf`,
+    `Check Request ${data.name} ${data.amount} ${getFormattedDate(now, " ")}.pdf`,
     "application/pdf"
   );
 }

@@ -51,22 +51,22 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         />
       </div>
       <div className="flex flex-col px-2 space-y-2">
-        <a
+        {/* <a
           href="http://jelizarovas.github.io/HondaAccessory/"
           target="_blank"
           rel="noopener noreferrer"
           className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
         >
           Honda Accessory
-        </a>
-        <a
+        </a> */}
+        {/* <a
           className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
           href="http://jelizarovas.github.io/makey/"
           target="_blank"
           rel="noopener noreferrer"
         >
           Make Key Tag
-        </a>
+        </a> */}
         {/* <Link to="/pdi">PDI Templates</Link> */}
         {/* <Link to="/pdi">Perfect Delivery</Link> */}
         <a

@@ -125,16 +125,16 @@ export const BuyersGuide = ({ data }) => {
 
     // Fill in the form fields
     const form = pdfDoc.getForm();
-    form.getTextField("year").setText(formData.year);
-    form.getTextField("make").setText(formData.make);
-    form.getTextField("model").setText(formData.model);
-    form.getTextField("vin").setText(formData.vin);
-    form.getTextField("stock").setText(formData.stock);
+    form.getTextField("year").setText(formData.year || "");
+    form.getTextField("make").setText(formData.make || "");
+    form.getTextField("model").setText(formData.model || "");
+    form.getTextField("vin").setText(formData.vin || "");
+    form.getTextField("stock").setText(formData.stock || "");
 
-    if (formData.includeDealAndCustomer) {
-      form.getTextField("customer").setText(formData.customer);
-      form.getTextField("deal").setText(formData.deal);
-    }
+    // if (formData.includeDealAndCustomer) {
+    //   form.getTextField("customer").setText(formData.customer);
+    //   form.getTextField("deal").setText(formData.deal);
+    // }
 
     // Serialize the PDFDocument to bytes (a Uint8Array)
     const pdfBytes = await pdfDoc.save();

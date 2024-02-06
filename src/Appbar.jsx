@@ -14,13 +14,8 @@ import {
 } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useVehicles } from "./VehicleContext";
-export const AppBar = ({
-  total,
-  settingsOpen,
-  setSettingsOpen,
-  setFilterPanelOpen,
-  filterPanelOpen,
-}) => {
+import { FilterPanel } from "./FilterPanel";
+export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
   const { filters, data, updateQuery } = useVehicles();
 
   function handleChange(event) {
@@ -28,9 +23,12 @@ export const AppBar = ({
   }
 
   return (
-    <div className=" bg-opacity-20 mb-0">
-      <div className="flex container   mx-auto ">
-        <div className="border  flex-grow m-2 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-opacity-25 flex items-center space-x-2 text-xl px-2">
+    <div className=" bg-opacity-20 mb-2 md:mb-0">
+      <div className="flex flex-col md:flex-row container  items-center mx-auto ">
+      <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
+
+        <AppBarButton toggle={setSettingsOpen} Icon={MdMenu} isActive={settingsOpen} />
+        <div className="border w-full  flex-grow m-2 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-opacity-25 flex items-center space-x-2 text-xl px-2">
           <div className="flex relative  justify-center items-cetner">
             <MdSearch />
             <span className="absolute leading-none text-[8px] h-3 flex p-0.5  -right-1 -top-1 bg-blue-700  rounded">
@@ -52,7 +50,27 @@ export const AppBar = ({
             </button>
           )}
         </div>
-        <div className="flex items-center">
+        {/* <div
+        className={`container mx-auto print:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+          filterPanelOpen ? "h-8" : "h-0"
+        } `}
+      > */}
+        </div>
+
+        {/* </div> */}
+          {filterPanelOpen && (
+            <FilterPanel
+              // facets={facets}
+              // facetsStats={facetsStats}
+              // total={total}
+              // defaultFacets={defaultFacets}
+              // defaultFacetsStats={defaultFacetsStats}
+              // defaultTotal={defaultTotal}
+              setFilterPanelOpen={setFilterPanelOpen}
+              // settings={settings}
+              // updateSettings={updateSettings}
+            />
+          )}
           {/* <Link
             to="/dev/test"
             type="button"
@@ -60,17 +78,11 @@ export const AppBar = ({
           >
             <MdList />
           </Link> */}
-          <AppBarButton
+          {/* <AppBarButton
             toggle={setFilterPanelOpen}
             Icon={MdFilterList}
             isActive={filterPanelOpen}
-          />
-          <AppBarButton
-            toggle={setSettingsOpen}
-            Icon={MdMenu}
-            isActive={settingsOpen}
-          />
-        </div>
+          /> */}
       </div>
     </div>
   );
@@ -82,9 +94,7 @@ const AppBarButton = ({ Icon, toggle, isActive, ...props }) => {
       type="button"
       onClick={() => toggle((v) => !v)}
       className={` group relative rounded-full p-1 text-lg mr-3 ml-1 bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
-        isActive
-          ? "bg-opacity-80 text-black hover:text-white"
-          : "bg-opacity-0 text-white"
+        isActive ? "bg-opacity-80 text-black hover:text-white" : "bg-opacity-0 text-white"
       } `}
     >
       {isActive ? <Icon /> : <Icon />}

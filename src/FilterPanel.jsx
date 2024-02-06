@@ -34,7 +34,7 @@ export const FilterPanel = ({
   // console.log("filterPanel", { filters });
 
   return (
-    <div className="w-full md:w-96 md:mx-2 mb-4 rounded   px-2">
+    <div className="w-full md:w-96 md:mx-2  rounded   px-2">
       {/* <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdFilterAlt /> <span>Filters</span>
@@ -44,7 +44,7 @@ export const FilterPanel = ({
         </button>
       </div> */}
       <div className="flex justify-between space-x-2">
-        <div className="flex text-xs border border-opacity-20 border-white rounded overflow-hidden">
+        <div className="flex text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "Burien", payload: "burienApi", bg: "bg-blue-800" },
             { label: "Rairdon", payload: "rairdonApi", bg: "bg-red-800" },
@@ -60,7 +60,7 @@ export const FilterPanel = ({
             </button>
           ))}
         </div>
-        <div className="flex items-center   text-xs border border-opacity-20 border-white rounded overflow-hidden">
+        <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "New", bg: "bg-indigo-900", value: "new" },
             { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
@@ -84,9 +84,9 @@ export const FilterPanel = ({
             </button>
           ))}
         </div>
-        <button onClick={() => setFilterPanelOpen(false)} className="px-2 rotate-180">
+        {/* <button onClick={() => setFilterPanelOpen(false)} className="px-2 rotate-180">
           <MdKeyboardArrowDown />
-        </button>
+        </button> */}
       </div>
 
       {/* <SettingsSlider
