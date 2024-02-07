@@ -180,7 +180,7 @@ export const VehiclePage = () => {
           <div>
             <h4>Exterior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.ext_options && v.ext_options?.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.ext_options && v?.ext_options?.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
           <div>
