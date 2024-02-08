@@ -34,7 +34,7 @@ const reducer = (state, { type, payload }) => {
         ...state,
         api: {
           ...state.api,
-          index: payload, // Assumes you add a 'currentIndex' to your API state to track the selected index
+          index: payload,
         },
       };
     case "UPDATE_YEAR":

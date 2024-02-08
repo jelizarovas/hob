@@ -310,12 +310,14 @@ export function generateLabelArray(label, range, allowedRange) {
 
 export const burienIndexes = [
   { label: "Price  ⬇️", index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low" },
+  { label: "Price  ⬆️", index: "rairdonshondaofburien-legacymigration0222_production_inventory_low_to_high" },
+  { label: "Specials", index: "rairdonshondaofburien-legacymigration0222_production_inventory_specials_price" },
 ];
 
 export const rairdonIndexes = [
+  { label: "Price ⬆️", index: "rairdonautomotivegroup_production_inventory_low_to_high" },
   { label: "Mileage ⬆️", index: "rairdonautomotivegroup_production_inventory_mileage_low_to_high" },
   { label: "Mileage ⬇️", index: "rairdonautomotivegroup_production_inventory_mileage_high_to_low" },
-  { label: "Price ⬆️", index: "rairdonautomotivegroup_production_inventory_low_to_high" },
   { label: "Price ⬇️", index: "rairdonautomotivegroup_production_inventory_high_to_low" },
   { label: "Specials", index: "rairdonautomotivegroup_production_inventory_specials_price" },
   { label: "Days ⬆️", index: "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high" },
@@ -333,7 +335,7 @@ export const rairdonAPI = {
   name: "Rairdon",
   "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
   "X-Algolia-Application-Id": "V3ZOVI2QFZ",
-  index: rairdonIndexes[2].index,
+  index: rairdonIndexes[0].index,
   indexes: rairdonIndexes,
 };
 
