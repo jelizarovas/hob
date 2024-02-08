@@ -21,9 +21,7 @@ export function parseMileage(mileage) {
   }
 
   // Convert mileage to a number
-  const numericMileage = Math.floor(
-    Number(mileage.toString().replace(/\D/g, ""))
-  );
+  const numericMileage = Math.floor(Number(mileage.toString().replace(/\D/g, "")));
 
   if (numericMileage < 100) {
     return "";
@@ -140,8 +138,7 @@ const settingsObj = [
         name: "Burien",
         "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
         "X-Algolia-Application-Id": "SEWJN80HTN",
-        index:
-          "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+        index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
       },
       {
         name: "Rairdon",
@@ -150,8 +147,7 @@ const settingsObj = [
         index: "rairdonautomotivegroup_production_inventory_low_to_high",
       },
     ],
-    description:
-      "Choose a preferred store for searching within a specific dealership.",
+    description: "Choose a preferred store for searching within a specific dealership.",
     value: 0,
   },
 ];
@@ -312,25 +308,33 @@ export function generateLabelArray(label, range, allowedRange) {
   return labelArray;
 }
 
+export const burienIndexes = [
+  { label: "Price  ⬇️", index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low" },
+];
+
+export const rairdonIndexes = [
+  { label: "Mileage ⬆️", index: "rairdonautomotivegroup_production_inventory_mileage_low_to_high" },
+  { label: "Mileage ⬇️", index: "rairdonautomotivegroup_production_inventory_mileage_high_to_low" },
+  { label: "Price ⬆️", index: "rairdonautomotivegroup_production_inventory_low_to_high" },
+  { label: "Price ⬇️", index: "rairdonautomotivegroup_production_inventory_high_to_low" },
+  { label: "Specials", index: "rairdonautomotivegroup_production_inventory_specials_price" },
+  { label: "Days ⬆️", index: "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high" },
+];
+
 export const burienAPI = {
   name: "Burien",
   "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
   "X-Algolia-Application-Id": "SEWJN80HTN",
-  index:
-    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+  index: burienIndexes[0].index,
+  indexes: burienIndexes,
 };
 
 export const rairdonAPI = {
   name: "Rairdon",
   "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
   "X-Algolia-Application-Id": "V3ZOVI2QFZ",
-  index: "rairdonautomotivegroup_production_inventory_low_to_high",
-  index2: "rairdonautomotivegroup_production_inventory_high_to_low",
-  index3: "rairdonautomotivegroup_production_inventory_specials_price",
-  index4: "rairdonautomotivegroup_production_inventory_mileage_low_to_high",
-  index5: "rairdonautomotivegroup_production_inventory_mileage_high_to_low",
-  index6:
-    "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
+  index: rairdonIndexes[2].index,
+  indexes: rairdonIndexes,
 };
 
 export const initialFilters = {
@@ -539,10 +543,7 @@ export const levenshteinDistance = (a, b) => {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1];
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
-        );
+        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
       }
     }
   }
@@ -576,10 +577,7 @@ export const parseAddress = (inputAddress) => {
   let bestMatch = null;
 
   for (let key in rairdonDealerships) {
-    const score = calculateSimilarity(
-      normalizedInput,
-      normalizeAddress(rairdonDealerships[key].address)
-    );
+    const score = calculateSimilarity(normalizedInput, normalizeAddress(rairdonDealerships[key].address));
 
     if (score > highestScore) {
       highestScore = score;

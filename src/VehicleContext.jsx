@@ -28,6 +28,15 @@ const reducer = (state, { type, payload }) => {
         ...state,
         api: payload === "burienApi" ? burienAPI : rairdonAPI,
       };
+
+    case "UPDATE_INDEX":
+      return {
+        ...state,
+        api: {
+          ...state.api,
+          index: payload, // Assumes you add a 'currentIndex' to your API state to track the selected index
+        },
+      };
     case "UPDATE_YEAR":
       return { ...state, year: payload };
     case "UPDATE_SETTINGS":

@@ -60,6 +60,21 @@ export const FilterPanel = ({
             </button>
           ))}
         </div>
+        <div className="flex">
+          <select
+            className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-sm"
+            onChange={(e) => {
+              filtersDispatch({ type: "UPDATE_INDEX", payload: e.target.value });
+            }}
+          >
+            {filters.api.indexes.map(({ label, index }) => (
+              <option key={index} value={index} className="bg-black">
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "New", bg: "bg-indigo-900", value: "new" },
