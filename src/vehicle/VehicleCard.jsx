@@ -82,9 +82,9 @@ export const VehicleCard = ({
                 <span className="text-[8px]  print:text-sm leading-none pt-0.5 opacity-50 select-none text-left  ">
                   {v?.type}
                 </span>
-                <button
+                <span
                   title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
-                  className="leading-none text-left whitespace-normal cursor-pointer bg-white bg-opacity-0  rounded"
+                  className="leading-none text-left whitespace-normal  bg-white bg-opacity-0  rounded"
                   // onClick={(e) => {
                   //   e.preventDefault();
                   //   e.stopPropagation();
@@ -94,7 +94,7 @@ export const VehicleCard = ({
                   // }}
                 >
                   {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
-                </button>
+                </span>
               </div>
               <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
                 <span className="leading-none truncate">

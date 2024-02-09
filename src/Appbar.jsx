@@ -24,7 +24,7 @@ export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpe
 
   return (
     <div className=" bg-opacity-20 mb-2 md:mb-0">
-      <div className="flex flex-col md:flex-row container  items-center mx-auto ">
+      <div className="flex flex-col lg:flex-row container  items-center mx-auto ">
       <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
 
         <AppBarButton toggle={setSettingsOpen} Icon={MdMenu} isActive={settingsOpen} />

@@ -34,7 +34,7 @@ export const FilterPanel = ({
   // console.log("filterPanel", { filters });
 
   return (
-    <div className="w-full md:w-96 md:mx-2  rounded   px-2">
+    <div className="w-full   mx-2  rounded mb-0 sm:mb-2 lg:mb-0   px-2">
       {/* <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdFilterAlt /> <span>Filters</span>
