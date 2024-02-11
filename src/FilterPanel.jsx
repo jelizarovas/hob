@@ -43,7 +43,7 @@ export const FilterPanel = ({
           <MdClear />
         </button>
       </div> */}
-      <div className="flex justify-between space-x-2">
+      <div className="flex justify-between flex-wrap md:space-x-2">
         <div className="flex text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "Burien", payload: "burienApi", bg: "bg-blue-800" },
@@ -94,8 +94,8 @@ export const FilterPanel = ({
                 checked={filters.type[value]}
                 onChange={() => handleTypeChange(value, filters.type[value])}
               /> */}
-              <span>{filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}</span>
-              <span className="pl-1 upper">{label}</span>
+              <span className="hidden sm:flex">{filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}</span>
+              <span className="md:pl-1 upper">{label}</span>
             </button>
           ))}
         </div>
