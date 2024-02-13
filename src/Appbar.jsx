@@ -15,8 +15,8 @@ import {
 import { Link } from "react-router-dom";
 import { useVehicles } from "./VehicleContext";
 import { FilterPanel } from "./FilterPanel";
-export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
-  const { filters, data, updateQuery } = useVehicles();
+export const AppBar = ({ settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
+  const { filters, data, updateQuery, defaultFacets, defaultFacetsStats } = useVehicles();
 
   function handleChange(event) {
     updateQuery(event.target.value);
@@ -25,32 +25,31 @@ export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpe
   return (
     <div className=" bg-opacity-20 mb-2 md:mb-0">
       <div className="flex flex-col lg:flex-row container  items-center mx-auto ">
-      <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
-
-        <AppBarButton toggle={setSettingsOpen} Icon={MdMenu} isActive={settingsOpen} />
-        <div className="border w-full  flex-grow m-2 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-opacity-25 flex items-center space-x-2 text-xl px-2">
-          <div className="flex relative  justify-center items-cetner">
-            <MdSearch />
-            <span className="absolute leading-none text-[8px] h-3 flex p-0.5  -right-1 -top-1 bg-blue-700  rounded">
-              {data?.pages?.[0]?.nbHits || 0}
-            </span>
+        <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
+          <AppBarButton toggle={setSettingsOpen} Icon={MdMenu} isActive={settingsOpen} />
+          <div className="border w-full  flex-grow m-2 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-opacity-25 flex items-center space-x-2 text-xl px-2">
+            <div className="flex relative  justify-center items-cetner">
+              <MdSearch />
+              <span className="absolute leading-none text-[8px] h-3 flex p-0.5  -right-1 -top-1 bg-blue-700  rounded">
+                {data?.pages?.[0]?.nbHits || 0}
+              </span>
+            </div>
+            <input
+              className="bg-transparent text-sm px-2 py-1 w-full outline-none"
+              value={filters.query}
+              onChange={handleChange}
+              placeholder={`Search ${getType(filters)} Inventory....`}
+            />
+            {filters.query.length > 0 && (
+              <button
+                className=" rounded-full p-0.5 bg-white bg-opacity-0 hover:bg-opacity-20 transition-all"
+                onClick={() => updateQuery("")}
+              >
+                <MdClear />
+              </button>
+            )}
           </div>
-          <input
-            className="bg-transparent text-sm px-2 py-1 w-full outline-none"
-            value={filters.query}
-            onChange={handleChange}
-            placeholder={`Search ${getType(filters)} Inventory....`}
-          />
-          {filters.query.length > 0 && (
-            <button
-              className=" rounded-full p-0.5 bg-white bg-opacity-0 hover:bg-opacity-20 transition-all"
-              onClick={() => updateQuery("")}
-            >
-              <MdClear />
-            </button>
-          )}
-        </div>
-        {/* <div
+          {/* <div
         className={`container mx-auto print:hidden overflow-hidden transition-all duration-500 ease-in-out ${
           filterPanelOpen ? "h-8" : "h-0"
         } `}
@@ -58,27 +57,27 @@ export const AppBar = ({ total, settingsOpen, setSettingsOpen, setFilterPanelOpe
         </div>
 
         {/* </div> */}
-          {filterPanelOpen && (
-            <FilterPanel
-              // facets={facets}
-              // facetsStats={facetsStats}
-              // total={total}
-              // defaultFacets={defaultFacets}
-              // defaultFacetsStats={defaultFacetsStats}
-              // defaultTotal={defaultTotal}
-              setFilterPanelOpen={setFilterPanelOpen}
-              // settings={settings}
-              // updateSettings={updateSettings}
-            />
-          )}
-          {/* <Link
+        {filterPanelOpen && (
+          <FilterPanel
+            // facets={facets}
+            // facetsStats={facetsStats}
+            // total={total}
+            defaultFacets={defaultFacets}
+            defaultFacetsStats={defaultFacetsStats}
+            // defaultTotal={defaultTotal}
+            setFilterPanelOpen={setFilterPanelOpen}
+            // settings={settings}
+            // updateSettings={updateSettings}
+          />
+        )}
+        {/* <Link
             to="/dev/test"
             type="button"
             className="border rounded-full p-1 text-2xl mr-3 ml-1 bg-white border-opacity-20 opacity-80 border-white bg-opacity-0 hover:bg-opacity-20 transition-all"
           >
             <MdList />
           </Link> */}
-          {/* <AppBarButton
+        {/* <AppBarButton
             toggle={setFilterPanelOpen}
             Icon={MdFilterList}
             isActive={filterPanelOpen}

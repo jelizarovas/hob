@@ -41,6 +41,8 @@ export const Dashboard = () => {
     loadMoreRef,
     updateQuery,
     fetchNextPage,
+    defaultFacets,
+    defaultFacetsStats,
   } = useVehicles();
 
   let displayClass = "";
@@ -57,24 +59,21 @@ export const Dashboard = () => {
         settingsOpen={isSettingsOpen}
         setFilterPanelOpen={setFilterPanelOpen}
         filterPanelOpen={isFilterPanelOpen}
-        // total={total}
       />
       {/* <pre className="text-xs">
           <code>{JSON.stringify(filters, null, 1)}</code>
         </pre> */}
 
-     
       {(isSettingsOpen || isFilterPanelOpen) && (
-          <div
-            className={`flex   w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
-              isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
-            } overflow-hidden`}
-          >
-            {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
-          </div>
-        )}
+        <div
+          className={`flex   w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
+            isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
+          } overflow-hidden`}
+        >
+          {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
+        </div>
+      )}
       <div className="flex flex-col  container mx-auto   lg:flex-row items-start lg:px-2 lg:space-x-10">
-      
         <div className="flex container mx-auto items-start transition-all ">
           <PinnedInventory
             {...{
