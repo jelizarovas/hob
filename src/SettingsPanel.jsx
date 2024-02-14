@@ -3,8 +3,14 @@ import React from "react";
 import { MdClear, MdFilterAlt, MdGridView, MdListAlt, MdMenu, MdSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { SettingsProvider, useSettings } from "./SettingsContext";
+import { SettingsSlider } from "./settings/SettingsSlider";
+import { useVehicles } from "./VehicleContext";
+import { FaFilePdf } from "react-icons/fa6";
+
 
 export const SettingsPanel = ({ setSettingsOpen }) => {
+  const { filters, updateFilters, defaultFacetsStats } = useVehicles();
+
   const { settings, setSetting } = useSettings();
 
   const handleChange = (e) => {
@@ -27,6 +33,15 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         </button>
       </div>
       <div className="flex flex-col py-2 px-2">
+      <SettingsSlider
+          label={"Price"}
+          minValue={defaultFacetsStats?.our_price?.min || 0}
+          maxValue={defaultFacetsStats?.our_price?.max || 100000}
+          currentMinValue={0}
+          currentMaxValue={100000}
+          value={filters.price}
+          onChange={(newValue) => updateFilters({ price: newValue })}
+        />
         <ButtonGroup variant="contained" aria-label="outlined primary button group">
           <Button
             variant={settings.vehicleListDisplayMode === "grid" ? "contained" : "outlined"}
@@ -70,21 +85,21 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         {/* <Link to="/pdi">PDI Templates</Link> */}
         {/* <Link to="/pdi">Perfect Delivery</Link> */}
         <a
-          className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+          className=" flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
           href="pdf/Take-in Sheet.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Take-In Sheet
+        <FaFilePdf /> <span>  Take-In Sheet </span>
         </a>
-        <Link className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/check/req">
-          Check Request
+        <Link className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/check/req">
+        <FaFilePdf /> <span> Check Request </span>
         </Link>
-        <Link className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/buyers/guide/">
-          Buyers Guide
+        <Link className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/buyers/guide/">
+        <FaFilePdf /> <span> Buyers Guide </span>
         </Link>
-        <Link className="bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/bar/code/">
-          Barcode
+        <Link className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/bar/code/">
+        <FaFilePdf /> <span> Barcode </span>
         </Link>
       </div>
     </div>

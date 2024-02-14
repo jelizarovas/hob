@@ -133,10 +133,10 @@ export const FilterPanel = ({
         /> */}
       {/* <SettingsSlider
           label={"Price"}
-          minValue={defaultFacetsStats?.our_price.min || 0}
-          maxValue={defaultFacetsStats?.our_price.max || 100000}
-          currentMinValue={facetsStats?.our_price.min || 0}
-          currentMaxValue={facetsStats?.our_price.max || 100000}
+          minValue={defaultFacetsStats?.our_price?.min || 0}
+          maxValue={defaultFacetsStats?.our_price?.max || 100000}
+          currentMinValue={facetsStats?.our_price?.min || 0}
+          currentMaxValue={facetsStats?.our_price?.max || 100000}
           value={filters.price}
           onChange={(newValue) => updateFilters({ price: newValue })}
         /> */}

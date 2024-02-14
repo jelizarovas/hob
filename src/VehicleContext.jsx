@@ -68,7 +68,7 @@ export const VehicleProvider = ({ children }) => {
 
   const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
     ["vehicles", filters],
-    ({ pageParam = 0 }) => fetchReq({ pageParam, filters }),
+    ({ pageParam = 0 }) => fetchReq({ pageParam, filters, defaultFacetsStats }),
     {
       getNextPageParam: (lastPage, pages) => {
         const nextPage = (lastPage.page ?? -1) + 1;
@@ -150,6 +150,7 @@ export const VehicleProvider = ({ children }) => {
         defaultFacetsStats,
       }}
     >
+      {/* <pre>{JSON.stringify(filters,null,2)}</pre> */}
       {children}
     </VehicleContext.Provider>
   );
@@ -157,7 +158,7 @@ export const VehicleProvider = ({ children }) => {
 //seems to not work at all ----> debug
 // const throttledFetchReq = throttle(fetchReq, 1000);
 
-async function fetchReq({ pageParam = 0, filters }) {
+async function fetchReq({ pageParam = 0, filters, defaultFacetsStats }) {
   const api = filters.api || burienAPI;
   const query = filters.query || "";
   const hitsPerPage = filters.hitsPerPage || 10;
@@ -181,7 +182,7 @@ async function fetchReq({ pageParam = 0, filters }) {
   const numericFilters = [
     //   ...generateLabelArray("days_in_stock", filters.days_in_stock, facetsStats?.days_in_stock),
     //   ...generateLabelArray("miles", filters.mileage, facetsStats?.miles),
-    // ...generateLabelArray("our_price", filters.price, facetsStats?.our_price),
+    ...generateLabelArray("our_price", filters.price, defaultFacetsStats?.our_price),
   ];
 
   const res = await fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
