@@ -12,6 +12,7 @@ export const PinnedInventory = ({
   togglePinnedCar,
   activeActionBarId,
   setActiveActionBarId,
+  showPin,
 }) => {
   const [isOpen, setOpen] = React.useState(true);
 
@@ -91,6 +92,7 @@ export const PinnedInventory = ({
                 setActiveActionBarId={setActiveActionBarId}
                 togglePinnedCar={togglePinnedCar}
                 isPinned={true}
+                showPin={showPin}
               />
             ))}
         </div>

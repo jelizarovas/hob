@@ -15,6 +15,7 @@ export const Dashboard = () => {
   const [isSettingsOpen, setSettingsOpen] = React.useState(false);
   const [isFilterPanelOpen, setFilterPanelOpen] = React.useState(true);
   const [activeActionBarId, setActiveActionBarId] = React.useState(null);
+  const [showPin, setShowPin] = useState(false);
   // const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
   //   useFetchVehicles(settings);
 
@@ -44,6 +45,31 @@ export const Dashboard = () => {
     defaultFacets,
     defaultFacetsStats,
   } = useVehicles();
+
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey) {
+      setShowPin(true);
+    }
+  };
+
+  const handleKeyUp = (e) => {
+    if (!e.ctrlKey) {
+      setShowPin(false);
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+
+
 
   let displayClass = "";
   if (vehicleListDisplayMode === "grid")
@@ -85,6 +111,7 @@ export const Dashboard = () => {
               togglePinnedCar,
               activeActionBarId,
               setActiveActionBarId,
+              showPin,
             }}
           />
         </div>
@@ -107,6 +134,7 @@ export const Dashboard = () => {
                     activeActionBarId={activeActionBarId}
                     setActiveActionBarId={setActiveActionBarId}
                     togglePinnedCar={togglePinnedCar}
+                    showPin={showPin}
                   />
                 ))}
               </React.Fragment>

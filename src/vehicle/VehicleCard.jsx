@@ -29,6 +29,7 @@ export const VehicleCard = ({
   setActiveActionBarId,
   togglePinnedCar,
   isPinned = false,
+  showPin,
   ...props
 }) => {
   // console.log({ v });
@@ -57,6 +58,18 @@ export const VehicleCard = ({
             style={backgroundStyle}
             className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
           >
+            {showPin && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  togglePinnedCar(v);
+                }}
+                className="group absolute w-full h-full flex items-center justify-center bg-black bg-opacity-80 hover:bg-slate-800 z-10 text-2xl transition-all"
+              >
+                <BsPinFill className="group-hover:rotate-45 transition-all" />
+              </button>
+            )}
             <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
             <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
               <span
