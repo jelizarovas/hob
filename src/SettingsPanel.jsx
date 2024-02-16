@@ -7,7 +7,6 @@ import { SettingsSlider } from "./settings/SettingsSlider";
 import { useVehicles } from "./VehicleContext";
 import { FaFilePdf } from "react-icons/fa6";
 
-
 export const SettingsPanel = ({ setSettingsOpen }) => {
   const { filters, updateFilters, defaultFacetsStats } = useVehicles();
 
@@ -33,7 +32,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         </button>
       </div>
       <div className="flex flex-col py-2 px-2">
-      <SettingsSlider
+        <SettingsSlider
           label={"Price"}
           minValue={defaultFacetsStats?.our_price?.min || 0}
           maxValue={defaultFacetsStats?.our_price?.max || 100000}
@@ -64,6 +63,22 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           control={<Checkbox name="showCarfax" checked={settings?.showCarfax} onChange={handleChange} />}
           label="Show Carfax"
         />
+        <FormControlLabel
+          control={<Checkbox name="showDays" checked={settings?.showDays} onChange={handleChange} />}
+          label="Show Days"
+        />
+        <FormControlLabel
+          control={<Checkbox name="showMiles" checked={settings?.showMiles} onChange={handleChange} />}
+          label="Show Miles"
+        />
+        <FormControlLabel
+          control={<Checkbox name="showLocation" checked={settings?.showLocation} onChange={handleChange} />}
+          label="Show Location"
+        />
+        <FormControlLabel
+          control={<Checkbox name="showColor" checked={settings?.showColor} onChange={handleChange} />}
+          label="Show Color"
+        />
       </div>
       <div className="flex flex-col px-2 space-y-2">
         {/* <a
@@ -90,16 +105,25 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-        <FaFilePdf /> <span>  Take-In Sheet </span>
+          <FaFilePdf /> <span> Take-In Sheet </span>
         </a>
-        <Link className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/check/req">
-        <FaFilePdf /> <span> Check Request </span>
+        <Link
+          className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+          to="/check/req"
+        >
+          <FaFilePdf /> <span> Check Request </span>
         </Link>
-        <Link className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/buyers/guide/">
-        <FaFilePdf /> <span> Buyers Guide </span>
+        <Link
+          className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+          to="/buyers/guide/"
+        >
+          <FaFilePdf /> <span> Buyers Guide </span>
         </Link>
-        <Link className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1" to="/bar/code/">
-        <FaFilePdf /> <span> Barcode </span>
+        <Link
+          className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+          to="/bar/code/"
+        >
+          <FaFilePdf /> <span> Barcode </span>
         </Link>
       </div>
     </div>

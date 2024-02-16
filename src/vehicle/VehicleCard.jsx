@@ -40,7 +40,7 @@ export const VehicleCard = ({
   };
 
   const {
-    settings: { vehicleListDisplayMode, showPrice, showCarfax },
+    settings: { vehicleListDisplayMode, showPrice, showCarfax, showDays, showMiles, showLocation, showColor },
   } = useSettings();
 
   if (vehicleListDisplayMode === "list")
@@ -72,13 +72,16 @@ export const VehicleCard = ({
             )}
             <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
             <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
-              <span
-                className={`${v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""}`}
-              >
-                {" "}
-                {v?.days_in_stock} days
-              </span>
-              <span>{parseMileage(v.miles)}</span>
+              {showDays && (
+                <span
+                  className={`${
+                    v?.days_in_stock > 60 ? "text-red-400" : v?.days_in_stock > 30 ? "text-orange-400" : ""
+                  }`}
+                >
+                  {v?.days_in_stock} days
+                </span>
+              )}
+              {showMiles && <span>{parseMileage(v.miles)}</span>}
             </div>
             {!!v?.miles && parseMileage(v.miles) && (
               <div
@@ -110,11 +113,15 @@ export const VehicleCard = ({
                 </span>
               </div>
               <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
-                <span className="leading-none truncate">
-                  <span title={v?.ext_color_generic}>{getGenericColor(getColorNameByCode(v?.ext_color_generic))}</span>{" "}
-                  <span title={v.ext_color}>{v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}</span>{" "}
-                  {v?.int_color && `   w/ ${v.int_color} interior`}
-                </span>
+                {showColor && (
+                  <span className="leading-none truncate">
+                    <span title={v?.ext_color_generic}>
+                      {getGenericColor(getColorNameByCode(v?.ext_color_generic))}
+                    </span>{" "}
+                    <span title={v.ext_color}>{v?.ext_color && `- ${getColorNameByCode(v.ext_color)}`}</span>{" "}
+                    {v?.int_color && `   w/ ${v.int_color} interior`}
+                  </span>
+                )}
               </div>
 
               <div className="flex items-center  justify-between">
@@ -163,17 +170,19 @@ export const VehicleCard = ({
                   </>
                 )}
               </div>
-              <div className="flex flex-col text-right   text-sm">
-                {v?.location && (
-                  <span
-                    tite={v.location}
-                    onClick={() => console.log(parseAddress(v.location))}
-                    className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
-                  >
-                    {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
-                  </span>
-                )}
-              </div>
+              {showLocation && (
+                <div className="flex flex-col text-right   text-sm">
+                  {v?.location && (
+                    <span
+                      tite={v.location}
+                      onClick={() => console.log(parseAddress(v.location))}
+                      className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
+                    >
+                      {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

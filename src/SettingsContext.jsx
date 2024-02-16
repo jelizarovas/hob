@@ -6,6 +6,10 @@ const initialState = {
   vehicleListDisplayMode: "list",
   showPrice: true,
   showCarfax: true,
+  showMiles: true,
+  showDays: true,
+  showLocation: true,
+  showColor: true,
 };
 
 const getInitialSettings = () => {
