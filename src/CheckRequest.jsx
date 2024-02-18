@@ -78,8 +78,8 @@ export const Input = ({
   return (
     <div
       className={`w-full  ${
-        defaultValue && defaultValue !== value ? "bg-green-100 rounded-lg" : ""
-      }  focus-within:text-green-600 max-w-lg box-border mb-2 transition-all ${containerClassName}`}
+        defaultValue && defaultValue !== value ? "bg-slate-100 rounded-lg" : ""
+      }  focus-within:text-slate-300 max-w-lg box-border mb-2 transition-all ${containerClassName}`}
     >
       {!!label && type !== "hidden" && (
         <label htmlFor={name} className="text-xs font-sans   text-justify pl-2 flex justify-between items-center">
@@ -104,7 +104,7 @@ export const Input = ({
           )} */}
         </label>
       )}
-      <div className="relative w-full flex justify-between items-center  bg-white bg-opacity-70  hover:border-green-300 hover:focus-within:border-green-500  rounded-md  border focus-within:border-green-400 transition-all  ">
+      <div className="relative w-full flex justify-between items-center  bg-white bg-opacity-70  hover:border-slate-300 hover:focus-within:border-slate-500  rounded-md  border focus-within:border-slate-400 transition-all  ">
         {!!Icon && <Icon className="ml-2 min-w-fit" />}
         <input
           {...rest}
@@ -126,7 +126,7 @@ export const Input = ({
           {...input}
           onChange={onChange ? onChange : input?.onChange}
           onPaste={pasteHandler(onChange ? onChange : input?.onChange)}
-          className={`w-full px-2 py-1 flex-grow text-sm focus:text-gray-900 ${textAlign[align]} bg-transparent outline-none ${className}`}
+          className={`w-full px-2 py-1 flex-grow  text-black text-sm focus:text-gray-900 ${textAlign[align]} bg-transparent outline-none ${className}`}
         />
 
         {units && (
@@ -163,9 +163,9 @@ const reducer = (state, { type, payload }) => {
 export const CheckRequest = () => {
   const [state, dispatch] = React.useReducer(reducer, {
     amount: 25,
-    name: "John Doe",
-    address: "15026 1st ave s, Burien WA 98108",
-    explanation: "Google Review",
+    name: "",
+    address: "",
+    explanation: "",
   });
 
   const [loadingPDF, setLoadingPDF] = React.useState(false);
@@ -269,15 +269,16 @@ export const CheckRequest = () => {
   };
 
   return (
-    <div className="text-black bg-white">
+    <div className="flex flex-col px-4">
       <Link
         to="/"
-        className="uppercase text-center items-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+        className="uppercase text-center w-full items-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg  mx-auto "
       >
         Go to Main
       </Link>
-      <h1> CheckRequest</h1>
-      <div className="flex flex-col text-black bg-white"></div>
+      <h1 className="bg-slate-800 py-2 uppercase text-sm text-center rounded-t"> Check Request</h1>
+      <div className="flex flex-col bg-slate-700 px-2 rounded-b py-4">
+
       <Input
         label="Amount"
         name="amount"
@@ -285,11 +286,11 @@ export const CheckRequest = () => {
         placeholder="25"
         type="number"
         onChange={handleOnChange}
-      />
-      <Input label="name" name="name" value={state.name} placeholder="John Doe" onChange={handleOnChange} />
-      <Input label="address" name="address" value={state.address} placeholder="25" onChange={handleOnChange} />
+        />
+      <Input label="Name" name="name" value={state.name} placeholder="John Doe" onChange={handleOnChange} />
+      <Input label="Address" name="address" value={state.address} placeholder="25" onChange={handleOnChange} />
       <Input
-        label="explanation"
+        label="Explanation"
         name="explanation"
         value={state.explanation}
         placeholder="25"
@@ -304,14 +305,15 @@ export const CheckRequest = () => {
             await modifyPdf(state, true);
             setLoadingPDF(false);
           }}
-        >
+          >
           {loadingPDF ? "Loading" : "Get Check Request"}
         </button>
       </div>
-      <div>
+      </div>
+      {/* <div>
         <button onClick={() => modifyPdf(state)}>Modify PDF</button>
         {pdfUrl && <iframe src={pdfUrl} style={{ width: "100%", height: 500 }} />}
-      </div>
+      </div> */}
     </div>
   );
 };
