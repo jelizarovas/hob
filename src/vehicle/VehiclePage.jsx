@@ -11,17 +11,20 @@ const api = {
 };
 
 function getVehicleDataByStockNumber(stock) {
-  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
-    headers: {
-      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-    },
-    method: "POST",
-    body: JSON.stringify({
-      hitsPerPage: 1,
-      query: stock,
-    }),
-  })
+  return fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify({
+        hitsPerPage: 1,
+        query: stock,
+      }),
+    }
+  )
     .then((response) => response.json())
     .then((data) => {
       return data.hits[0];
@@ -92,10 +95,11 @@ export const VehiclePage = () => {
             // href={v?.link}
             // target="_blank"
           >
-            {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+            {`${v?.year} ${v?.make} ${v?.model}`}{" "}
+            <span className="opacity-40">{v?.trim}</span>
           </span>
           <div className="flex items-center">
-            {showCarfax && (
+            {/* {showCarfax && (
               <a
                 href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
                 target="_blank"
@@ -104,10 +108,10 @@ export const VehiclePage = () => {
               >
                 <MdOutlineHistory />
               </a>
-            )}
+            )} */}
             {showPrice && v?.our_price && (
               <span className="px-2 " onClick={() => console.log(v)}>
-                {formatCurrency(v.our_price)}
+                {v?.our_price && formatCurrency(v.our_price)}
               </span>
             )}
             <button className="text-2xl p-4" onClick={handleModalClose}>
@@ -122,75 +126,124 @@ export const VehiclePage = () => {
           />
 
           <div className="w-96">
-            <ul>
-              <li>
-                <Label text="VIN" /> <span>{v?.vin}</span>
-              </li>
-              <li>
-                <Label text="Mileage" /> <span>{v?.miles}</span>
-              </li>
-              <li>
-                <Label text="Body" /> <span>{v?.body}</span>
-              </li>
-              <li>
-                <Label text="Fuel Type" /> <span>{v?.fueltype}</span>
-              </li>
-              <li>
-                <Label text="City MPG" /> <span>{v?.city_mpg}</span>
-              </li>
-              <li>
-                <Label text="Highway MPG" /> <span>{v?.hw_mpg}</span>
-              </li>
-              <li>
-                <Label text="Transmission" /> <span>{v?.transmission_description}</span>
-              </li>
-              <li>
-                <Label text="Drivetrain" /> <span>{v?.drivetrain}</span>
-              </li>
-              <li>
-                <Label text="Cylinders" /> <span>{v?.cylinders}</span>
-              </li>
-              <li>
-                <Label text="Engine" /> <span>{v?.engine_description}</span>
-              </li>
-              <li>
-                <Label text="Doors" /> <span>{v?.doors}</span>
-              </li>
-              <li>
-                <Label
-                  text="
+            <table>
+              <tr>
+                <td>
+                  <Label text="VIN" />
+                </td>{" "}
+                <td>{v?.vin}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Mileage" />{" "}
+                </td>
+                <td>{v?.miles}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Body" />{" "}
+                </td>
+                <td>{v?.body}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Fuel Type" />{" "}
+                </td>
+                <td>{v?.fueltype}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="City MPG" />{" "}
+                </td>
+                <td>{v?.city_mpg}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Highway MPG" />{" "}
+                </td>
+                <td>{v?.hw_mpg}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Transmission" />
+                </td>
+                <td>{v?.transmission_description}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Drivetrain" />{" "}
+                </td>
+                <td>{v?.drivetrain}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Cylinders" />{" "}
+                </td>
+                <td>{v?.cylinders}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Engine" />{" "}
+                </td>
+                <td>{v?.engine_description}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Doors" />{" "}
+                </td>
+                <td>{v?.doors}</td>
+              </tr>
+              <tr>
+                <td>
+                  <Label
+                    text="
                 Exterior Color"
-                />{" "}
-                {v?.ext_color} ({v?.ext_color_generic})
-              </li>
-              <li>
-                <Label text="Interior Color" /> {v?.int_color}
-              </li>
-              {/* <li>Location {v?.location}</li> */}
-              <li>
-                <Label text="Stock" /> {v?.stock}
-              </li>
-              {/* <li>Trim {v?.trim}</li> */}
-              {/* <li>Type {v?.type}</li> */}
-              {/* <li>Days In Stock {v?.days_in_stock}</li> */}
-            </ul>
+                  />
+                </td>{" "}
+                <td>
+                  {v?.ext_color} ({v?.ext_color_generic})
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <Label text="Interior Color" />{" "}
+                </td>{" "}
+                <td>{v?.int_color}</td>
+              </tr>
+              {/* <tr>Location {v?.location}</tr> */}
+              <tr>
+                <td>
+                  <Label text="Stock" />
+                </td>{" "}
+                <td>{v?.stock}</td>
+              </tr>
+              {/* <tr>Trim {v?.trim}</tr> */}
+              {/* <tr>Type {v?.type}</tr> */}
+              {/* <tr>Days In Stock {v?.days_in_stock}</tr> */}
+            </table>
           </div>
         </div>
         <div className="px-2 mt-4 flex flex-col space-y-4">
           <div>
             <h4>Exterior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.ext_options && v?.ext_options.length > 0 && v?.ext_options?.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.ext_options &&
+                v?.ext_options.length > 0 &&
+                v?.ext_options?.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
           <div>
             <h4>Features</h4>
-            <ul className="px-2 text-xs">{v?.features && v.features?.map((option, i) => <li key={i}>{option}</li>)}</ul>
+            <ul className="px-2 text-xs">
+              {v?.features &&
+                v.features?.map((option, i) => <li key={i}>{option}</li>)}
+            </ul>
           </div>
           <div>
             <h4>Interior Options</h4>
             <ul className="px-2 text-xs">
-              {v?.int_options && v.int_options?.map((option, i) => <li key={i}>{option}</li>)}
+              {v?.int_options &&
+                v.int_options?.map((option, i) => <li key={i}>{option}</li>)}
             </ul>
           </div>
         </div>
@@ -205,7 +258,9 @@ export const VehiclePage = () => {
 };
 
 const Label = ({ text }) => (
-  <span className="opacity-70 uppercase text-xs leading-none mr-2 w-64 tunrcate min-w-64 ">{text}</span>
+  <span className="opacity-70 uppercase text-xs leading-none mr-2 w-64 tunrcate min-w-64 ">
+    {text}
+  </span>
 );
 
 const IframeComponent = ({ url }) => {
