@@ -9,6 +9,7 @@ import { useSettings } from "./SettingsContext";
 import { useVehicles } from "./VehicleContext";
 import { PinnedInventory } from "./PinnedInventory";
 import useLocalStorage from "./useLocalStorage";
+import { PriceChip } from "./PriceChip";
 
 export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
@@ -59,17 +60,14 @@ export const Dashboard = () => {
   };
 
   React.useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
-
-
-
 
   let displayClass = "";
   if (vehicleListDisplayMode === "grid")
@@ -124,6 +122,9 @@ export const Dashboard = () => {
           <div
             className={`container print:hidden flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}
           >
+            <div>
+              <PriceChip />
+            </div>
             {data.pages.map((group, i) => (
               <React.Fragment key={i}>
                 {filterSearchResults(pinnedCars, group.hits).map((v) => (
