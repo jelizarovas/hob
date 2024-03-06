@@ -90,7 +90,7 @@ export const Dashboard = () => {
 
       {(isSettingsOpen || isFilterPanelOpen) && (
         <div
-          className={`flex   w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
+          className={`flex absolute z-50  w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
             isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
           } overflow-hidden`}
         >

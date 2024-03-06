@@ -22,7 +22,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
   };
 
   return (
-    <div className="container mx-auto md:w-96 md:mx-2 mb-4 rounded border-white border-opacity-20 border  py-0.5">
+    <div className="container mx-auto   md:w-96 bg-black mb-4 rounded border-white border-opacity-20 border  py-0.5">
       <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdMenu /> <span>Menu</span>
