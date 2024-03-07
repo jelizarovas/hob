@@ -56,7 +56,7 @@ export const VehicleCard = ({
         >
           <div
             style={backgroundStyle}
-            className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
+            className="w-24 h-[68px] print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
           >
             {showPin && (
               <button
@@ -152,7 +152,7 @@ export const VehicleCard = ({
                   <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
                     MSRP
                   </span>
-                  <span className="leading-none print:leading-normal cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded  ">
+                  <span className="leading-none print:leading-normal   ">
                     <PriceComponent price={formatCurrency(v.msrp, true)} />
                   </span>
                 </div>
@@ -164,14 +164,14 @@ export const VehicleCard = ({
                       {v.our_price_label}
                     </span>
 
-                    <span className="leading-none cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded  ">
+                    <span className="leading-none   ">
                       <PriceComponent price={determinePrice(v.our_price)} />
                     </span>
                   </>
                 )}
               </div>
               {showLocation && (
-                <div className="flex flex-col text-right   text-sm">
+                <div className="flex flex-col text-left px-1  text-sm">
                   {v?.location && (
                     <span
                       tite={v.location}
@@ -353,7 +353,7 @@ export const PriceComponent = ({ price }) => {
   return (
     <button
       type="button"
-      className="flex space-x-1 print:space-x-0 group cursor-copy"
+      className="flex space-x-1 print:space-x-0 group cursor-copy py-0.5 bg-white bg-opacity-0 hover:bg-opacity-10 rounded px-1"
       onClick={(e) => {
         e.stopPropagation();
         handleCopy(price);

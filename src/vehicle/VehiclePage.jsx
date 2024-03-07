@@ -11,20 +11,17 @@ const api = {
 };
 
 function getVehicleDataByStockNumber(stock) {
-  return fetch(
-    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
-    {
-      headers: {
-        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-      },
-      method: "POST",
-      body: JSON.stringify({
-        hitsPerPage: 1,
-        query: stock,
-      }),
-    }
-  )
+  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
+    headers: {
+      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+    },
+    method: "POST",
+    body: JSON.stringify({
+      hitsPerPage: 1,
+      query: stock,
+    }),
+  })
     .then((response) => response.json())
     .then((data) => {
       return data.hits[0];
@@ -89,14 +86,13 @@ export const VehiclePage = () => {
   return (
     <div className="modal z-10 absolute top-0 left-0 w-full h-screen overflow-auto bg-gray-800">
       <div className="container mx-auto">
-        <div className="flex items-center justify-between text-2xl">
+        <div className="flex items-center justify-between text-sm lg:text-2xl">
           <span
             className="whitespace-pre-wrap  py-4 px-4 "
             // href={v?.link}
             // target="_blank"
           >
-            {`${v?.year} ${v?.make} ${v?.model}`}{" "}
-            <span className="opacity-40">{v?.trim}</span>
+            {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
           </span>
           <div className="flex items-center">
             {/* {showCarfax && (
@@ -114,107 +110,110 @@ export const VehiclePage = () => {
                 {v?.our_price && formatCurrency(v.our_price)}
               </span>
             )}
-            <button className="text-2xl p-4" onClick={handleModalClose}>
+            <button
+              className="text-sm lg:text-2xl p-2 mx-2 bg-white bg-opacity-0 hover:bg-opacity-5 transition-all rounded-full"
+              onClick={handleModalClose}
+            >
               <MdClear />
             </button>
           </div>
         </div>
 
-        <div className="flex flex-col space-x-4 lg:flex-row">
+        <div className="flex flex-col gap-4 lg:flex-row">
           <IframeComponent
             url={`https://photon360.dealerimagepro.com/v3/vdp?dealer=2835,2843,2838,2836,2837,2839,2842,2841,2840,2845,2844&vin=${v?.vin}&viewer=gallery`}
           />
 
-          <div className="w-96">
-            <table>
-              <tr>
+          <div className="my-0 w-full lg:w-96 ">
+            <table className="border-white border-opacity-20 border rounded mx-auto shadow-lg bg-white bg-opacity-5 text-sm">
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
                   <Label text="VIN" />
-                </td>{" "}
+                </td>
                 <td>{v?.vin}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Mileage" />{" "}
+                  <Label text="Mileage" />
                 </td>
                 <td>{v?.miles}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Body" />{" "}
+                  <Label text="Body" />
                 </td>
                 <td>{v?.body}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Fuel Type" />{" "}
+                  <Label text="Fuel Type" />
                 </td>
                 <td>{v?.fueltype}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="City MPG" />{" "}
+                  <Label text="City MPG" />
                 </td>
                 <td>{v?.city_mpg}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Highway MPG" />{" "}
+                  <Label text="Highway MPG" />
                 </td>
                 <td>{v?.hw_mpg}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
                   <Label text="Transmission" />
                 </td>
                 <td>{v?.transmission_description}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Drivetrain" />{" "}
+                  <Label text="Drivetrain" />
                 </td>
                 <td>{v?.drivetrain}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Cylinders" />{" "}
+                  <Label text="Cylinders" />
                 </td>
                 <td>{v?.cylinders}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Engine" />{" "}
+                  <Label text="Engine" />
                 </td>
                 <td>{v?.engine_description}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Doors" />{" "}
+                  <Label text="Doors" />
                 </td>
                 <td>{v?.doors}</td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
                   <Label
                     text="
                 Exterior Color"
                   />
-                </td>{" "}
+                </td>
                 <td>
                   {v?.ext_color} ({v?.ext_color_generic})
                 </td>
               </tr>
-              <tr>
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
-                  <Label text="Interior Color" />{" "}
-                </td>{" "}
+                  <Label text="Interior Color" />
+                </td>
                 <td>{v?.int_color}</td>
               </tr>
-              {/* <tr>Location {v?.location}</tr> */}
-              <tr>
+              {/* <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">Location {v?.location}</tr> */}
+              <tr className="bg-white bg-opacity-0 hover:bg-opacity-20 transition-all">
                 <td>
                   <Label text="Stock" />
-                </td>{" "}
+                </td>
                 <td>{v?.stock}</td>
               </tr>
               {/* <tr>Trim {v?.trim}</tr> */}
@@ -223,27 +222,47 @@ export const VehiclePage = () => {
             </table>
           </div>
         </div>
-        <div className="px-2 mt-4 flex flex-col space-y-4">
-          <div>
-            <h4>Exterior Options</h4>
-            <ul className="px-2 text-xs">
+        <div className=" mt-4 flex flex-col space-y-4">
+          <div className="border border-white border-opacity-20 rounded mx-2">
+            <h4 className="px-4 border-b border-white border-opacity-20 uppercase text-xs py-1 bg-white bg-opacity-5">
+              Exterior Options
+            </h4>
+            <ul className=" text-xs">
               {v?.ext_options &&
                 v?.ext_options.length > 0 &&
-                v?.ext_options?.map((option, i) => <li key={i}>{option}</li>)}
+                v?.ext_options?.map((option, i) => (
+                  <li key={i} className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4">
+                    {option}
+                  </li>
+                ))}
             </ul>
           </div>
-          <div>
-            <h4>Features</h4>
-            <ul className="px-2 text-xs">
+          <div className="border border-white border-opacity-20 rounded mx-2">
+            <h4 className="px-4 border-b border-white border-opacity-20 uppercase text-xs py-1 bg-white bg-opacity-5">
+              Features
+            </h4>
+
+            <ul className="text-xs">
               {v?.features &&
-                v.features?.map((option, i) => <li key={i}>{option}</li>)}
+                v.features?.map((option, i) => (
+                  <li key={i} className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4">
+                    {option}
+                  </li>
+                ))}
             </ul>
           </div>
-          <div>
-            <h4>Interior Options</h4>
+          <div className="border border-white border-opacity-20 rounded mx-2">
+            <h4 className="px-4 border-b border-white border-opacity-20 uppercase text-xs py-1 bg-white bg-opacity-5">
+              Interior Options
+            </h4>
+
             <ul className="px-2 text-xs">
               {v?.int_options &&
-                v.int_options?.map((option, i) => <li key={i}>{option}</li>)}
+                v.int_options?.map((option, i) => (
+                  <li key={i} className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4">
+                    {option}
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
@@ -258,7 +277,7 @@ export const VehiclePage = () => {
 };
 
 const Label = ({ text }) => (
-  <span className="opacity-70 uppercase text-xs leading-none mr-2 w-64 tunrcate min-w-64 ">
+  <span className="opacity-70 uppercase text-xs leading-none mr-2 select-none tunrcate min-w-64 px-2 text-right w-full">
     {text}
   </span>
 );
@@ -269,7 +288,7 @@ const IframeComponent = ({ url }) => {
       id="dipPhoton360Player"
       allowFullScreen={false}
       src={url}
-      className="w-full max-w-[600px] h-[355px] lg:h-[520px]"
+      className="w-full max-w-[600px] h-[425px] lg:h-[520px]"
       // style={{ width: "100%", height: "100%" }}
     />
   );

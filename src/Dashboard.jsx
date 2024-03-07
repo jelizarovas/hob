@@ -90,7 +90,7 @@ export const Dashboard = () => {
 
       {(isSettingsOpen || isFilterPanelOpen) && (
         <div
-          className={`flex absolute z-50  w-full lg:w-96 mr-4 print:hidden  flex-col transition-all duration-200 ease-in-out ${
+          className={`flex container mx-auto  w-full  print:hidden lg:w-96   flex-col transition-all duration-200 ease-in-out ${
             isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
           } overflow-hidden`}
         >
@@ -122,7 +122,7 @@ export const Dashboard = () => {
           <div
             className={`container print:hidden flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}
           >
-            <div>
+            <div className="px-2">
               <PriceChip />
             </div>
             {data.pages.map((group, i) => (
