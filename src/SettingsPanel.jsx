@@ -99,14 +99,24 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         </a> */}
         {/* <Link to="/pdi">PDI Templates</Link> */}
         {/* <Link to="/pdi">Perfect Delivery</Link> */}
-        <a
-          className=" flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
-          href="pdf/Take-in Sheet.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FaFilePdf /> <span> Take-In Sheet </span>
-        </a>
+        <div className="flex">
+          <a
+            className=" flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+            href="pdf/Take-in Sheet.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFilePdf /> <span> Take-In Sheet </span>
+          </a>
+          <a
+            className=" flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
+            href="pdf/Take-in Sheet Form.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFilePdf /> <span> Take-In Form </span>
+          </a>
+        </div>
         <Link
           className="flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
           to="/check/req"
