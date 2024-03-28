@@ -127,7 +127,7 @@ export const VehicleCard = ({
               <div className="flex items-center  justify-between">
                 <div className="flex justify-between text-xs w-full ">
                   <div className="text-sm leading-none">
-                    <VINComponent vin={v?.vin} />
+                    <VINComponent vin={v?.vin} stock={v?.stock} />
                     {/* {v?.vin && "#" + v.vin.slice(-8)} */}
                   </div>
                 </div>
@@ -287,9 +287,9 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         <ActionButton
           label="B Guide"
           Icon={MdListAlt}
-          to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${v?.make}&model=${v?.model}&stock=${v?.vin?.slice(
-            -8
-          )}`}
+          to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${v?.make}&model=${v?.model}&stock=${
+            v?.stock || v?.vin?.slice(-8)
+          }`}
         />
       )}
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
@@ -364,7 +364,7 @@ export const PriceComponent = ({ price }) => {
   );
 };
 
-export const VINComponent = ({ vin }) => {
+export const VINComponent = ({ vin, stock }) => {
   const [isCopying, setIsCopying] = React.useState("");
 
   const handleCopy = (text) => {
@@ -403,6 +403,17 @@ export const VINComponent = ({ vin }) => {
       >
         {boldStockNumber}
       </span>
+      {boldStockNumber !== stock && (
+        <span
+          className="opacity-70 text-orange-500 print:opacity-100 print:font-bold transition-all group-hover:opacity-100 hover:text-orange-400 "
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCopy(stock);
+          }}
+        >
+          #{stock}
+        </span>
+      )}
     </div>
   );
 };
