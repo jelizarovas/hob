@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Checkbox, FormControlLabel } from "@mui/material";
 import React from "react";
-import { MdClear, MdFilterAlt, MdGridView, MdListAlt, MdMenu, MdSettings } from "react-icons/md";
+import { MdClear, MdFilterAlt, MdGridView, MdListAlt, MdMenu, MdSettings, MdVisibility } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { SettingsProvider, useSettings } from "./SettingsContext";
 import { SettingsSlider } from "./settings/SettingsSlider";
@@ -52,33 +52,39 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
             variant={settings.vehicleListDisplayMode === "list" ? "contained" : "outlined"}
             onClick={() => handleViewChange("list")}
           >
-            <MdListAlt /> <span className="px-2">List</span>
+            <MdListAlt /> <span className="px-2">Card</span>
           </Button>
         </ButtonGroup>
-        <FormControlLabel
-          control={<Checkbox name="showPrice" checked={settings?.showPrice} onChange={handleChange} />}
-          label="Show Price"
-        />
-        <FormControlLabel
-          control={<Checkbox name="showCarfax" checked={settings?.showCarfax} onChange={handleChange} />}
-          label="Show Carfax"
-        />
-        <FormControlLabel
-          control={<Checkbox name="showDays" checked={settings?.showDays} onChange={handleChange} />}
-          label="Show Days"
-        />
-        <FormControlLabel
-          control={<Checkbox name="showMiles" checked={settings?.showMiles} onChange={handleChange} />}
-          label="Show Miles"
-        />
-        <FormControlLabel
-          control={<Checkbox name="showLocation" checked={settings?.showLocation} onChange={handleChange} />}
-          label="Show Location"
-        />
-        <FormControlLabel
-          control={<Checkbox name="showColor" checked={settings?.showColor} onChange={handleChange} />}
-          label="Show Color"
-        />
+        <div className="flex gap-0 border rounded border-white border-opacity-20  flex-wrap  my-2">
+          <div className="w-full text-xs flex gap-2 items-center bg-white bg-opacity-10 px-4 py-0.5 uppercase"> <MdVisibility /> <span>View</span></div>
+          <div className="px-2 flex flex-wrap">
+
+          <FormControlLabel
+            control={<Checkbox name="showPrice" checked={settings?.showPrice} onChange={handleChange} />}
+            label="Price"
+            />
+          <FormControlLabel
+            control={<Checkbox name="showCarfax" checked={settings?.showCarfax} onChange={handleChange} />}
+            label="Carfax"
+            />
+          <FormControlLabel
+            control={<Checkbox name="showDays" checked={settings?.showDays} onChange={handleChange} />}
+            label="Days"
+            />
+          <FormControlLabel
+            control={<Checkbox name="showMiles" checked={settings?.showMiles} onChange={handleChange} />}
+            label="Miles"
+            />
+          <FormControlLabel
+            control={<Checkbox name="showLocation" checked={settings?.showLocation} onChange={handleChange} />}
+            label="Location"
+            />
+          <FormControlLabel
+            control={<Checkbox name="showColor" checked={settings?.showColor} onChange={handleChange} />}
+            label="Color"
+            />
+            </div>
+        </div>
       </div>
       <div className="flex flex-col px-2 space-y-2">
         {/* <a

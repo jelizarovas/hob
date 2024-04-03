@@ -51,7 +51,7 @@ export const FilterPanel = ({
           ].map(({ label, payload, bg }, i) => (
             <button
               key={i}
-              className={`px-2 p-1 bg-opacity-0   transition-all  ${
+              className={`px-2 p-1 bg-opacity-0 text-xs  transition-all  ${
                 filters.api.name === label ? `${bg} bg-opacity-90 hover:bg-opacity-100` : "bg-white hover:bg-opacity-20"
               }`}
               onClick={() => filtersDispatch({ type: "UPDATE_API", payload })}
@@ -62,7 +62,7 @@ export const FilterPanel = ({
         </div>
         <div className="flex">
           <select
-            className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-sm"
+            className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-xs hover:bg-white hover:bg-opacity-10 cursor-pointer"
             onChange={(e) => {
               filtersDispatch({ type: "UPDATE_INDEX", payload: e.target.value });
             }}
@@ -83,7 +83,7 @@ export const FilterPanel = ({
           ].map(({ label, value, bg }, i) => (
             <button
               key={i}
-              className={`flex items-center cursor-pointer py-1 px-2  transition-all ${bg} ${
+              className={`flex items-center cursor-pointer text-xs py-1 px-2  transition-all ${bg} ${
                 filters.type[value] ? `bg-opacity-100 hover:bg-opacity-50  ` : "bg-opacity-0  hover:bg-opacity-20 "
               } `}
               onClick={() => handleTypeChange(value, filters.type[value])}
