@@ -809,7 +809,7 @@ function getGapAmount(packages) {
     if (packages.hasOwnProperty(key)) {
       const pkg = packages[key]; // Use 'pkg' to avoid reserved word conflict
       // Normalize the label for comparison and check the 'include' property
-      const labelNormalized = pkg.label.toLowerCase();
+      const labelNormalized = pkg?.label?.toLowerCase() || "";
       if (searchTerms.some((term) => labelNormalized.includes(term)) && pkg.include) {
         return pkg.value; // Return the value if a match is found and 'include' is true
       }
