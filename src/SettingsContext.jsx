@@ -3,7 +3,7 @@ import React, { useReducer, useEffect, createContext, useContext } from "react";
 const SettingsContext = createContext();
 
 const initialState = {
-  vehicleListDisplayMode: "list",
+  vehicleListDisplayMode: "card",
   showPrice: true,
   showCarfax: true,
   showMiles: true,

@@ -41,7 +41,7 @@ export const PriceChip = () => {
       <div className="flex items-center space-x-2"><MdFilterAlt /> <span>{priceDisplay}</span></div>
       <button
         onClick={handleRemovePriceFilter}
-        className="border-l px-1 ml-1 border-white border-opacity-5 hover:text-lg hover:px-0.5 hover:leading-none transition-all"
+        className="border-l p-1 ml-1 border-white border-opacity-5 hover:bg-white bg-opacity-0 hover:bg-opacity-20 rounded-full  hover:leading-none transition-all"
       >
         <MdClear />
       </button>

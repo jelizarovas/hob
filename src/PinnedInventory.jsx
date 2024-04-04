@@ -81,7 +81,7 @@ export const PinnedInventory = ({
             </button>
           </div>
         </div>
-        <div id="printable">
+        <div id="printable" className="flex flex-col gap-1">
           {isOpen &&
             pinnedCars.map((v, i) => (
               <VehicleCard

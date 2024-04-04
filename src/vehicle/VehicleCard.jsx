@@ -43,7 +43,7 @@ export const VehicleCard = ({
     settings: { vehicleListDisplayMode, showPrice, showCarfax, showDays, showMiles, showLocation, showColor },
   } = useSettings();
 
-  if (vehicleListDisplayMode === "list")
+  if (vehicleListDisplayMode === "card")
     return (
       <div
         className="flex flex-col  w-full items-center  first:mt-0 last:mb-0 mt-0.5 mb-0.5"

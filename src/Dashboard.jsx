@@ -10,6 +10,7 @@ import { useVehicles } from "./VehicleContext";
 import { PinnedInventory } from "./PinnedInventory";
 import useLocalStorage from "./useLocalStorage";
 import { PriceChip } from "./PriceChip";
+import { MdPin, MdPinDrop } from "react-icons/md";
 
 export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
@@ -120,10 +121,17 @@ export const Dashboard = () => {
           <p>Error: {error.message}</p>
         ) : (
           <div
-            className={`container print:hidden flex-grow-0 mx-auto flex items-start transition-all   ${displayClass}`}
+            className={`container print:hidden flex-grow-0 mx-auto flex items-start transition-all   ${
+              vehicleListDisplayMode === "grid" ? displayClass : "flex-col"
+            }`}
           >
-            <div className="px-2">
-              <PriceChip />
+            <div className="chips w-full">
+              <div className="px-2 flex items-center gap-2 mb-1">
+                <button className="text-xs rounded-full bg-white bg-opacity-5 text-gray-500 px-2 py-1" disabled>
+                  Pin All
+                </button>
+                <PriceChip />
+              </div>
             </div>
             {data.pages.map((group, i) => (
               <React.Fragment key={i}>
