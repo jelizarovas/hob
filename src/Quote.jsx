@@ -48,7 +48,7 @@ const initialState = {
   },
   accessories: {},
   tradeIns: {},
-  salesTaxRate: 10.4,
+  salesTaxRate: 10.5,
   fees: {
     docfee: {
       label: "Doc Fee",
