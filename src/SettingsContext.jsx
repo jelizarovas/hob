@@ -32,7 +32,10 @@ const settingsReducer = (state, action) => {
 export const SettingsProvider = ({ children }) => {
   // Initialize state from localStorage or use defaults
   const initialSettings = getInitialSettings();
-  const [settings, dispatch] = useReducer(settingsReducer, initialSettings);
+  const [settings, dispatch] = useReducer(
+    settingsReducer,
+    initialSettings || initialState
+  );
 
   useEffect(() => {
     // Store the settings to localStorage whenever they change
@@ -43,7 +46,11 @@ export const SettingsProvider = ({ children }) => {
     dispatch({ type: "SET_SETTING", payload: { name, value } });
   };
 
-  return <SettingsContext.Provider value={{ settings, setSetting }}>{children}</SettingsContext.Provider>;
+  return (
+    <SettingsContext.Provider value={{ settings, setSetting }}>
+      {children}
+    </SettingsContext.Provider>
+  );
 };
 
 export const useSettings = () => {

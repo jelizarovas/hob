@@ -127,9 +127,9 @@ export const Dashboard = () => {
           >
             <div className="chips w-full">
               <div className="px-2 flex items-center gap-2 mb-1">
-                <button className="text-xs rounded-full bg-white bg-opacity-5 text-gray-500 px-2 py-1" disabled>
+                {/* <button className="text-xs rounded-full bg-white bg-opacity-5 text-gray-500 px-2 py-1" disabled>
                   Pin All
-                </button>
+                </button> */}
                 <PriceChip />
               </div>
             </div>
