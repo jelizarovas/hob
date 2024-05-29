@@ -11,6 +11,7 @@ import { Quote } from "./Quote";
 import { CheckRequest } from "./CheckRequest";
 import { BuyersGuide } from "./BuyersGuide";
 import { BarCode } from "./BarCode";
+import { Pencil } from "./Pencil";
 
 const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
@@ -30,6 +31,7 @@ function App() {
             <CssBaseline />
             <Router>
               <Route exact path="/dev/test" component={DevPanel} />
+              <Route exact path="/dev/pencil" component={Pencil} />
               <Route exact path="/check/req" component={CheckRequest} />
               <Route path="/buyers/guide/" component={BuyersGuide} />
               <Route path="/bar/code/" component={BarCode} />
