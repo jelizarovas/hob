@@ -12,11 +12,34 @@ import {
   MdSearch,
   MdSettings,
 } from "react-icons/md";
-import { Link } from "react-router-dom";
 import { useVehicles } from "./VehicleContext";
 import { FilterPanel } from "./FilterPanel";
-export const AppBar = ({ settingsOpen, setSettingsOpen, setFilterPanelOpen, filterPanelOpen }) => {
-  const { filters, data, updateQuery, defaultFacets, defaultFacetsStats } = useVehicles();
+import { Link, useHistory } from "react-router-dom";
+import { useAuth } from "./auth/AuthProvider";
+import { signOut } from "firebase/auth";
+import { auth } from "./firebase";
+
+export const AppBar = ({
+  settingsOpen,
+  setSettingsOpen,
+  setFilterPanelOpen,
+  filterPanelOpen,
+}) => {
+  const { filters, data, updateQuery, defaultFacets, defaultFacetsStats } =
+    useVehicles();
+
+  const [isAccountMenuOpen, setAccountMenuOpen] = React.useState(false);
+  const { currentUser } = useAuth();
+  const history = useHistory();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      history.push("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   function handleChange(event) {
     updateQuery(event.target.value);
@@ -26,7 +49,45 @@ export const AppBar = ({ settingsOpen, setSettingsOpen, setFilterPanelOpen, filt
     <div className=" bg-opacity-20 mb-2 md:mb-0">
       <div className="flex flex-col lg:flex-row container  items-center mx-auto ">
         <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
-          <AppBarButton toggle={setSettingsOpen} Icon={MdMenu} isActive={settingsOpen} />
+          {currentUser && (
+            <div className="relative px-2">
+              <button
+                className="flex items-center space-x-2 text-white"
+                onClick={() => setAccountMenuOpen((v) => !v)}
+              >
+                {/* <img
+                  src={currentUser.photoURL || "/default-avatar.png"}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full"
+                /> */}
+                <span className="uppercase bg-lime-700 rounded-full text-[10px] w-6 h-6  flex items-center justify-center transition-all hover:bg-lime-500">
+                  {currentUser.email.slice(0, 2) || "User"}
+                </span>
+              </button>
+              {isAccountMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden">
+                  <Link
+                    to="/account/"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Account
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <AppBarButton
+            toggle={setSettingsOpen}
+            Icon={MdMenu}
+            isActive={settingsOpen}
+          />
           <div className="border w-full  flex-grow m-2 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-opacity-25 flex items-center space-x-2 text-xl px-2">
             <div className="flex relative  justify-center items-cetner">
               <MdSearch />
@@ -93,7 +154,9 @@ const AppBarButton = ({ Icon, toggle, isActive, ...props }) => {
       type="button"
       onClick={() => toggle((v) => !v)}
       className={` group relative rounded-full p-1 text-lg mr-3 ml-1 bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
-        isActive ? "bg-opacity-80 text-black hover:text-white" : "bg-opacity-0 text-white"
+        isActive
+          ? "bg-opacity-80 text-black hover:text-white"
+          : "bg-opacity-0 text-white"
       } `}
     >
       {isActive ? <Icon /> : <Icon />}

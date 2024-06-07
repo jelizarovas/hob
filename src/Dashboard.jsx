@@ -11,6 +11,7 @@ import { PinnedInventory } from "./PinnedInventory";
 import useLocalStorage from "./useLocalStorage";
 import { PriceChip } from "./PriceChip";
 import { MdPin, MdPinDrop } from "react-icons/md";
+import useRealtimeDB from "./useRealtimeDB";
 
 export const Dashboard = () => {
   const [settings, updateSettings] = useSearchSettings();
@@ -21,7 +22,7 @@ export const Dashboard = () => {
   // const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
   //   useFetchVehicles(settings);
 
-  const [pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar] = useLocalStorage(
+  const [pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar] = useRealtimeDB(
     "pinnedCars",
     [],
     "vin"
