@@ -6,12 +6,19 @@ import {
   MdCheckBox,
   MdCheckBoxOutlineBlank,
   MdCheckCircle,
+  MdClear,
   MdDelete,
   MdEdit,
   MdIndeterminateCheckBox,
   MdPrint,
 } from "react-icons/md";
-import { formatCurrency, getColorNameByCode, getGenericColor, parseAddress, parseMileage } from "./utils";
+import {
+  formatCurrency,
+  getColorNameByCode,
+  getGenericColor,
+  parseAddress,
+  parseMileage,
+} from "./utils";
 import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { VINComponent, determinePrice } from "./vehicle/VehicleCard";
 
@@ -92,7 +99,10 @@ function reducer(state, action) {
       const newState = { ...state };
 
       // Check if the field exists and is an object
-      if (newState[action.field] && typeof newState[action.field] === "object") {
+      if (
+        newState[action.field] &&
+        typeof newState[action.field] === "object"
+      ) {
         delete newState[action.field][action.key];
       }
 
@@ -116,11 +126,17 @@ function reducer(state, action) {
 
       if (action.state === "check" || action.state === "intermediate") {
         updatedField = Object.fromEntries(
-          Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: true }])
+          Object.entries(fieldToUpdate).map(([key, item]) => [
+            key,
+            { ...item, include: true },
+          ])
         );
       } else if (action.state === "uncheck") {
         updatedField = Object.fromEntries(
-          Object.entries(fieldToUpdate).map(([key, item]) => [key, { ...item, include: false }])
+          Object.entries(fieldToUpdate).map(([key, item]) => [
+            key,
+            { ...item, include: false },
+          ])
         );
       }
       return {
@@ -268,7 +284,7 @@ export const Quote = () => {
             <MdPrint /> <span>Print</span>
           </button>
         </div>
-        <VehiclePrice />
+        {/* <VehiclePrice /> */}
         <div className=" w-96 mx-auto">
           <div className="bg-white bg-opacity-20 rounded-lg flex print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
             <Input
@@ -315,7 +331,12 @@ export const Quote = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-[8px] leading-none"> Tax credit:</span>
-                <span> {(Number(state.tradeInAllowance || 0) * Number(state.salesTaxRate || 0)) / 100}</span>
+                <span>
+                  {" "}
+                  {(Number(state.tradeInAllowance || 0) *
+                    Number(state.salesTaxRate || 0)) /
+                    100}
+                </span>
               </div>
             </div>
           </div>
@@ -371,7 +392,9 @@ export const Quote = () => {
               />
               <span className="opacity-50">%</span>
             </div>
-            <span className="whitespace-nowrap px-2 w-32 text-right">{salesTax && formatCurrency(salesTax)} </span>
+            <span className="whitespace-nowrap px-2 w-32 text-right">
+              {salesTax && formatCurrency(salesTax)}{" "}
+            </span>
             <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5 print:hidden">
               <MdEdit />
             </button>
@@ -382,9 +405,54 @@ export const Quote = () => {
             </div>
             <span className="whitespace-nowrap px-2 flex-grow">Total OTD</span>
 
-            <span className="whitespace-nowrap px-2 w-32 text-right">{total && formatCurrency(total)} </span>
+            <span className="whitespace-nowrap px-2 w-32 text-right">
+              {total && formatCurrency(total)}{" "}
+            </span>
             <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdEdit />
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <select className="text-black">
+              <option>Finance</option> <option>Cash</option>
+              <option>Lease</option>
+            </select>
+
+            <span>Term & APR options</span>
+            <div className="flex gap-2">
+              {[
+                { term: 48, apr: 6.99 },
+                { term: 60, apr: 7.99 },
+                { term: 72, apr: 8.99 },
+
+              ].map((option, i) => (
+                <div className="flex flex-col my-2  rounded w-full">
+                  <div className="bg-white bg-opacity-20 rounded -mx-0 px-0 py-1 text-xs flex items-center">
+                 <span className="px-2"> <MdCheckBox /></span>
+                    
+                    <span className="flex-grow">Term #{i+1}</span>
+
+                    <button type="button" className="px-2">
+                      <MdClear />
+                    </button>
+                  </div>
+                  <div className="flex gap-2  text-center items-center text-sm py-0.5 px-1 bg-white bg-opacity-10">
+                    <input
+                      value={option.term}
+                      className="bg-white bg-opacity-5 rounded px-2 w-10 text-right flex-grow py-1"
+                    />
+                    <span className="opacity-50 text-xs px-1">Months</span>
+                  </div>
+                  <div className="flex gap-2  text-center items-center text-sm py-0.5 px-1 bg-white bg-opacity-10 rounded-b">
+                    <input
+                      value={option.apr}
+                      className="bg-white bg-opacity-5 rounded px-2 w-10 text-right flex-grow py-1"
+                    />
+                    <span className="opacity-50 text-xs px-1">% APR</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -396,7 +464,13 @@ export const Quote = () => {
               label="Downpayment"
               className="w-28 text-right"
             />
-            <Input name="apr" value={state.apr} onChange={handleChange} label="APR" className="w-28 text-right" />
+            <Input
+              name="apr"
+              value={state.apr}
+              onChange={handleChange}
+              label="APR"
+              className="w-28 text-right"
+            />
             <Input
               name="term"
               value={state.term}
@@ -411,9 +485,13 @@ export const Quote = () => {
               <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
                 <MdCheckBox />
               </div>
-              <span className="whitespace-nowrap px-2 flex-grow">Amount Financed</span>
+              <span className="whitespace-nowrap px-2 flex-grow">
+                Amount Financed
+              </span>
 
-              <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(amountFinanced)} </span>
+              <span className="whitespace-nowrap px-2 w-32 text-right">
+                {formatCurrency(amountFinanced)}{" "}
+              </span>
               <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
                 <MdEdit />
               </div>
@@ -422,9 +500,13 @@ export const Quote = () => {
               <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
                 <MdCheckBox />
               </div>
-              <span className="whitespace-nowrap px-2 flex-grow">Monthly Payment</span>
+              <span className="whitespace-nowrap px-2 flex-grow">
+                Monthly Payment
+              </span>
 
-              <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(monthlyPayment)} </span>
+              <span className="whitespace-nowrap px-2 w-32 text-right">
+                {formatCurrency(monthlyPayment)}{" "}
+              </span>
               <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
                 <MdEdit />
               </div>
@@ -433,9 +515,13 @@ export const Quote = () => {
               <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
                 <MdCheckBox />
               </div>
-              <span className="whitespace-nowrap px-2 flex-grow">Total Amount Paid</span>
+              <span className="whitespace-nowrap px-2 flex-grow">
+                Total Amount Paid
+              </span>
 
-              <span className="whitespace-nowrap px-2 w-32 text-right">{formatCurrency(totalAmountPaid)} </span>
+              <span className="whitespace-nowrap px-2 w-32 text-right">
+                {formatCurrency(totalAmountPaid)}{" "}
+              </span>
               <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
                 <MdEdit />
               </div>
@@ -447,7 +533,16 @@ export const Quote = () => {
   );
 };
 
-const Input = ({ name, value, label, Icon, onChange, type = "number", className = "", ...props }) => {
+const Input = ({
+  name,
+  value,
+  label,
+  Icon,
+  onChange,
+  type = "number",
+  className = "",
+  ...props
+}) => {
   return (
     <label className="flex flex-col text-left print:text-black print:flex-row">
       <span className="text-[10px] print:text-sm">{label}</span>
@@ -483,18 +578,33 @@ const calculateTotal = (state) => {
   const sellingPrice = parseFloat(state.sellingPrice) || 0;
   const sumPackages = sumValues(state.packages);
   const sumAccessories = sumValues(state.accessories);
-  const sumTradeIns = Number(state.tradeInAllowance) - Number(state.tradeInPayoff) || 0;
+  const sumTradeIns =
+    Number(state.tradeInAllowance) - Number(state.tradeInPayoff) || 0;
   const sumFees = sumValues(state.fees);
   const salesTaxRate = parseFloat(state.salesTaxRate) || 0;
 
   console.log("GAP", getGapAmount(state.packages));
 
-  const taxableAmount = sellingPrice - sumTradeIns + (sumPackages - getGapAmount(state.packages)) + sumAccessories;
+  const taxableAmount =
+    sellingPrice -
+    sumTradeIns +
+    (sumPackages - getGapAmount(state.packages)) +
+    sumAccessories;
   const salesTax = (salesTaxRate / 100) * taxableAmount;
 
-  const total = sellingPrice + sumPackages + sumAccessories + salesTax + sumFees - sumTradeIns;
+  const total =
+    sellingPrice +
+    sumPackages +
+    sumAccessories +
+    salesTax +
+    sumFees -
+    sumTradeIns;
   const downPayment = parseFloat(state.downPayment) || 0;
-  const fin = calculateLoanDetails(total - downPayment || 0, state?.apr || 0, state?.term || 0);
+  const fin = calculateLoanDetails(
+    total - downPayment || 0,
+    state?.apr || 0,
+    state?.term || 0
+  );
 
   return [
     total.toFixed(2),
@@ -512,7 +622,9 @@ const calculateTotal = (state) => {
 const calculateLoanDetails = (amountFinanced, apr, term) => {
   const monthlyRate = apr / 100 / 12;
   const monthlyPayment =
-    monthlyRate !== 0 ? (amountFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term)) : amountFinanced / term;
+    monthlyRate !== 0
+      ? (amountFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term))
+      : amountFinanced / term;
   const totalAmountPaid = monthlyPayment * term;
 
   return {
@@ -635,17 +747,20 @@ const api = {
 };
 
 function getVehicleDataByVINNumber(vin) {
-  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
-    headers: {
-      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-    },
-    method: "POST",
-    body: JSON.stringify({
-      hitsPerPage: 1,
-      query: vin,
-    }),
-  })
+  return fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify({
+        hitsPerPage: 1,
+        query: vin,
+      }),
+    }
+  )
     .then((response) => response.json())
     .then((data) => {
       return data.hits[0];
@@ -688,7 +803,11 @@ const VehiclePrice = (props) => {
           style={backgroundStyle}
           className="w-24 h-16 print:w-48 print:h-36  relative  flex-shrink-0 overflow-hidden hover:scale-105 transition-all "
         >
-          <img src={v?.thumbnail} alt="car" className="w-48 hidden print:block" />
+          <img
+            src={v?.thumbnail}
+            alt="car"
+            className="w-48 hidden print:block"
+          />
           {/* <div className="text-[10px] print:text-sm px-1 py-0.5 flex justify-between absolute w-full bg-black bg-opacity-80 left-0   bottom-0  leading-none">
             <span
               className={`${
@@ -723,7 +842,8 @@ const VehiclePrice = (props) => {
                 title={`${v?.year} ${v?.make} ${v?.model} ${v?.trim}`}
                 className="leading-none  whitespace-normal cursor-pointer"
               >
-                {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+                {`${v?.year} ${v?.make} ${v?.model}`}{" "}
+                <span className="opacity-40">{v?.trim}</span>
               </span>
             </div>
             {/* <div className="flex space-x-2 flex-grow text-[8px]  print:text-sm   pt-1 opacity-50 print:opacity-90 ">
@@ -753,14 +873,18 @@ const VehiclePrice = (props) => {
         {v?.our_price && (
           <div
             className="flex  flex-col justify-between  flex-shrink-0    px-0.5 w-20 print:w-32 pb-1"
-            onClick={() => console.log(v?.our_price_label, v?.our_price, v?.msrp)}
+            onClick={() =>
+              console.log(v?.our_price_label, v?.our_price, v?.msrp)
+            }
           >
             {v.msrp != 0 && (
               <div className="flex flex-col  print:space-x-2   justify-between text-right  text-sm">
                 <span className="text-[8px] print:text-sm leading-none pt-0.5 opacity-50 print:opacity-80 select-none text-left ml-1 ">
                   MSRP
                 </span>
-                <span className="leading-none print:leading-normal cursor-pointer">{formatCurrency(v.msrp)}</span>
+                <span className="leading-none print:leading-normal cursor-pointer">
+                  {formatCurrency(v.msrp)}
+                </span>
               </div>
             )}
             <div className="flex flex-col  text-right  print:space-x-2   text-sm">
@@ -770,7 +894,10 @@ const VehiclePrice = (props) => {
                     {v.our_price_label}
                   </span>
 
-                  <span className="leading-none cursor-pointer "> {determinePrice(v.our_price)}</span>
+                  <span className="leading-none cursor-pointer ">
+                    {" "}
+                    {determinePrice(v.our_price)}
+                  </span>
                 </>
               )}
             </div>
@@ -781,7 +908,9 @@ const VehiclePrice = (props) => {
                   onClick={() => console.log(parseAddress(v.location))}
                   className="leading-none cursor-pointer truncate text-[8px] print:text-sm print:whitespace-nowrap print:overflow-visible print:text-right "
                 >
-                  {parseAddress(v.location)?.name || parseAddress(v.location)?.value || ""}
+                  {parseAddress(v.location)?.name ||
+                    parseAddress(v.location)?.value ||
+                    ""}
                 </span>
               )}
             </div>
@@ -810,7 +939,10 @@ function getGapAmount(packages) {
       const pkg = packages[key]; // Use 'pkg' to avoid reserved word conflict
       // Normalize the label for comparison and check the 'include' property
       const labelNormalized = pkg?.label?.toLowerCase() || "";
-      if (searchTerms.some((term) => labelNormalized.includes(term)) && pkg.include) {
+      if (
+        searchTerms.some((term) => labelNormalized.includes(term)) &&
+        pkg.include
+      ) {
         return pkg.value; // Return the value if a match is found and 'include' is true
       }
     }

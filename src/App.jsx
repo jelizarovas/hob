@@ -39,7 +39,7 @@ function App() {
                   <Route path="/login" component={Login} />
                   <ProtectedRoute path="/account/" component={Account} />
                   <ProtectedRoute exact path="/dev/test" component={DevPanel} />
-                  <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
+                  <Route exact path="/dev/pencil" component={Pencil} />
                   <ProtectedRoute
                     exact
                     path="/check/req"
@@ -60,7 +60,9 @@ function App() {
                     path="/:stock"
                     component={VehiclePage}
                   />
-                  <ProtectedRoute exact path="/quote/:vin" component={Quote} />
+
+                  <Route exact path="/quote/:vin" component={Quote} />
+
                   <ProtectedRoute exact path="/" component={Dashboard} />
                 </Switch>
               </Router>
