@@ -1,10 +1,8 @@
-import React, { createContext, useContext, useState, useReducer, useRef } from "react";
+import React, { createContext, useContext, useState, useReducer } from "react";
 import {
   burienAPI,
   initialFilters,
   rairdonAPI,
-  camelCaseToProperCase,
-  debounce,
   defaultFacetKeys,
   generateLabelArray,
   generateTypeNewCertifiedUsed,
@@ -36,7 +34,11 @@ const reducer = (state, { type, payload }) => {
           ...state.api,
           index: payload,
         },
+        sortByAge: false, // Reset sorting by age when index changes
       };
+    case "SORT_BY_AGE":
+      return { ...state, sortByAge: payload }; // Set sortByAge based on ASC, DESC, or false
+
     case "UPDATE_YEAR":
       return { ...state, year: payload };
     case "UPDATE_SETTINGS":
@@ -66,9 +68,24 @@ export const VehicleProvider = ({ children }) => {
   const [defaultFacets, setDefaultFacets] = useState({});
   const [defaultFacetsStats, setDefaultFacetsStats] = useState({});
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery(
     ["vehicles", filters],
-    ({ pageParam = 0 }) => fetchReq({ pageParam, filters, defaultFacetsStats }),
+    ({ pageParam = 0 }) =>
+      fetchReq({
+        pageParam,
+        filters,
+        defaultFacetsStats,
+        hasNextPage,
+        fetchNextPage,
+      }),
     {
       getNextPageParam: (lastPage, pages) => {
         const nextPage = (lastPage.page ?? -1) + 1;
@@ -83,7 +100,9 @@ export const VehicleProvider = ({ children }) => {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        const { facets, facets_stats } = await fetchReq({ filters: { ...filters, query: "", hitsPerPage: 1 } });
+        const { facets, facets_stats } = await fetchReq({
+          filters: { ...filters, query: "", hitsPerPage: 1 },
+        });
 
         if (facets) setDefaultFacets(facets);
         if (facets_stats) setDefaultFacetsStats(facets_stats);
@@ -101,7 +120,6 @@ export const VehicleProvider = ({ children }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         // Check if the sentinel is in viewport
-
         if (entries[0].isIntersecting && hasNextPage) {
           fetchNextPage();
         }
@@ -129,7 +147,7 @@ export const VehicleProvider = ({ children }) => {
     filtersDispatch({ type: "QUERY", payload });
   };
 
-  console.log({ data });
+  // console.log({ data });
 
   return (
     <VehicleContext.Provider
@@ -158,7 +176,13 @@ export const VehicleProvider = ({ children }) => {
 //seems to not work at all ----> debug
 // const throttledFetchReq = throttle(fetchReq, 1000);
 
-async function fetchReq({ pageParam = 0, filters, defaultFacetsStats }) {
+async function fetchReq({
+  pageParam = 0,
+  filters,
+  defaultFacetsStats,
+  fetchNextPage,
+  hasNextPage,
+}) {
   const api = filters.api || burienAPI;
   const query = filters.query || "";
   const hitsPerPage = filters.hitsPerPage || 10;
@@ -182,26 +206,67 @@ async function fetchReq({ pageParam = 0, filters, defaultFacetsStats }) {
   const numericFilters = [
     //   ...generateLabelArray("days_in_stock", filters.days_in_stock, facetsStats?.days_in_stock),
     //   ...generateLabelArray("miles", filters.mileage, facetsStats?.miles),
-    ...generateLabelArray("our_price", filters.price, defaultFacetsStats?.our_price),
+    ...generateLabelArray(
+      "our_price",
+      filters.price,
+      defaultFacetsStats?.our_price
+    ),
   ];
+  const fetchPage = async (page) => {
+    const res = await fetch(
+      `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+      {
+        headers: {
+          "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+          "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+        },
+        method: "POST",
+        body: JSON.stringify({
+          hitsPerPage,
+          query,
+          page: page,
+          facetFilters,
+          numericFilters,
+          facets: defaultFacetKeys,
+        }),
+      }
+    );
+    if (!res.ok) throw new Error("Network response was not ok");
+    return res.json();
+  };
 
-  const res = await fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
-    headers: {
-      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-    },
-    method: "POST",
-    body: JSON.stringify({
-      hitsPerPage,
-      query,
-      page: pageParam,
-      facetFilters,
-      numericFilters,
-      facets: defaultFacetKeys,
-    }),
-  });
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
+  if (filters.sortByAge === "ASC" || filters.sortByAge === "DESC") {
+    // Fetch the first page based on the pageParam (start with the correct page)
+    const firstPageData = await fetchPage(pageParam);
+    const allHits = firstPageData.hits;
+    const totalPages = firstPageData.nbPages;
+
+    // Fetch all subsequent pages starting from the next page
+    for (let page = pageParam + 1; page < totalPages; page++) {
+      const pageData = await fetchPage(page);
+      allHits.push(...pageData.hits); // Concatenate the results
+    }
+
+    // Sort the fetched results based on `days_in_stock`
+    allHits.sort((a, b) => {
+      if (filters.sortByAge === "ASC") {
+        return a.days_in_stock - b.days_in_stock;
+      } else if (filters.sortByAge === "DESC") {
+        return b.days_in_stock - a.days_in_stock;
+      }
+    });
+
+    // Return sorted results and ensure schema consistency with Algolia's response
+    return {
+      hits: allHits,
+      page: 0, // Treat this as the first page since it's all combined
+      nbPages: 1, // All data is treated as one large page
+      hitsPerPage: allHits.length, // Number of hits in the entire dataset
+    };
+  }
+
+  // If no sorting by age is required, fetch only the requested page
+  return fetchPage(pageParam);
 }
 
 function generateFacetFilters(filterPairs) {

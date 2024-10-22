@@ -1,80 +1,74 @@
-import { useState, useEffect, useRef } from "react";
-import { getDatabase, ref, set, onValue } from "firebase/database";
-import { auth } from "./firebase";
-import useLocalStorage from "./useLocalStorage";
+import { useState, useEffect, useRef } from 'react';
+import { getDatabase, ref, set, onValue } from 'firebase/database';
+import { auth } from './firebase';
 
-function useRealtimeDB(key, initialValue, identifierKey) {
-  const userId = auth.currentUser ? auth.currentUser.uid : null;
-  const [
-    localData,
-    setLocalData,
-    addLocalItem,
-    removeLocalItem,
-    clearLocalItems,
-    toggleLocalItem,
-  ] = useLocalStorage(key, initialValue, identifierKey);
+const useRealtimeDB = (key, initialValue) => {
+    const userId = auth.currentUser ? auth.currentUser.uid : null;
+    const [data, setData] = useState(initialValue);
+    const isInitialLoad = useRef(true);
+    const skipNextEffect = useRef(false);
 
-  const [remoteData, setRemoteData] = useState(initialValue);
-  const isRemoteDataInitialized = useRef(false);
-  const isLocalDataInitialized = useRef(false);
+    // Fetch remote data on load and subscribe to changes
+    useEffect(() => {
+        if (!userId) return;
 
-  // Fetch remote data
-  useEffect(() => {
-    if (!userId) return;
+        const db = getDatabase();
+        const dataRef = ref(db, `sync/${userId}/${key}`);
 
-    const db = getDatabase();
-    const dataRef = ref(db, `sync/${userId}/${key}`);
+        const unsubscribe = onValue(dataRef, (snapshot) => {
+            const value = snapshot.val();
+            if (value !== null) {
+                setData(value);
+            } else {
+                setData(initialValue);
+            }
+            isInitialLoad.current = false;
+        });
 
-    const unsubscribe = onValue(dataRef, (snapshot) => {
-      const value = snapshot.val();
-      if (value !== null) {
-        setRemoteData(value);
-        isRemoteDataInitialized.current = true;
-      }
-    });
+        return () => unsubscribe();
+    }, [userId, key, initialValue]);
 
-    return () => unsubscribe();
-  }, [userId, key]);
+    // Sync state to remote database
+    useEffect(() => {
+        if (isInitialLoad.current || skipNextEffect.current || !userId) {
+            skipNextEffect.current = false;
+            return;
+        }
 
-  // Sync remote data to local storage
-  useEffect(() => {
-    if (!isRemoteDataInitialized.current) return;
+        const db = getDatabase();
+        const dataRef = ref(db, `sync/${userId}/${key}`);
 
-    setLocalData(remoteData);
-  }, [remoteData]);
+        set(dataRef, data).catch((error) => {
+            console.error("Error updating Firebase:", error);
+        });
+    }, [data, userId, key]);
 
-  // Sync local data to remote database
-  useEffect(() => {
-    if (!userId) return;
+    const addItem = (item) => {
+        skipNextEffect.current = true;
+        setData((prevData) => [...prevData, item]);
+    };
 
-    const db = getDatabase();
-    const dataRef = ref(db, `sync/${userId}/${key}`);
+    const removeItem = (itemId, identifierKey) => {
+        skipNextEffect.current = true;
+        setData((prevData) => prevData.filter((item) => item[identifierKey] !== itemId));
+    };
 
-    if (isRemoteDataInitialized.current) {
-      isRemoteDataInitialized.current = false;
-      return;
-    }
+    const clearItems = () => {
+        skipNextEffect.current = true;
+        setData([]);
+    };
 
-    set(dataRef, localData);
-  }, [localData, userId, key]);
+    const toggleItem = (item, identifierKey) => {
+        skipNextEffect.current = true;
+        setData((prevData) => {
+            const exists = prevData.some((i) => i[identifierKey] === item[identifierKey]);
+            return exists
+                ? prevData.filter((i) => i[identifierKey] !== item[identifierKey])
+                : [...prevData, item];
+        });
+    };
 
-  const addItem = (item) => {
-    addLocalItem(item);
-  };
-
-  const removeItem = (itemId) => {
-    removeLocalItem(itemId);
-  };
-
-  const clearItems = () => {
-    clearLocalItems();
-  };
-
-  const toggleItem = (item) => {
-    toggleLocalItem(item);
-  };
-
-  return [localData, setLocalData, addItem, removeItem, clearItems, toggleItem];
-}
+    return [data, addItem, removeItem, clearItems, toggleItem];
+};
 
 export default useRealtimeDB;

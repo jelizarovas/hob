@@ -22,11 +22,14 @@ export const Dashboard = () => {
   // const { vehicles, isLoading, total, facets, facetsStats, defaultTotal, defaultFacets, defaultFacetsStats } =
   //   useFetchVehicles(settings);
 
-  const [pinnedCars, setPinnedCars, addPinnedCar, removePinnedCar, clearPinnedCars, togglePinnedCar] = useRealtimeDB(
-    "pinnedCars",
-    [],
-    "vin"
-  );
+  const [
+    pinnedCars,
+    setPinnedCars,
+    addPinnedCar,
+    removePinnedCar,
+    clearPinnedCars,
+    togglePinnedCar,
+  ] = useLocalStorage("pinnedCars", [], "vin");
 
   const {
     settings: { vehicleListDisplayMode, showPrice, showCarfax },
@@ -73,7 +76,8 @@ export const Dashboard = () => {
 
   let displayClass = "";
   if (vehicleListDisplayMode === "grid")
-    displayClass = "flex-row sm:flex-row gap-2 justify-center flex-wrap md:space-y-0 md:px-4";
+    displayClass =
+      "flex-row sm:flex-row gap-2 justify-center flex-wrap md:space-y-0 md:px-4";
   if (vehicleListDisplayMode === "list") displayClass = "flex-col";
 
   return (
@@ -96,25 +100,29 @@ export const Dashboard = () => {
             isFilterPanelOpen || isSettingsOpen ? "h-full" : "h-0"
           } overflow-hidden`}
         >
-          {isSettingsOpen && <SettingsPanel setSettingsOpen={setSettingsOpen} />}
+          {isSettingsOpen && (
+            <SettingsPanel setSettingsOpen={setSettingsOpen} />
+          )}
         </div>
       )}
       <div className="flex flex-col  container mx-auto   lg:flex-row items-start lg:px-2 lg:space-x-10">
-        <div className="flex container mx-auto items-start transition-all ">
-          <PinnedInventory
-            {...{
-              pinnedCars,
-              setPinnedCars,
-              addPinnedCar,
-              removePinnedCar,
-              clearPinnedCars,
-              togglePinnedCar,
-              activeActionBarId,
-              setActiveActionBarId,
-              showPin,
-            }}
-          />
-        </div>
+        {pinnedCars && pinnedCars.length > 0 && (
+          <div className="flex container mx-auto items-start transition-all max-w-md ">
+            <PinnedInventory
+              {...{
+                pinnedCars,
+                setPinnedCars,
+                addPinnedCar,
+                removePinnedCar,
+                clearPinnedCars,
+                togglePinnedCar,
+                activeActionBarId,
+                setActiveActionBarId,
+                showPin,
+              }}
+            />
+          </div>
+        )}
 
         {status === "loading" ? (
           <p className="mx-auto">Loading...</p>
@@ -122,7 +130,7 @@ export const Dashboard = () => {
           <p>Error: {error.message}</p>
         ) : (
           <div
-            className={`container print:hidden flex-grow-0 mx-auto flex items-start transition-all   ${
+            className={`container print:hidden flex-grow-0 max-w-md mx-auto flex items-start transition-all   ${
               vehicleListDisplayMode === "grid" ? displayClass : "flex-col"
             }`}
           >
@@ -150,12 +158,21 @@ export const Dashboard = () => {
               </React.Fragment>
             ))}
             <div className="print:hidden">
-              <button onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
-                {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
+              <button
+                onClick={() => fetchNextPage()}
+                disabled={!hasNextPage || isFetchingNextPage}
+              >
+                {isFetchingNextPage
+                  ? "Loading more..."
+                  : hasNextPage
+                  ? "Load More"
+                  : "Nothing more to load"}
               </button>
             </div>
             <div ref={loadMoreRef}></div>
-            <div>{isFetching && !isFetchingNextPage ? "Fetching..." : null}</div>
+            <div>
+              {isFetching && !isFetchingNextPage ? "Fetching..." : null}
+            </div>
           </div>
         )}
       </div>
@@ -164,5 +181,7 @@ export const Dashboard = () => {
 };
 
 const filterSearchResults = (pinnedCars, searchResults) => {
-  return searchResults.filter((car) => !pinnedCars.some((pinnedCar) => pinnedCar.vin === car.vin));
+  return searchResults.filter(
+    (car) => !pinnedCars.some((pinnedCar) => pinnedCar.vin === car.vin)
+  );
 };

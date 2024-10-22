@@ -17,7 +17,13 @@ export const BuyersGuide = ({ data }) => {
   const stock = queryParams.get("stock");
 
   React.useEffect(() => {
-    if (vin !== null && year !== null && make !== null && model !== null && stock !== null) {
+    if (
+      vin !== null &&
+      year !== null &&
+      make !== null &&
+      model !== null &&
+      stock !== null
+    ) {
       setFormData((obj) => ({ ...obj, vin, year, make, model, stock }));
     }
   }, [vin, year, make, model, stock]);
@@ -80,7 +86,11 @@ export const BuyersGuide = ({ data }) => {
 
         // Check if year, make, or model fields already have data
         if (formData.year || formData.make || formData.model) {
-          if (window.confirm("Data already exists for Year, Make, Model. Do you want to overwrite?")) {
+          if (
+            window.confirm(
+              "Data already exists for Year, Make, Model. Do you want to overwrite?"
+            )
+          ) {
             setFormData({
               ...formData,
               year: vinData.year,
@@ -115,9 +125,19 @@ export const BuyersGuide = ({ data }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const baseUrl =
+      window.location.origin.toString() + import.meta.env.BASE_URL;
 
+    const pdf = {
+      name: "pdf/Buyers Guide Form.pdf",
+    };
+
+    const pdfurl = baseUrl + pdf.name;
+    console.log(pdfurl);
     // Load your PDF document
-    const existingPdfBytes = await fetch("pdf/Buyers Guide Form.pdf").then((res) => res.arrayBuffer());
+    const existingPdfBytes = await fetch(pdfurl).then((res) =>
+      res.arrayBuffer()
+    );
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
     // Embed a font
@@ -153,7 +173,19 @@ export const BuyersGuide = ({ data }) => {
 
   const batchPDFs = async (formDataArray) => {
     // Fetch the PDF template once and store it in memory
-    const existingPdfBytes = await fetch("pdf/Buyers Guide Form.pdf").then((res) => res.arrayBuffer());
+    const baseUrl =
+      window.location.origin.toString() + import.meta.env.BASE_URL;
+
+    const pdf = {
+      name: "pdf/Buyers Guide Form.pdf",
+    };
+
+    const pdfurl = baseUrl + pdf.name;
+    // Load your PDF document
+
+    const existingPdfBytes = await fetch(pdfurl).then((res) =>
+      res.arrayBuffer()
+    );
 
     // Create a new PDF document for merging
     const mergedPdfDoc = await PDFDocument.create();
@@ -183,7 +215,10 @@ export const BuyersGuide = ({ data }) => {
       const filledPdf = await PDFDocument.load(pdfBytes);
 
       // Copy all pages from the filled PDF to the merged document
-      const copiedPages = await mergedPdfDoc.copyPages(filledPdf, filledPdf.getPageIndices());
+      const copiedPages = await mergedPdfDoc.copyPages(
+        filledPdf,
+        filledPdf.getPageIndices()
+      );
       copiedPages.forEach((page) => mergedPdfDoc.addPage(page));
     }
 
@@ -199,7 +234,9 @@ export const BuyersGuide = ({ data }) => {
   if (state && state.length > 0)
     return (
       <div>
-        <button onClick={() => batchPDFs(state)}>Get Batch Buyers Guides</button>
+        <button onClick={() => batchPDFs(state)}>
+          Get Batch Buyers Guides
+        </button>
         {/* <pre className="text-xs">{JSON.stringify(state, null, 2)}</pre> */}
       </div>
     );
@@ -225,8 +262,22 @@ export const BuyersGuide = ({ data }) => {
           placeholder="VIN"
           label="VIN"
         />
-        <Input type="text" name="year" value={formData.year} onChange={handleChange} placeholder="Year" label="Year" />
-        <Input type="text" name="make" value={formData.make} onChange={handleChange} placeholder="Make" label="Make" />
+        <Input
+          type="text"
+          name="year"
+          value={formData.year}
+          onChange={handleChange}
+          placeholder="Year"
+          label="Year"
+        />
+        <Input
+          type="text"
+          name="make"
+          value={formData.make}
+          onChange={handleChange}
+          placeholder="Make"
+          label="Make"
+        />
         <Input
           type="text"
           name="model"
@@ -267,7 +318,10 @@ export const BuyersGuide = ({ data }) => {
           onChange={handleChange}
         />
       </label> */}
-        <button className="bg-green-500 my-2 w-full py-1 hover:bg-green-400 transition-all rounded" type="submit">
+        <button
+          className="bg-green-500 my-2 w-full py-1 hover:bg-green-400 transition-all rounded"
+          type="submit"
+        >
           Get Buyer's Guide
         </button>
       </form>
@@ -275,7 +329,15 @@ export const BuyersGuide = ({ data }) => {
   );
 };
 
-const Input = ({ name, label, value, onBlur, onChange, placeHolder, autoFocus = false }) => {
+const Input = ({
+  name,
+  label,
+  value,
+  onBlur,
+  onChange,
+  placeHolder,
+  autoFocus = false,
+}) => {
   return (
     <label htmlFor={name} className="flex flex-col">
       <span className="text-xs text-white leading-none">{label}</span>
@@ -297,7 +359,9 @@ const Input = ({ name, label, value, onBlur, onChange, placeHolder, autoFocus = 
 
 const fetchVINData = async (vin) => {
   try {
-    const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`);
+    const response = await fetch(
+      `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`
+    );
     const data = await response.json();
 
     const results = data.Results;

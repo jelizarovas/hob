@@ -52,7 +52,9 @@ export const FilterPanel = ({
             <button
               key={i}
               className={`px-2 p-1 bg-opacity-0 text-xs  transition-all  ${
-                filters.api.name === label ? `${bg} bg-opacity-90 hover:bg-opacity-100` : "bg-white hover:bg-opacity-20"
+                filters.api.name === label
+                  ? `${bg} bg-opacity-90 hover:bg-opacity-100`
+                  : "bg-white hover:bg-opacity-20"
               }`}
               onClick={() => filtersDispatch({ type: "UPDATE_API", payload })}
             >
@@ -64,7 +66,21 @@ export const FilterPanel = ({
           <select
             className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-xs hover:bg-white hover:bg-opacity-10 cursor-pointer"
             onChange={(e) => {
-              filtersDispatch({ type: "UPDATE_INDEX", payload: e.target.value });
+              const selectedValue = e.target.value;
+
+              if (selectedValue === "AgeDesc") {
+                // If "Age Desc" is selected, dispatch SORT_BY_AGE with DESC
+                filtersDispatch({ type: "SORT_BY_AGE", payload: "DESC" });
+              } else if (selectedValue === "AgeAsc") {
+                // If "Age Asc" is selected, dispatch SORT_BY_AGE with ASC
+                filtersDispatch({ type: "SORT_BY_AGE", payload: "ASC" });
+              } else {
+                // Otherwise, update the index
+                filtersDispatch({
+                  type: "UPDATE_INDEX",
+                  payload: selectedValue,
+                });
+              }
             }}
           >
             {filters.api.indexes.map(({ label, index }) => (
@@ -72,8 +88,15 @@ export const FilterPanel = ({
                 {label}
               </option>
             ))}
+            <option value="AgeDesc" className="bg-black">
+              Age ⬆️
+            </option>
+            <option value="AgeAsc" className="bg-black">
+              Age ⬇️
+            </option>
           </select>
         </div>
+        {/* <span>sortByAge {filters.sortByAge.toString()}</span> */}
 
         <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
           {[
@@ -84,7 +107,9 @@ export const FilterPanel = ({
             <button
               key={i}
               className={`flex items-center cursor-pointer text-xs py-1 px-2  transition-all ${bg} ${
-                filters.type[value] ? `bg-opacity-100 hover:bg-opacity-50  ` : "bg-opacity-0  hover:bg-opacity-20 "
+                filters.type[value]
+                  ? `bg-opacity-100 hover:bg-opacity-50  `
+                  : "bg-opacity-0  hover:bg-opacity-20 "
               } `}
               onClick={() => handleTypeChange(value, filters.type[value])}
             >
@@ -94,7 +119,13 @@ export const FilterPanel = ({
                 checked={filters.type[value]}
                 onChange={() => handleTypeChange(value, filters.type[value])}
               /> */}
-              <span className="hidden sm:flex">{filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}</span>
+              <span className="hidden sm:flex">
+                {filters.type[value] ? (
+                  <MdCheckBox />
+                ) : (
+                  <MdCheckBoxOutlineBlank />
+                )}
+              </span>
               <span className="md:pl-1 upper">{label}</span>
             </button>
           ))}
