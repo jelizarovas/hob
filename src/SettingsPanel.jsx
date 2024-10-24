@@ -22,7 +22,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
   };
 
   return (
-    <div className="container mx-auto   md:w-96 bg-black mb-4 rounded border-white border-opacity-20 border  py-0.5">
+    <div className="container mx-auto  md:w-96 bg-black mb-4 rounded border-white border-opacity-20 border  py-0.5">
       <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
         <div className="flex items-center space-x-2">
           <MdMenu /> <span>Menu</span>
@@ -113,7 +113,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
         </a> */}
         {/* <Link to="/pdi">PDI Templates</Link> */}
         {/* <Link to="/pdi">Perfect Delivery</Link> */}
-        <div className="flex">
+        {/* <div className="flex">
           <a
             className=" flex space-x-2 items-center bg-white bg-opacity-0 hover:bg-opacity-10 px-2 py-1 rounded my-1"
             href="pdf/Take-in Sheet.pdf"
@@ -148,7 +148,7 @@ export const SettingsPanel = ({ setSettingsOpen }) => {
           to="/bar/code/"
         >
           <FaFilePdf /> <span> Barcode </span>
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
