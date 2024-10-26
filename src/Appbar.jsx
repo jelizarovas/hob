@@ -2,13 +2,20 @@ import React from "react";
 import {
   MdApps,
   MdBugReport,
+  MdBusinessCenter,
+  MdCategory,
+  MdCheck,
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
   MdClear,
   MdDeleteForever,
+  MdDiscount,
   MdFilter,
   MdFilterAlt,
   MdFilterList,
   MdGridView,
   MdKeyboardAlt,
+  MdKeyboardArrowDown,
   MdKeyboardArrowUp,
   MdList,
   MdLogout,
@@ -17,6 +24,7 @@ import {
   MdPin,
   MdSearch,
   MdSettings,
+  MdSort,
   MdVerifiedUser,
 } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
@@ -35,8 +43,15 @@ export const AppBar = ({
   setFilterPanelOpen,
   filterPanelOpen,
 }) => {
-  const { filters, data, updateQuery, defaultFacets, defaultFacetsStats } =
-    useVehicles();
+  const {
+    filters,
+    data,
+    updateQuery,
+    defaultFacets,
+    defaultFacetsStats,
+    filtersDispatch,
+    updateFilters,
+  } = useVehicles();
 
   const { currentUser } = useAuth();
   const history = useHistory();
@@ -54,6 +69,10 @@ export const AppBar = ({
     updateQuery(event.target.value);
   }
 
+  const handleTypeChange = (option, value) => {
+    updateFilters({ type: { ...filters.type, [option]: !value } });
+  };
+
   const dd = {
     popperPlacement: "bottom-end",
     options: [
@@ -61,6 +80,13 @@ export const AppBar = ({
         label: "Account",
         Icon: MdPerson,
         onClick: (e) => history.push("/account"),
+        Component: (props) => (
+          <div className="flex flex-col">
+            <span>Hi, {currentUser?.email?.slice(0, 2)}</span>
+            <Link to="/account">Account</Link>
+            {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
+          </div>
+        ),
       },
       {
         label: "Take-In Sheet",
@@ -102,28 +128,117 @@ export const AppBar = ({
       </div>
     ),
     renderButton: ({ isOpen, open, close, props }) => (
+      <AppBarButton
+        {...props}
+        Icon={MdMenu}
+        onClick={isOpen ? close : open}
+        isActive={isOpen}
+        label="menu"
+      />
+    ),
+    onSelect: console.log,
+    disableSearch: true,
+  };
+
+  const stores = {
+    popperPlacement: "bottom-end",
+    options: [
+      {
+        label: "Honda of Burien",
+        Icon: MdBusinessCenter,
+        onClick: () =>
+          filtersDispatch({ type: "UPDATE_API", payload: "burienApi" }),
+      },
+      {
+        label: "All Rairdon Stores",
+        Icon: MdBusinessCenter,
+        onClick: () =>
+          filtersDispatch({ type: "UPDATE_API", payload: "rairdonApi" }),
+      },
+    ],
+    renderItem: ({ label, Icon, ...props }) => (
+      <div
+        className="min-w-32 w-full flex   items-center space-x-2 px-4 py-1 bg-black hover:bg-slate-900 text-white"
+        {...props}
+      >
+        {Icon && <Icon />} <span>{label}</span>
+      </div>
+    ),
+    renderButton: ({ isOpen, open, close, props }) => (
       <button
         onClick={isOpen ? close : open}
         {...props}
-        className={`mx-2 flex flex-nowrap items-center justify-center group text-center   space-x-2    ${
-          isOpen ? "ring-blue-100 ring-0" : ""
-        } ring-blue-300 focus:ring-0  transition-all bg-opacity-0 bg-black hover:bg-opacity-5  select-none   `}
+        className="px-1 text-sm py-2 rounded bg-white bg-opacity-0 hover:bg-opacity-5 text-opacity-50 text-white mx-1"
       >
-        {/* <img
-          src={currentUser.photoURL || "/default-avatar.png"}
-          alt="avatar"
-          className="w-8 h-8 rounded-full"
-        /> */}
-        <span
-          className={`ring-slate-300 focus:ring-1  ${
-            isOpen ? "ring-slate-100 ring-1" : ""
-          } uppercase bg-gray-800 rounded-lg text-[10px] w-7 h-7  flex items-center justify-center transition-all hover:bg-slate-500`}
-        >
-          {currentUser.email.slice(0, 2) || "User"}
-        </span>
+        <MdKeyboardArrowDown />
       </button>
     ),
     onSelect: console.log,
+    disableSearch: true,
+  };
+
+  const vehicleTypes = {
+    popperPlacement: "bottom-end",
+    options: [
+      { label: "New", bg: "bg-indigo-900", value: "new" },
+      { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
+      { label: "Used", bg: "bg-orange-900", value: "used" },
+    ],
+    renderItem: ({ label, value, bg, ...props }) => (
+      <div
+        className="min-w-32 w-full flex   items-center space-x-2 px-2 py-1 bg-black hover:bg-slate-900 text-white"
+        {...props}
+      >
+        {filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}{" "}
+        <span>{label}</span>
+      </div>
+    ),
+    renderButton: ({ isOpen, open, close, props }) => (
+      <AppBarButton
+        {...props}
+        Icon={MdCategory}
+        label="Types"
+        onClick={isOpen ? close : open}
+        isActive={isOpen}
+      />
+    ),
+    onSelect: ({ value }) => handleTypeChange(value, filters.type[value]),
+    disableSearch: true,
+  };
+
+  const sortTypes = {
+    popperPlacement: "bottom-end",
+    options: [
+      ...filters.api.indexes,
+      { label: "Age ⬆️", value: "DESC" },
+      { label: "Age ⬇️", value: "ASC" },
+    ], // label, index
+    renderItem: ({ label, index, ...props }) => (
+      <div
+        className="min-w-32 w-full flex   items-center space-x-2 px-2 py-1 bg-black hover:bg-slate-900 text-white"
+        {...props}
+      >
+        <span>{label}</span>
+      </div>
+    ),
+    renderButton: ({ isOpen, open, close, props }) => (
+      <AppBarButton
+        {...props}
+        Icon={MdSort}
+        onClick={isOpen ? close : open}
+        isActive={isOpen}
+        label="Sort"
+      />
+    ),
+    onSelect: ({ index, value }) => {
+      if (value)
+        return filtersDispatch({ type: "SORT_BY_AGE", payload: value });
+      if (index)
+        return filtersDispatch({
+          type: "UPDATE_INDEX",
+          payload: index,
+        });
+    },
     disableSearch: true,
   };
 
@@ -138,10 +253,21 @@ export const AppBar = ({
           )}
 
           <AppBarButton
-            toggle={setSettingsOpen}
+            onClick={() =>
+              !settingsOpen ? setSettingsOpen(true) : setSettingsOpen(false)
+            }
             Icon={MdFilterAlt}
             isActive={settingsOpen}
+            label="filter"
           />
+
+          <div className="relative">
+            <DropDown {...sortTypes} />
+          </div>
+          <div className="relative">
+            <DropDown {...vehicleTypes} />
+          </div>
+
           <div className=" w-full  flex-grow my-0.5 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-0 border-opacity-25 flex items-center space-x-2 text-xl px-2">
             <div className="flex relative  justify-center items-cetner">
               <MdSearch />
@@ -169,7 +295,21 @@ export const AppBar = ({
           filterPanelOpen ? "h-8" : "h-0"
         } `}
       > */}
-      <Link to="/" className="text-sm px-4 py-2 text-blue-600 font-mono font-bold">HOFB</Link>
+          <div className="flex items-center justify-center">
+            <Link
+              to="/"
+              className={`text-xs pl-4 pr-0 py-2 ${
+                filters.api.name !== "HOFB"
+                  ? `text-red-500 bg-opacity-90 hover:bg-opacity-100`
+                  : "text-blue-500 bg-opacity-90 hover:bg-opacity-100"
+              } font-mono font-bold`}
+            >
+              {filters.api.name}
+            </Link>
+            <div className="relative">
+              <DropDown {...stores} />
+            </div>
+          </div>
         </div>
 
         {/* </div> */}
@@ -203,24 +343,27 @@ export const AppBar = ({
   );
 };
 
-const AppBarButton = ({ Icon, toggle, isActive, ...props }) => {
+const AppBarButton = ({
+  Icon,
+  onClick = () => {},
+  isActive,
+  label,
+  ...props
+}) => {
   return (
     <button
       type="button"
-      onClick={() => toggle((v) => !v)}
-      className={` group relative rounded-lg p-1 text-lg  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
+      onClick={onClick}
+      className={`flex flex-col group relative rounded-lg p-2 mx-1 text-2xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
         isActive
           ? "bg-opacity-80 text-black hover:text-white"
           : "bg-opacity-0 text-white"
       } `}
     >
       {isActive ? <Icon /> : <Icon />}
-      {/* {isActive && <span className="absolute -top-1 text-sm -right-1 p-0 bg-green-500 bg-opacity-100 text-green-800  rounded-full "><MdClear /></span>} */}
-      {/* {isActive && (
-        <span className="absolute -bottom-1 text-sm -right-1 p-0 bg-white bg-opacity-100 text-green-800  rounded-full ">
-          <MdKeyboardArrowUp />
-        </span>
-      )} */}
+      {label && (
+        <span className="text-[8px] leading-none uppercase">{label}</span>
+      )}
     </button>
   );
 };

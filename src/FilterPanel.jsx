@@ -44,7 +44,7 @@ export const FilterPanel = ({
         </button>
       </div> */}
       <div className="flex justify-between flex-wrap md:space-x-2">
-        <div className="flex text-sm border border-opacity-20 border-white rounded ">
+        {/* <div className="flex text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "Burien", payload: "burienApi", bg: "bg-blue-800" },
             { label: "Rairdon", payload: "rairdonApi", bg: "bg-red-800" },
@@ -61,8 +61,8 @@ export const FilterPanel = ({
               {label}
             </button>
           ))}
-        </div>
-        <div className="flex">
+        </div> */}
+        {/* <div className="flex">
           <select
             className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-xs hover:bg-white hover:bg-opacity-10 cursor-pointer"
             onChange={(e) => {
@@ -95,10 +95,10 @@ export const FilterPanel = ({
               Age ⬇️
             </option>
           </select>
-        </div>
+        </div> */}
         {/* <span>sortByAge {filters.sortByAge.toString()}</span> */}
 
-        <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
+        {/* <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "New", bg: "bg-indigo-900", value: "new" },
             { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
@@ -113,12 +113,6 @@ export const FilterPanel = ({
               } `}
               onClick={() => handleTypeChange(value, filters.type[value])}
             >
-              {/* <input
-                type="checkbox"
-                className="cursor-pointer text-lime-500"
-                checked={filters.type[value]}
-                onChange={() => handleTypeChange(value, filters.type[value])}
-              /> */}
               <span className="hidden sm:flex">
                 {filters.type[value] ? (
                   <MdCheckBox />
@@ -129,7 +123,7 @@ export const FilterPanel = ({
               <span className="md:pl-1 upper">{label}</span>
             </button>
           ))}
-        </div>
+        </div> */}
         {/* <button onClick={() => setFilterPanelOpen(false)} className="px-2 rotate-180">
           <MdKeyboardArrowDown />
         </button> */}

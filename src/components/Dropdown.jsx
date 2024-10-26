@@ -316,7 +316,7 @@ const ListContainer = ({
                 }}
                 className="cursor-pointer hover:bg-blue-100 hover:bg-opacity-50  flex items-center bg-transparent justify-between whitespace-nowrap "
               >
-                {renderItem(item)}
+                {item?.Component ?  <item.Component /> : renderItem(item)}
                 {item === selected && <MdCheck className="mx-2" />}
               </li>
             );

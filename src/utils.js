@@ -359,7 +359,7 @@ export const rairdonIndexes = [
 ];
 
 export const burienAPI = {
-  name: "Burien",
+  name: "HOFB",
   "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
   "X-Algolia-Application-Id": "SEWJN80HTN",
   index: burienIndexes[0].index,
@@ -367,7 +367,7 @@ export const burienAPI = {
 };
 
 export const rairdonAPI = {
-  name: "Rairdon",
+  name: "RAIRDON",
   "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
   "X-Algolia-Application-Id": "V3ZOVI2QFZ",
   index: rairdonIndexes[0].index,
