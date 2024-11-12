@@ -1,4 +1,6 @@
 import React from "react";
+import { isMobile } from "react-device-detect";
+
 import {
   MdApps,
   MdBugReport,
@@ -243,7 +245,7 @@ export const AppBar = ({
   };
 
   return (
-    <div className=" bg-opacity-20 px-2 mb-2 md:mb-0">
+    <div className=" bg-black  w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
       <div className="flex flex-col lg:flex-row container  items-center mx-auto ">
         <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
           {currentUser && (
