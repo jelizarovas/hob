@@ -135,7 +135,7 @@ export const AppBar = ({
         Icon={MdMenu}
         onClick={isOpen ? close : open}
         isActive={isOpen}
-        label="menu"
+        // label="menu"
       />
     ),
     onSelect: console.log,
@@ -247,56 +247,7 @@ export const AppBar = ({
   return (
     <div className=" bg-black  w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
       <div className="flex flex-col lg:flex-row container  items-center mx-auto ">
-        <div className="flex flex-row-reverse md:flex-row pt-1 items-center w-full">
-          {currentUser && (
-            <div className="relative">
-              <DropDown {...dd} />
-            </div>
-          )}
-
-          <AppBarButton
-            onClick={() =>
-              !settingsOpen ? setSettingsOpen(true) : setSettingsOpen(false)
-            }
-            Icon={MdFilterAlt}
-            isActive={settingsOpen}
-            label="filter"
-          />
-
-          <div className="relative">
-            <DropDown {...sortTypes} />
-          </div>
-          <div className="relative">
-            <DropDown {...vehicleTypes} />
-          </div>
-
-          <div className=" w-full  flex-grow my-0.5 md:m-2 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-0 border-opacity-25 flex items-center space-x-2 text-xl px-2">
-            <div className="flex relative  justify-center items-cetner">
-              <MdSearch />
-              <span className="absolute leading-none text-[9px] h-3 flex p-0.5  -right-1 -top-1 bg-slate-700  rounded">
-                {data?.pages?.[0]?.nbHits || 0}
-              </span>
-            </div>
-            <input
-              className="bg-transparent text-sm px-2 py-2 w-full outline-none"
-              value={filters.query}
-              onChange={handleChange}
-              placeholder={`Search ${getType(filters)} Inventory....`}
-            />
-            {filters.query.length > 0 && (
-              <button
-                className=" rounded-full p-0.5 bg-white bg-opacity-0 hover:bg-opacity-20 transition-all"
-                onClick={() => updateQuery("")}
-              >
-                <MdClear />
-              </button>
-            )}
-          </div>
-          {/* <div
-        className={`container mx-auto print:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-          filterPanelOpen ? "h-8" : "h-0"
-        } `}
-      > */}
+        <div className="flex mb-0.5  pt-1 items-center w-full">
           <div className="flex items-center justify-center">
             <Link
               to="/"
@@ -312,9 +263,46 @@ export const AppBar = ({
               <DropDown {...stores} />
             </div>
           </div>
+
+          <div className=" w-full  flex-grow  my-0.5 rounded-lg focus-within:outline-2 focus-within:hover:bg-opacity-30 focus-within:bg-opacity-20 hover:bg-opacity-5 bg-white bg-opacity-0 border-white border-0 border-opacity-25 flex items-center space-x-2 text-md px-2">
+            <div className="flex relative  justify-center items-cetner">
+              <MdSearch />
+              {filters.query.length > 0 && (
+                <span className="absolute leading-none text-[9px] h-3 flex p-0.5  -right-1 -top-1 bg-slate-700  rounded">
+                  {data?.pages?.[0]?.nbHits || 0}
+                </span>
+              )}
+            </div>
+            <input
+              className="bg-transparent text-sm px-1 py-1  w-full outline-none"
+              value={filters.query}
+              onChange={handleChange}
+              placeholder={`Search ${getType(filters)} ${
+                "(" + data?.pages?.[0]?.nbHits + ")" || ""
+              } Inventory....`}
+            />
+            {filters.query.length > 0 && (
+              <button
+                className=" rounded-full p-0.5 bg-white bg-opacity-0 hover:bg-opacity-20 transition-all"
+                onClick={() => updateQuery("")}
+              >
+                <MdClear />
+              </button>
+            )}
+          </div>
+          {/* <div
+        className={`container mx-auto print:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+          filterPanelOpen ? "h-8" : "h-0"
+        } `}
+      > */}
+
+          {currentUser && (
+            <div className="relative">
+              <DropDown {...dd} />
+            </div>
+          )}
         </div>
 
-        {/* </div> */}
         {filterPanelOpen && (
           <FilterPanel
             // facets={facets}
@@ -325,6 +313,9 @@ export const AppBar = ({
             // defaultTotal={defaultTotal}
             setFilterPanelOpen={setFilterPanelOpen}
             // settings={settings}
+
+            settingsOpen={settingsOpen}
+            setSettingsOpen={setSettingsOpen}
             // updateSettings={updateSettings}
           />
         )}
@@ -345,7 +336,7 @@ export const AppBar = ({
   );
 };
 
-const AppBarButton = ({
+export const AppBarButton = ({
   Icon,
   onClick = () => {},
   isActive,
@@ -356,7 +347,7 @@ const AppBarButton = ({
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col group relative rounded-lg p-2 mx-1 text-2xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
+      className={`flex flex-col group relative rounded-lg p-1 mx-1 text-xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
         isActive
           ? "bg-opacity-80 text-black hover:text-white"
           : "bg-opacity-0 text-white"

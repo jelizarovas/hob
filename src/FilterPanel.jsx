@@ -11,6 +11,7 @@ import { SettingsSlider } from "./settings/SettingsSlider";
 // import { FilterListSelection } from "./settings/FilterListSelection";
 import { FilterListSelection } from "./dev/FilterListSelection";
 import { useVehicles } from "./VehicleContext";
+import { AppBarButton } from "./Appbar";
 
 export const FilterPanel = ({
   setFilterPanelOpen,
@@ -20,6 +21,8 @@ export const FilterPanel = ({
   defaultFacets,
   defaultFacetsStats,
   defaultTotal,
+  setSettingsOpen,
+  settingsOpen,
   ...props
 }) => {
   const handleCheckboxChange = (option, value) => {
@@ -35,15 +38,7 @@ export const FilterPanel = ({
 
   return (
     <div className="w-full   mx-2  rounded mb-0 sm:mb-2 lg:mb-0   px-2">
-      {/* <div className="flex justify-between items-center opacity-80 border-b border-white border-opacity-20 px-4 pb-0.5">
-        <div className="flex items-center space-x-2">
-          <MdFilterAlt /> <span>Filters</span>
-        </div>
-        <button type="button" className="flex" onClick={() => setFilterPanelOpen(false)}>
-          <MdClear />
-        </button>
-      </div> */}
-      <div className="flex justify-between flex-wrap md:space-x-2">
+      <div className="flex justify-between flex-wrap md:space-x-2 pb-2">
         {/* <div className="flex text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "Burien", payload: "burienApi", bg: "bg-blue-800" },
@@ -62,7 +57,7 @@ export const FilterPanel = ({
             </button>
           ))}
         </div> */}
-        {/* <div className="flex">
+         <div className="flex pb-0">
           <select
             className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-xs hover:bg-white hover:bg-opacity-10 cursor-pointer"
             onChange={(e) => {
@@ -95,10 +90,20 @@ export const FilterPanel = ({
               Age ⬇️
             </option>
           </select>
-        </div> */}
+        </div> 
         {/* <span>sortByAge {filters.sortByAge.toString()}</span> */}
 
-        {/* <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
+        <button
+        className={`flex space-x-2 items-center justify-center   uppercase border border-white rounded px-2 py-0.5 border-opacity-10 bg-white transition-all ${settingsOpen ? "bg-opacity-10" : "bg-opacity-0"}`}
+          onClick={() =>
+            !settingsOpen ? setSettingsOpen(true) : setSettingsOpen(false)
+          }
+          
+        >
+            <MdFilterAlt className="text-xl" /> <span className="text-[9px]">Filter</span>
+          </button>
+
+         <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "New", bg: "bg-indigo-900", value: "new" },
             { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
@@ -123,7 +128,7 @@ export const FilterPanel = ({
               <span className="md:pl-1 upper">{label}</span>
             </button>
           ))}
-        </div> */}
+        </div> 
         {/* <button onClick={() => setFilterPanelOpen(false)} className="px-2 rotate-180">
           <MdKeyboardArrowDown />
         </button> */}
