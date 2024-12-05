@@ -39,7 +39,7 @@ const initialState = {
     },
     [cuid.slug()]: {
       label: "PermaPlate",
-      value: 1277,
+      value: 995,
       include: true,
     },
     [cuid.slug()]: {
@@ -52,8 +52,19 @@ const initialState = {
       value: 1995,
       include: true,
     },
+    [cuid.slug()]: {
+      label: "Dealer Prep",
+      value: 695,
+      include: true,
+    },
   },
-  accessories: {},
+  accessories: {
+    [cuid.slug()]: {
+      label: "All Weather Mats",
+      value: 270,
+      include: false,
+    },
+  },
   tradeIns: {},
   salesTaxRate: 10.5,
   fees: {
@@ -276,6 +287,12 @@ export const Quote = () => {
           >
             Go to Main
           </Link>
+          <Link
+            to="/dev/pencil"
+            className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+          >
+            Demo*
+          </Link>
           <button
             onClick={() => window.print()}
             className="flex space-x-1 items-center bg-white bg-opacity-10  px-2 py-1 transition-all  hover:bg-opacity-20 rounded cursor-pointer"
@@ -425,13 +442,15 @@ export const Quote = () => {
                 { term: 48, apr: 6.99 },
                 { term: 60, apr: 7.99 },
                 { term: 72, apr: 8.99 },
-
               ].map((option, i) => (
                 <div className="flex flex-col my-2  rounded w-full">
                   <div className="bg-white bg-opacity-20 rounded -mx-0 px-0 py-1 text-xs flex items-center">
-                 <span className="px-2"> <MdCheckBox /></span>
-                    
-                    <span className="flex-grow">Term #{i+1}</span>
+                    <span className="px-2">
+                      {" "}
+                      <MdCheckBox />
+                    </span>
+
+                    <span className="flex-grow">Term #{i + 1}</span>
 
                     <button type="button" className="px-2">
                       <MdClear />

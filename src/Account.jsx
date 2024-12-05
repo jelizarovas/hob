@@ -28,6 +28,7 @@ const Account = () => {
 };
 
 const AccountInput = ({
+  name,
   label,
   value = "",
   placeholder = "",
@@ -43,9 +44,10 @@ const AccountInput = ({
       <input
         className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
         value={inputValue}
-        // placeholder={placeholder}
+        name={name}
         type={type}
         onChange={(e) => setInputValue(e.target.value)}
+        onBlur={(e) => onChange}
         placeholder="Disabled"
         disabled
       />
