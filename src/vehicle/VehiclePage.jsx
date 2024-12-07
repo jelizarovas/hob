@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { MdClear, MdOutlineHistory } from "react-icons/md";
+import { MdClear, MdInfo, MdOutlineHistory } from "react-icons/md";
 import { useParams, useHistory, useLocation } from "react-router-dom";
 import { useSettings } from "../SettingsContext";
 import { formatCurrency } from "../utils";
@@ -11,17 +11,20 @@ const api = {
 };
 
 function getVehicleDataByStockNumber(stock) {
-  return fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
-    headers: {
-      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-    },
-    method: "POST",
-    body: JSON.stringify({
-      hitsPerPage: 1,
-      query: stock,
-    }),
-  })
+  return fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify({
+        hitsPerPage: 1,
+        query: stock,
+      }),
+    }
+  )
     .then((response) => response.json())
     .then((data) => {
       return data.hits[0];
@@ -92,7 +95,8 @@ export const VehiclePage = () => {
             // href={v?.link}
             // target="_blank"
           >
-            {`${v?.year} ${v?.make} ${v?.model}`} <span className="opacity-40">{v?.trim}</span>
+            {`${v?.year} ${v?.make} ${v?.model}`}{" "}
+            <span className="opacity-40">{v?.trim}</span>
           </span>
           <div className="flex items-center">
             {/* {showCarfax && (
@@ -110,6 +114,12 @@ export const VehiclePage = () => {
                 {v?.our_price && formatCurrency(v.our_price)}
               </span>
             )}
+            <button
+              className="text-sm lg:text-2xl p-2 mx-2 bg-white bg-opacity-0 hover:bg-opacity-5 transition-all rounded-full"
+              onClick={() => console.log(v)}
+            >
+              <MdInfo />
+            </button>
             <button
               className="text-sm lg:text-2xl p-2 mx-2 bg-white bg-opacity-0 hover:bg-opacity-5 transition-all rounded-full"
               onClick={handleModalClose}
@@ -231,7 +241,10 @@ export const VehiclePage = () => {
               {v?.ext_options &&
                 v?.ext_options.length > 0 &&
                 v?.ext_options?.map((option, i) => (
-                  <li key={i} className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4">
+                  <li
+                    key={i}
+                    className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4"
+                  >
                     {option}
                   </li>
                 ))}
@@ -245,7 +258,10 @@ export const VehiclePage = () => {
             <ul className="text-xs">
               {v?.features &&
                 v.features?.map((option, i) => (
-                  <li key={i} className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4">
+                  <li
+                    key={i}
+                    className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4"
+                  >
                     {option}
                   </li>
                 ))}
@@ -259,7 +275,10 @@ export const VehiclePage = () => {
             <ul className="px-2 text-xs">
               {v?.int_options &&
                 v.int_options?.map((option, i) => (
-                  <li key={i} className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4">
+                  <li
+                    key={i}
+                    className="bg-white bg-opacity-0 hover:bg-opacity-10 transition-all py-1 px-4"
+                  >
                     {option}
                   </li>
                 ))}

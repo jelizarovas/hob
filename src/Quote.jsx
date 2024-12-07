@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import cuid from "cuid";
 import {
   MdAdd,
@@ -10,6 +10,7 @@ import {
   MdDelete,
   MdEdit,
   MdIndeterminateCheckBox,
+  MdInfo,
   MdPrint,
 } from "react-icons/md";
 import {
@@ -74,7 +75,7 @@ const initialState = {
       include: true,
     },
     other: {
-      label: "License, Admin, Title",
+      label: "Estimated Licensing Fees",
       value: 899,
       include: true,
     },
@@ -179,8 +180,12 @@ function reducer(state, action) {
 }
 
 export const Quote = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { search } = useLocation();
+  const [isLoading, setIsLoading] = useState(false); // For loading indicator
+  const {
+    search,
+    state: { vehicle },
+  } = useLocation();
+  const [state, dispatch] = useLocalStorage(reducer, initialState, vehicle);
 
   const parsePrice = (price) => {
     if (price === "call") return "Call for Price";
@@ -216,6 +221,23 @@ export const Quote = () => {
   }, [state.listedPrice, state.discount]);
 
   let history = useHistory();
+
+  const handleNavigation = async () => {
+    setIsLoading(true); // Show loading indicator
+
+    try {
+      // Process the quote data
+      const processedDealData = processQuote(state);
+
+      // Navigate to the next page with processed data
+      history.push("/dev/pencil", { dealData: processedDealData, vehicle });
+    } catch (error) {
+      console.error("Error processing quote:", error);
+      // Handle error (e.g., show a message to the user)
+    } finally {
+      setIsLoading(false); // Hide loading indicator
+    }
+  };
 
   const goBack = () => {
     history.goBack();
@@ -287,12 +309,19 @@ export const Quote = () => {
           >
             Go to Main
           </Link>
-          <Link
-            to="/dev/pencil"
-            className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+          <button
+            onClick={() => console.log(state)}
+            className="uppercase flex justify-center text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-24 mx-auto "
           >
-            Demo*
-          </Link>
+            <MdInfo />
+          </button>
+          <button
+            onClick={handleNavigation}
+            className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto"
+            disabled={isLoading} // Disable button while loading
+          >
+            {isLoading ? "Processing..." : "Demo*"}
+          </button>
           <button
             onClick={() => window.print()}
             className="flex space-x-1 items-center bg-white bg-opacity-10  px-2 py-1 transition-all  hover:bg-opacity-20 rounded cursor-pointer"
@@ -970,3 +999,194 @@ function getGapAmount(packages) {
   // Return 0 if no matching label is found or 'include' is not true
   return 0;
 }
+
+//SAMPLE STATE
+
+const sample = {
+  listedPrice: 59750,
+  discount: "500",
+  sellingPrice: "59250",
+  packages: {
+    jsl3oi3: {
+      label: "Vehicle Service Contract",
+      value: 4495,
+      include: true,
+    },
+    jsm3oxo: {
+      label: "LoJack",
+      value: 795,
+      include: true,
+    },
+    jsn3o9p: {
+      label: "PermaPlate",
+      value: 995,
+      include: true,
+    },
+    jso3oud: {
+      label: "GAP",
+      value: 995,
+      include: true,
+    },
+    jsp3o14: {
+      label: "Rairdon Investment Package",
+      value: 1995,
+      include: true,
+    },
+    jsq3okl: {
+      label: "Dealer Prep",
+      value: 695,
+      include: true,
+    },
+  },
+  accessories: {
+    jsr3osj: {
+      label: "All Weather Mats",
+      value: 270,
+      include: true,
+    },
+  },
+  tradeIns: {},
+  salesTaxRate: 10.5,
+  fees: {
+    docfee: {
+      label: "Doc Fee",
+      value: 200,
+      include: true,
+    },
+    other: {
+      label: "License, Admin, Title",
+      value: 899,
+      include: true,
+    },
+  },
+  downPayment: 2000,
+  apr: 8.99,
+  term: 72,
+  amountFinanced: 0,
+  totalAmountPaid: 0,
+  monthlyPayment: 0,
+  tradeInAllowance: "28000",
+  tradeInPayoff: "17000",
+};
+
+function processQuote(quote) {
+  // 1. Listed Price
+  const listedPrice = parseFloat(quote.listedPrice) || 0;
+
+  // 2. Discount
+  const discount = parseFloat(quote.discount) || 0;
+
+  // 3. Selling Price
+  const sellingPrice = parseFloat(quote.sellingPrice) || 0;
+
+  // 4. Packages
+  const includedPackages = Object.values(quote.packages)
+    .filter((pkg) => pkg.include)
+    .map((pkg) => ({ label: pkg.label, amount: `$${pkg.value.toFixed(2)}` }));
+  const packagesTotal = includedPackages.reduce(
+    (total, pkg) => total + parseFloat(pkg.amount.replace("$", "")),
+    0
+  );
+
+  // 5. Accessories
+  const includedAccessories = Object.values(quote.accessories)
+    .filter((acc) => acc.include)
+    .map((acc) => ({ label: acc.label, amount: `$${acc.value.toFixed(2)}` }));
+  const accessoriesTotal = includedAccessories.reduce(
+    (total, acc) => total + parseFloat(acc.amount.replace("$", "")),
+    0
+  );
+
+  // 6. Fees
+  const includedFees = Object.values(quote.fees)
+    .filter((fee) => fee.include)
+    .map((fee) => ({ label: fee.label, amount: `$${fee.value.toFixed(2)}` }));
+  const feesTotal = includedFees.reduce(
+    (total, fee) => total + parseFloat(fee.amount.replace("$", "")),
+    0
+  );
+
+  // 7. Subtotal
+  const salesSubtotal =
+    sellingPrice + packagesTotal + accessoriesTotal + feesTotal;
+
+  // 8. Amount Financed
+  const downPayment = parseFloat(quote.downPayment) || 0;
+  const amountFinanced = salesSubtotal - downPayment;
+
+  // 9. Payment Options Matrix
+  const termHeaders = [
+    { payments: 48, type: "monthly", apr: 9.9 },
+    { payments: 60, type: "monthly", apr: 9.9 },
+    { payments: 72, type: "monthly", apr: 9.9 },
+  ];
+
+  const calculatePayment = (principal, apr, term) => {
+    const monthlyRate = apr / 100 / 12;
+    return (
+      (principal * monthlyRate) /
+      (1 - Math.pow(1 + monthlyRate, -term))
+    ).toFixed(2);
+  };
+
+  const calculatedPayments = [
+    termHeaders.map((term) =>
+      calculatePayment(amountFinanced, term.apr, term.payments)
+    ),
+    termHeaders.map((term) =>
+      calculatePayment(amountFinanced - 500, term.apr, term.payments)
+    ),
+    termHeaders.map((term) =>
+      calculatePayment(amountFinanced - 1000, term.apr, term.payments)
+    ),
+  ];
+
+  // Construct the final dealData object
+  const dealItems = [
+    { label: "Listed Price", amount: `$${listedPrice.toFixed(2)}` },
+    ...(discount > 0
+      ? [{ label: "Discount", amount: `$${discount.toFixed(2)}` }]
+      : []),
+    { label: "Selling Price", amount: `$${sellingPrice.toFixed(2)}` },
+    ...includedAccessories,
+    ...includedPackages,
+    ...includedFees,
+    { label: "Sales Subtotal", amount: `$${salesSubtotal.toFixed(2)}` },
+    { label: "Down Payment", amount: `$${downPayment.toFixed(2)}` },
+    {
+      label: "Amount Financed",
+      amount: `$${amountFinanced.toFixed(2)}`,
+      isBold: true,
+    },
+  ];
+
+  return {
+    id: "59122",
+    items: dealItems,
+    paymentOptions: {
+      downPaymentOptions: ["$0.00", "$500.00", "$1000.00"],
+      termHeaders,
+      calculatedPayments,
+    },
+  };
+}
+
+// Example Usage
+// const processedDealData = processQuote(sample);
+// console.log(processedDealData);
+const useLocalStorage = (reducer, initialState, vehicle) => {
+  // Retrieve saved state from localStorage, or use initialState
+  const key = `quoteState_${vehicle?.id || "default"}`;
+  const savedState = JSON.parse(localStorage.getItem(key)) || initialState;
+
+  const [state, dispatch] = useReducer(reducer, savedState);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(state));
+  }, [state, key]);
+
+  return [state, dispatch];
+};
+
+export default useLocalStorage;

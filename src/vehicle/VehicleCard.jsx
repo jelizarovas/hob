@@ -446,10 +446,14 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
       <ActionButton
         label="Quote"
         Icon={MdRequestQuote}
-        to={`quote/${v?.vin}/?listPrice=${
-          v?.msrp && v.msrp > 0 ? v?.msrp : v?.our_price
-        }&sellingPrice=${v?.our_price}`}
-        state={{ key: "value", ...v }}
+        to={{
+          pathname: `/quote/${v?.vin}/`,
+          search: `?listPrice=${
+            v?.msrp && v.msrp > 0 ? v.msrp : v.our_price
+          }&sellingPrice=${v?.our_price}`,
+          state: { vehicle: v },
+        }}
+        // state={{ key: "value", ...v }}
       />
       {v?.type === "New" ? (
         <ActionButton
