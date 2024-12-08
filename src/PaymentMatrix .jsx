@@ -1,4 +1,18 @@
 import React, { useReducer, useEffect } from "react";
+import {
+  MdAddCircle,
+  MdAddCircleOutline,
+  MdArrowDownward,
+  MdArrowDropDown,
+  MdArrowForward,
+  MdArrowOutward,
+  MdArrowRight,
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdClear,
+  MdKeyboardArrowDown,
+  MdPlusOne,
+} from "react-icons/md";
 
 const initialState = {
   terms: [
@@ -27,6 +41,29 @@ const reducer = (state, action) => {
       };
       return recalculatePayments(
         { ...state, downPayments: [...state.downPayments, newDownPayment] },
+        action.payload.totalOTD
+      );
+    case "ADD_TERM":
+      // Generate a unique ID by finding the first number between 1-10 not used
+      const existingIds = state.terms.map((term) => term.id);
+      let newId = 1;
+      while (existingIds.includes(newId) && newId <= 10) {
+        newId++;
+      }
+      if (newId > 10) {
+        alert("Cannot add more terms. Maximum limit of 10 reached.");
+        return state;
+      }
+
+      const newTerm = {
+        id: newId, // Unique ID
+        duration: 1, // Default duration
+        apr: 0, // Default APR
+        selected: true, // Default to selected
+      };
+
+      return recalculatePayments(
+        { ...state, terms: [...state.terms, newTerm] },
         action.payload.totalOTD
       );
     case "UPDATE_TERM":
@@ -79,11 +116,27 @@ const recalculatePayments = (state, totalOTD) => {
     ...dp,
     payments: state.terms.map((term) => {
       if (!term.selected) return null; // Skip unselected terms
+
+      // Ensure `term.duration` and `term.apr` are numbers
+      const duration = Number(term.duration);
+      const apr = Number(term.apr);
       const principal = totalOTD - dp.amount;
-      const monthlyRate = term.apr / 100 / 12;
+
+      // Handle invalid or missing duration gracefully
+      if (isNaN(duration) || duration <= 0) {
+        return "Invalid Duration"; // Avoid division by 0 or invalid input
+      }
+
+      // Handle 0 APR case
+      if (apr === 0) {
+        return (principal / duration).toFixed(2); // Simple division for 0 APR
+      }
+
+      // Standard payment calculation for non-zero APR
+      const monthlyRate = apr / 100 / 12;
       return (
         (principal * monthlyRate) /
-        (1 - Math.pow(1 + monthlyRate, -term.duration))
+        (1 - Math.pow(1 + monthlyRate, -duration))
       ).toFixed(2);
     }),
   }));
@@ -102,11 +155,37 @@ const PaymentMatrix = ({ totalOTD = 50000 }) => {
   }, [totalOTD]);
 
   return (
-    <div className="bg-gray-900 text-gray-200">
-      <table className="table-auto border-collapse border border-gray-700 w-full text-sm">
+    <div className="bg-white bg-opacity-5 text-gray-200 p-1 py-2 rounded-lg">
+      <table className="table-auto border-collapse border border-none w-full text-sm">
         <thead>
           <tr>
-            <th className="p-2 text-left"></th>
+            <th className=" text-center ">
+              <button className="flex items-center font-normal text-xs justify-center gap-1  w-full  py-1 text-white px-1 rounded hover:bg-gray-600">
+                <span>Presets</span>
+              </button>
+              <button
+                onClick={() =>
+                  dispatch({
+                    type: "ADD_TERM",
+                    payload: { totalOTD },
+                  })
+                }
+                className="flex items-center font-normal text-xs justify-center gap-1  w-full  py-1 text-white px-1 rounded hover:bg-gray-600"
+              >
+                <MdAddCircleOutline /> <span>Term</span> <MdArrowForward />
+              </button>
+              <button
+                onClick={() =>
+                  dispatch({
+                    type: "ADD_DOWN_PAYMENT",
+                    payload: { totalOTD },
+                  })
+                }
+                className="flex items-center font-normal text-xs justify-center gap-1  w-full  py-1 text-white px-1 rounded hover:bg-gray-600"
+              >
+                <MdAddCircleOutline /> <span>Payment</span> <MdArrowDownward />
+              </button>
+            </th>
             {state.terms.map((term) => (
               <ColumnHeader
                 key={term.id}
@@ -145,11 +224,11 @@ const PaymentMatrix = ({ totalOTD = 50000 }) => {
               {dp.payments &&
                 dp.payments.map((payment, index) =>
                   payment ? (
-                    <td key={index} className="p-2 text-center">
+                    <td key={index} className=" text-center">
                       ${payment}
                     </td>
                   ) : (
-                    <td key={index} className="p-2 text-center">
+                    <td key={index} className=" text-center">
                       --
                     </td>
                   )
@@ -157,19 +236,7 @@ const PaymentMatrix = ({ totalOTD = 50000 }) => {
             </tr>
           ))}
           <tr>
-            <td colSpan={state.terms.length + 1} className="p-2 text-center">
-              <button
-                onClick={() =>
-                  dispatch({
-                    type: "ADD_DOWN_PAYMENT",
-                    payload: { totalOTD },
-                  })
-                }
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                + Add New Down Payment
-              </button>
-            </td>
+            <td colSpan={1} className=" text-center"></td>
           </tr>
         </tbody>
       </table>
@@ -181,34 +248,56 @@ export default PaymentMatrix;
 
 const ColumnHeader = ({ term, onChange, onDelete }) => {
   return (
-    <th className="p-2">
-      <div className="flex flex-col items-center space-y-2">
-        <input
-          type="checkbox"
-          checked={term.selected}
-          onChange={(e) => onChange(term.id, "selected", e.target.checked)}
-          className="form-checkbox text-blue-500"
-        />
-        <input
-          type="number"
-          value={term.duration}
-          onChange={(e) => onChange(term.id, "duration", e.target.value)}
-          className="w-24 bg-gray-800 text-gray-200 border border-gray-700 text-center"
-          placeholder="Duration"
-        />
-        <input
-          type="number"
-          value={term.apr}
-          onChange={(e) => onChange(term.id, "apr", e.target.value)}
-          className="w-24 bg-gray-800 text-gray-200 border border-gray-700 text-center"
-          placeholder="APR"
-        />
-        <button
-          onClick={() => onDelete(term.id)}
-          className="text-red-500 text-sm"
-        >
-          ❌
-        </button>
+    <th className="bg-white bg-opacity-5">
+      <div className="flex items-center flex-col  justify-center">
+        <div className="w-full flex hover:bg-opacity-15 bg-opacity-5 items-center  ">
+          <button
+            className="form-checkbox  mx-2 text-md rounded-l "
+            onClick={(e) => onChange(term.id, "selected", !term.selected)}
+          >
+            {term.selected ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
+          </button>
+          <span className="flex-grow text-[10px]">Term #{term.id}</span>
+          <button
+            onClick={() => {
+              if (
+                window.confirm("Are you sure you want to delete this term?")
+              ) {
+                onDelete(term.id);
+              }
+            }}
+            className="hover:text-red-500 text-sm"
+          >
+            <MdClear />
+          </button>
+        </div>
+        <div className="w-full flex hover:bg-opacity-15 bg-opacity-5 items-center bg-white text-gray-200 border border-gray-700">
+          <input
+            type="number"
+            value={term.duration}
+            onChange={(e) => onChange(term.id, "duration", e.target.value)}
+            className="w-8 flex-grow bg-transparent  text-center outline-none"
+            placeholder="Duration"
+          />
+          <span className="font-normal text-[10px]">Months</span>
+          <button className="px-1  bg-opacity-0 transition-all bg-white h-full">
+            <MdKeyboardArrowDown />
+          </button>
+        </div>
+
+        <div className="flex w-full hover:bg-opacity-15 bg-opacity-5 items-center bg-white text-gray-200 border border-gray-700">
+          <input
+            type="number"
+            value={term.apr}
+            onChange={(e) => onChange(term.id, "apr", e.target.value)}
+            className="w-12 flex-grow bg-transparent outline-none text-gray-200   text-center"
+            placeholder="APR"
+          />
+          <span className="font-normal text-[10px]">APR</span>
+          <button className="px-1  bg-opacity-0 transition-all bg-white h-full">
+            <MdKeyboardArrowDown />
+          </button>
+        </div>
       </div>
     </th>
   );
@@ -216,28 +305,29 @@ const ColumnHeader = ({ term, onChange, onDelete }) => {
 
 const RowHeader = ({ downPayment, onChange, onDelete }) => {
   return (
-    <td className="p-2">
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          checked={downPayment.selected}
-          onChange={(e) =>
-            onChange(downPayment.id, "selected", e.target.checked)
+    <td className="">
+      <div className="flex items-center bg-white bg-opacity-10 p-1">
+        <button
+          className="form-checkbox   text-md rounded-l "
+          onClick={(e) =>
+            onChange(downPayment.id, "selected", !downPayment.selected)
           }
-          className="form-checkbox text-blue-500"
-        />
+        >
+          {downPayment.selected ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
+        </button>
+
         <input
           type="number"
           value={downPayment.amount}
           onChange={(e) => onChange(downPayment.id, "amount", e.target.value)}
-          className="w-24 bg-gray-800 text-gray-200 border border-gray-700 ml-2"
+          className="w-10 bg-transparent text-right text-gray-200 border outline-none border-none"
           placeholder="Down Payment"
         />
         <button
-          onClick={() => onDelete(downPayment.id)}
-          className="text-red-500 ml-2"
+          //   onClick={() => onDelete(downPayment.id)}
+          className=" p-1"
         >
-          ❌
+          <MdArrowDropDown />
         </button>
       </div>
     </td>
