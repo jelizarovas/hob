@@ -26,6 +26,7 @@ import {
 import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { VINComponent, determinePrice } from "./vehicle/VehicleCard";
 import PaymentMatrix from "./PaymentMatrix ";
+import NumberFlow from "@number-flow/react";
 
 const initialState = {
   listedPrice: 32040,
@@ -185,19 +186,15 @@ function reducer(state, action) {
 }
 
 export const Quote = () => {
-  const [isLoading, setIsLoading] = useState(false); // For loading indicator
-  const [showTradeIn, setShowTradeIn] = useState(false); // For loading indicator
+  const [isLoading, setIsLoading] = useState(false);
+  const [showTradeIn, setShowTradeIn] = useState(false);
   const {
     search,
     state: { vehicle },
   } = useLocation();
   const [state, dispatch] = useLocalStorage(reducer, initialState, vehicle);
 
-  const parsePrice = (price) => {
-    if (price === "call") return "Call for Price";
-    const value = parseFloat(price);
-    return isNaN(value) ? null : value;
-  };
+ 
 
   const queryParams = new URLSearchParams(search);
   const listPrice = parsePrice(queryParams.get("listPrice"));
@@ -279,18 +276,7 @@ export const Quote = () => {
     });
   };
 
-  function determineCheckboxState(items) {
-    const allChecked = Object.values(items).every((item) => item.include);
-    const someChecked = Object.values(items).some((item) => item.include);
 
-    if (allChecked) {
-      return "uncheck";
-    } else if (someChecked) {
-      return "intermediate";
-    } else {
-      return "check";
-    }
-  }
 
   const [
     total,
@@ -325,7 +311,9 @@ export const Quote = () => {
           </button>
           <button
             onClick={() => setShowTradeIn((v) => !v)}
-            className={`uppercase flex justify-center text-center px-2 gap-2 text-nowrap items-center bg-white ${showTradeIn ? "bg-opacity-40" : "bg-opacity-10"} hover:bg-opacity-25 text-xs py-1 rounded-lg w-24 mx-auto`}
+            className={`uppercase flex justify-center text-center px-2 gap-2 text-nowrap items-center bg-white ${
+              showTradeIn ? "bg-opacity-40" : "bg-opacity-10"
+            } hover:bg-opacity-25 text-xs py-1 rounded-lg w-24 mx-auto`}
           >
             <span>Trade in</span>
           </button>
@@ -486,7 +474,14 @@ export const Quote = () => {
               <span className="opacity-50">%</span>
             </div>
             <span className="whitespace-nowrap px-2 w-32 text-right">
-              {salesTax && formatCurrency(salesTax)}{" "}
+            <NumberFlow
+                        format={{
+                          style: "currency",
+                          currency: "USD",
+                          trailingZeroDisplay: "stripIfInteger",
+                        }}
+                        value={salesTax}
+                      />
             </span>
             <button className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-5 print:hidden">
               <MdEdit />
@@ -499,135 +494,23 @@ export const Quote = () => {
             <span className="whitespace-nowrap px-2 flex-grow">Total OTD</span>
 
             <span className="whitespace-nowrap px-2 w-32 text-right">
-              {total && formatCurrency(total)}{" "}
+            <NumberFlow
+                        format={{
+                          style: "currency",
+                          currency: "USD",
+                          trailingZeroDisplay: "stripIfInteger",
+                        }}
+                        value={total}
+                      />
             </span>
             <div className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
               <MdEdit />
             </div>
           </div>
 
-          {/* <div className="flex flex-col">
-            <select className="text-black">
-              <option>Finance</option> <option>Cash</option>
-              <option>Lease</option>
-            </select>
-
-            <span>Term & APR options</span>
-            <div className="flex gap-2">
-              {[
-                { term: 48, apr: 6.99 },
-                { term: 60, apr: 7.99 },
-                { term: 72, apr: 8.99 },
-              ].map((option, i) => (
-                <div className="flex flex-col my-2  rounded w-full">
-                  <div className="bg-white bg-opacity-20 rounded -mx-0 px-0 py-1 text-xs flex items-center">
-                    <span className="px-2">
-                      {" "}
-                      <MdCheckBox />
-                    </span>
-
-                    <span className="flex-grow">Term #{i + 1}</span>
-
-                    <button type="button" className="px-2">
-                      <MdClear />
-                    </button>
-                  </div>
-                  <div className="flex gap-2  text-center items-center text-sm py-0.5 px-1 bg-white bg-opacity-10">
-                    <input
-                      value={option.term}
-                      onChange={() => {}}
-                      className="bg-white bg-opacity-5 rounded px-2 w-10 text-right flex-grow py-1"
-                    />
-                    <span className="opacity-50 text-xs px-1">Months</span>
-                  </div>
-                  <div className="flex gap-2  text-center items-center text-sm py-0.5 px-1 bg-white bg-opacity-10 rounded-b">
-                    <input
-                      value={option.apr}
-                      onChange={() => {}}
-                      className="bg-white bg-opacity-5 rounded px-2 w-10 text-right flex-grow py-1"
-                    />
-                    <span className="opacity-50 text-xs px-1">% APR</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div> */}
-
-
+         
 
           <PaymentMatrix totalOTD={total} />
-
-          <div className="bg-white bg-opacity-20 rounded-lg flex print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-            <Input
-              name="downPayment"
-              value={state.downPayment}
-              onChange={handleChange}
-              label="Downpayment"
-              className="w-28 text-right"
-            />
-            <Input
-              name="apr"
-              value={state.apr}
-              onChange={handleChange}
-              label="APR"
-              className="w-28 text-right"
-            />
-            <Input
-              name="term"
-              value={state.term}
-              onChange={handleChange}
-              label="Term In Months"
-              className="w-28 text-right"
-            />
-          </div>
-
-          <div className="rounded-lg bg-white bg-opacity-10 py-1 text-sm  my-2 flex  flex-col">
-            <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
-              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-                <MdCheckBox />
-              </div>
-              <span className="whitespace-nowrap px-2 flex-grow">
-                Amount Financed
-              </span>
-
-              <span className="whitespace-nowrap px-2 w-32 text-right">
-                {formatCurrency(amountFinanced)}{" "}
-              </span>
-              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-                <MdEdit />
-              </div>
-            </div>
-            <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
-              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-                <MdCheckBox />
-              </div>
-              <span className="whitespace-nowrap px-2 flex-grow">
-                Monthly Payment
-              </span>
-
-              <span className="whitespace-nowrap px-2 w-32 text-right">
-                {formatCurrency(monthlyPayment)}{" "}
-              </span>
-              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-                <MdEdit />
-              </div>
-            </div>
-            <div className="w-full flex bg-white bg-opacity-0 hover:bg-opacity-10 transition-all">
-              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-                <MdCheckBox />
-              </div>
-              <span className="whitespace-nowrap px-2 flex-grow">
-                Total Amount Paid
-              </span>
-
-              <span className="whitespace-nowrap px-2 w-32 text-right">
-                {formatCurrency(totalAmountPaid)}{" "}
-              </span>
-              <div className="text-lg px-2 py-1 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg opacity-0">
-                <MdEdit />
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </>
@@ -790,7 +673,16 @@ const QuoteGroup = ({
             } transition-all`}
           />
           <span className=" w-full"> {groupLabel}</span>
-          <span className="">{formatCurrency(groupSum)}</span>
+          <span className="">
+            <NumberFlow
+              format={{
+                style: "currency",
+                currency: "USD",
+                trailingZeroDisplay: "stripIfInteger",
+              }}
+              value={groupSum}
+            />
+          </span>
         </div>
         <div>
           <button
@@ -1261,3 +1153,22 @@ const useLocalStorage = (reducer, initialState, vehicle) => {
 };
 
 export default useLocalStorage;
+
+const parsePrice = (price) => {
+  if (price === "call") return "Call for Price";
+  const value = parseFloat(price);
+  return isNaN(value) ? null : value;
+};
+
+function determineCheckboxState(items) {
+  const allChecked = Object.values(items).every((item) => item.include);
+  const someChecked = Object.values(items).some((item) => item.include);
+
+  if (allChecked) {
+    return "uncheck";
+  } else if (someChecked) {
+    return "intermediate";
+  } else {
+    return "check";
+  }
+}

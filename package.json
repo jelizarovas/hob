@@ -16,6 +16,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.13.6",
+    "@number-flow/react": "^0.4.2",
     "cuid": "^3.0.0",
     "downloadjs": "^1.4.7",
     "firebase": "^10.12.2",

@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect } from "react";
+import NumberFlow from "@number-flow/react";
 import {
   MdAddCircle,
   MdAddCircleOutline,
@@ -156,6 +157,7 @@ const PaymentMatrix = ({ totalOTD = 50000 }) => {
 
   return (
     <div className="bg-white bg-opacity-5 text-gray-200 p-1 py-2 rounded-lg">
+        {/* <div><pre className="text-xs">{JSON.stringify(state,null,1)}</pre></div> */}
       <table className="table-auto border-collapse border border-none w-full text-sm">
         <thead>
           <tr>
@@ -224,8 +226,15 @@ const PaymentMatrix = ({ totalOTD = 50000 }) => {
               {dp.payments &&
                 dp.payments.map((payment, index) =>
                   payment ? (
-                    <td key={index} className=" text-center">
-                      ${payment}
+                    <td key={index} className=" text-center bg-white bg-opacity-0 hover:bg-opacity-10 cursor-pointer">
+                      <NumberFlow
+                        format={{
+                          style: "currency",
+                          currency: "USD",
+                          trailingZeroDisplay: "stripIfInteger",
+                        }}
+                        value={payment}
+                      />
                     </td>
                   ) : (
                     <td key={index} className=" text-center">
@@ -249,7 +258,7 @@ export default PaymentMatrix;
 const ColumnHeader = ({ term, onChange, onDelete }) => {
   return (
     <th className="bg-white bg-opacity-5">
-      <div className="flex items-center flex-col  justify-center">
+      <div className="flex items-center flex-col gap-1  justify-center">
         <div className="w-full flex hover:bg-opacity-15 bg-opacity-5 items-center  ">
           <button
             className="form-checkbox  mx-2 text-md rounded-l "
@@ -271,7 +280,7 @@ const ColumnHeader = ({ term, onChange, onDelete }) => {
             <MdClear />
           </button>
         </div>
-        <div className="w-full flex hover:bg-opacity-15 bg-opacity-5 items-center bg-white text-gray-200 border border-gray-700">
+        <div className="w-full flex hover:bg-opacity-15 bg-opacity-5 items-center bg-white text-gray-200 ">
           <input
             type="number"
             value={term.duration}
@@ -285,7 +294,7 @@ const ColumnHeader = ({ term, onChange, onDelete }) => {
           </button>
         </div>
 
-        <div className="flex w-full hover:bg-opacity-15 bg-opacity-5 items-center bg-white text-gray-200 border border-gray-700">
+        <div className="flex w-full hover:bg-opacity-15 bg-opacity-5 items-center bg-white text-gray-200 ">
           <input
             type="number"
             value={term.apr}
@@ -333,3 +342,71 @@ const RowHeader = ({ downPayment, onChange, onDelete }) => {
     </td>
   );
 };
+
+
+//SAMPLE STATE
+
+const sampleState = {
+    "terms": [
+     {
+      "id": 1,
+      "duration": 48,
+      "apr": 9.9,
+      "selected": true
+     },
+     {
+      "id": 2,
+      "duration": 60,
+      "apr": 9.9,
+      "selected": true
+     },
+     {
+      "id": 3,
+      "duration": 72,
+      "apr": 9.9,
+      "selected": true
+     }
+    ],
+    "downPayments": [
+     {
+      "id": 1,
+      "amount": 0,
+      "selected": true,
+      "payments": [
+       "1888.28",
+       "1581.20",
+       "1378.13"
+      ]
+     },
+     {
+      "id": 2,
+      "amount": 2000,
+      "selected": true,
+      "payments": [
+       "1837.65",
+       "1538.81",
+       "1341.18"
+      ]
+     },
+     {
+      "id": 3,
+      "amount": 4000,
+      "selected": true,
+      "payments": [
+       "1787.02",
+       "1496.41",
+       "1304.23"
+      ]
+     },
+     {
+      "id": 1733680970926,
+      "amount": "4",
+      "selected": true,
+      "payments": [
+       "1888.18",
+       "1581.12",
+       "1378.06"
+      ]
+     }
+    ]
+   }
