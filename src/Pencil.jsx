@@ -13,7 +13,7 @@ const managerData = {
   cell: "206-591-9143",
 };
 
-const dealData = {
+const defaultdealData = {
   id: "59122",
   items: [
     { label: "Retail Price", amount: "$51,500.00" },
@@ -40,16 +40,11 @@ const dealData = {
   },
 };
 
-export const Pencil = ({
-  dealership = dealershipData,
-  deal = dealData,
-
-  customer,
-  manager = managerData,
-}) => {
+export const Pencil = ({ customer }) => {
   const location = useLocation();
-
-  const dealData = location.state?.dealData || deal; // Prioritize location.state
+  const dealership = dealershipData;
+  const manager = managerData;
+  const dealData = location.state?.dealData || defaultdealData; // Prioritize location.state
   const vehicle = location.state?.vehicle || vehicleData; // Prioritize location.state
 
   return (
@@ -68,7 +63,7 @@ export const Pencil = ({
         <div className="flex flex-wrap gap-2 justify-evenly  w-full md:gap-10  md:w-1/2 ">
           <div className="flex flex-col">
             <strong className="whitespace-nowrap leading-none">Deal #</strong>{" "}
-            <span className="leading-none">{deal?.id}</span>
+            <span className="leading-none">{dealData?.id}</span>
           </div>
           <div className="flex flex-col md:flex-grow">
             <strong className="whitespace-nowrap leading-none">

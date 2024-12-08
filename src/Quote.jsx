@@ -9,9 +9,12 @@ import {
   MdClear,
   MdDelete,
   MdEdit,
+  MdEmojiTransportation,
   MdIndeterminateCheckBox,
   MdInfo,
+  MdKeyboardArrowRight,
   MdPrint,
+  MdRestorePage,
 } from "react-icons/md";
 import {
   formatCurrency,
@@ -22,6 +25,7 @@ import {
 } from "./utils";
 import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { VINComponent, determinePrice } from "./vehicle/VehicleCard";
+import PaymentMatrix from "./PaymentMatrix ";
 
 const initialState = {
   listedPrice: 32040,
@@ -173,7 +177,8 @@ function reducer(state, action) {
           discount: delta,
         };
       }
-
+    case "RESET_STATE":
+      return action.payload; // Replace with the new state
     default:
       return state;
   }
@@ -181,6 +186,7 @@ function reducer(state, action) {
 
 export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false); // For loading indicator
+  const [showTradeIn, setShowTradeIn] = useState(false); // For loading indicator
   const {
     search,
     state: { vehicle },
@@ -305,22 +311,30 @@ export const Quote = () => {
         <div className="flex w-96 mx-auto space-x-2 print:hidden">
           <Link
             to="/"
-            className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
+            className="uppercase text-center flex justify-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
           >
-            Go to Main
+            Back
           </Link>
           <button
-            onClick={() => console.log(state)}
-            className="uppercase flex justify-center text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-24 mx-auto "
+            onClick={() =>
+              dispatch({ type: "RESET_STATE", payload: initialState })
+            }
+            className="uppercase flex justify-center text-center px-2 gap-2 items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-24 mx-auto"
           >
-            <MdInfo />
+            <span>Reset</span>
+          </button>
+          <button
+            onClick={() => setShowTradeIn((v) => !v)}
+            className={`uppercase flex justify-center text-center px-2 gap-2 text-nowrap items-center bg-white ${showTradeIn ? "bg-opacity-40" : "bg-opacity-10"} hover:bg-opacity-25 text-xs py-1 rounded-lg w-24 mx-auto`}
+          >
+            <span>Trade in</span>
           </button>
           <button
             onClick={handleNavigation}
             className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto"
             disabled={isLoading} // Disable button while loading
           >
-            {isLoading ? "Processing..." : "Demo*"}
+            {isLoading ? "Processing..." : "Pencil"}
           </button>
           <button
             onClick={() => window.print()}
@@ -332,60 +346,93 @@ export const Quote = () => {
         </div>
         {/* <VehiclePrice /> */}
         <div className=" w-96 mx-auto">
-          <div className="bg-white bg-opacity-20 rounded-lg flex print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-            <Input
-              name="listedPrice"
-              value={state.listedPrice}
-              onChange={handleChange}
-              label="List / MSRP"
-              className="w-28 text-right"
-            />
-            <Input
-              name="discount"
-              value={state.discount}
-              onChange={handleChange}
-              label="Discount"
-              className="w-28 text-right"
-            />
-            <Input
-              name="sellingPrice"
-              value={state.sellingPrice}
-              onChange={handleChange}
-              label="Selling"
-              className="w-28 text-right"
-            />
-          </div>
-          <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-            <Input
-              name="tradeInAllowance"
-              value={state.tradeInAllowance}
-              onChange={handleChange}
-              label="Trade Allowance"
-              className="w-28 text-right"
-            />
-            <Input
-              name="tradeInPayoff"
-              value={state.tradeInPayoff}
-              onChange={handleChange}
-              label="Payoff"
-              className="w-28 text-right"
-            />
-            <div className="text-sm flex flex-col w-28 text-right">
-              <div className="flex flex-col">
-                <span className="text-[8px] leading-none">Total Trade</span>
-                <span> {sumTradeIns}</span>
+          <div className="bg-white bg-opacity-20 rounded-lg flex flex-col print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+            <div className="flex">
+              <div className="mr-2">
+                <img src={vehicle.thumbnail} className="w-16 h-10 rounded" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-[8px] leading-none"> Tax credit:</span>
-                <span>
-                  {" "}
-                  {(Number(state.tradeInAllowance || 0) *
-                    Number(state.salesTaxRate || 0)) /
-                    100}
-                </span>
+              <div className="flex flex-col  w-full px-1">
+                <div className="flex justify-between items-center w-full">
+                  <a
+                    href={vehicle?.link}
+                    target="_blank"
+                    className="hover:underline"
+                  >
+                    {vehicle?.year} {vehicle?.make} {vehicle?.model}{" "}
+                    {vehicle?.trim}
+                  </a>
+                  <span className="uppercase text-xs opacity-50">
+                    {vehicle?.type}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs opacity-50">{vehicle?.vin}</span>
+                  <span className="text-xs opacity-50">
+                    {vehicle?.miles} miles
+                  </span>
+                  <span className="text-xs opacity-50">
+                    {vehicle?.ext_color}
+                  </span>
+                </div>
               </div>
             </div>
+            <div className="flex justify-between w-full">
+              <Input
+                name="listedPrice"
+                value={state.listedPrice}
+                onChange={handleChange}
+                label="List / MSRP"
+                className="w-28 text-right"
+              />
+              <Input
+                name="discount"
+                value={state.discount}
+                onChange={handleChange}
+                label="Discount"
+                className="w-28 text-right"
+              />
+              <Input
+                name="sellingPrice"
+                value={state.sellingPrice}
+                onChange={handleChange}
+                label="Selling"
+                className="w-28 text-right"
+              />
+            </div>
           </div>
+          {showTradeIn && (
+            <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
+              <Input
+                name="tradeInAllowance"
+                value={state.tradeInAllowance}
+                onChange={handleChange}
+                label="Trade Allowance"
+                className="w-28 text-right"
+              />
+              <Input
+                name="tradeInPayoff"
+                value={state.tradeInPayoff}
+                onChange={handleChange}
+                label="Payoff"
+                className="w-28 text-right"
+              />
+              <div className="text-sm flex flex-col w-28 text-right">
+                <div className="flex flex-col">
+                  <span className="text-[8px] leading-none">Total Trade</span>
+                  <span> {sumTradeIns}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[8px] leading-none"> Tax credit:</span>
+                  <span>
+                    {" "}
+                    {(Number(state.tradeInAllowance || 0) *
+                      Number(state.salesTaxRate || 0)) /
+                      100}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <QuoteGroup
             data={state.packages}
@@ -459,7 +506,7 @@ export const Quote = () => {
             </div>
           </div>
 
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <select className="text-black">
               <option>Finance</option> <option>Cash</option>
               <option>Lease</option>
@@ -488,6 +535,7 @@ export const Quote = () => {
                   <div className="flex gap-2  text-center items-center text-sm py-0.5 px-1 bg-white bg-opacity-10">
                     <input
                       value={option.term}
+                      onChange={() => {}}
                       className="bg-white bg-opacity-5 rounded px-2 w-10 text-right flex-grow py-1"
                     />
                     <span className="opacity-50 text-xs px-1">Months</span>
@@ -495,6 +543,7 @@ export const Quote = () => {
                   <div className="flex gap-2  text-center items-center text-sm py-0.5 px-1 bg-white bg-opacity-10 rounded-b">
                     <input
                       value={option.apr}
+                      onChange={() => {}}
                       className="bg-white bg-opacity-5 rounded px-2 w-10 text-right flex-grow py-1"
                     />
                     <span className="opacity-50 text-xs px-1">% APR</span>
@@ -502,7 +551,11 @@ export const Quote = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
+
+
+
+          <PaymentMatrix totalOTD={total} />
 
           <div className="bg-white bg-opacity-20 rounded-lg flex print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
             <Input
@@ -729,9 +782,14 @@ const QuoteGroup = ({
         </button>
         <div
           onClick={() => setOpen((v) => !v)}
-          className="flex-grow flex justify-between w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none"
+          className="flex-grow flex justify-between items-center w-full bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none"
         >
-          <span className=" w-full">{groupLabel}</span>
+          <MdKeyboardArrowRight
+            className={`mx-1 text-xl ${
+              isOpen ? "rotate-90" : ""
+            } transition-all`}
+          />
+          <span className=" w-full"> {groupLabel}</span>
           <span className="">{formatCurrency(groupSum)}</span>
         </div>
         <div>
@@ -1111,8 +1169,8 @@ function processQuote(quote) {
     sellingPrice + packagesTotal + accessoriesTotal + feesTotal;
 
   // 8. Amount Financed
-  const downPayment = parseFloat(quote.downPayment) || 0;
-  const amountFinanced = salesSubtotal - downPayment;
+  // const downPayment = parseFloat(quote.downPayment) || 0;
+  const amountFinanced = salesSubtotal; //- downPayment;
 
   // 9. Payment Options Matrix
   const termHeaders = [
@@ -1134,10 +1192,10 @@ function processQuote(quote) {
       calculatePayment(amountFinanced, term.apr, term.payments)
     ),
     termHeaders.map((term) =>
-      calculatePayment(amountFinanced - 500, term.apr, term.payments)
+      calculatePayment(amountFinanced - 200, term.apr, term.payments)
     ),
     termHeaders.map((term) =>
-      calculatePayment(amountFinanced - 1000, term.apr, term.payments)
+      calculatePayment(amountFinanced - 4000, term.apr, term.payments)
     ),
   ];
 
@@ -1152,7 +1210,7 @@ function processQuote(quote) {
     ...includedPackages,
     ...includedFees,
     { label: "Sales Subtotal", amount: `$${salesSubtotal.toFixed(2)}` },
-    { label: "Down Payment", amount: `$${downPayment.toFixed(2)}` },
+    // { label: "Down Payment", amount: `$${downPayment.toFixed(2)}` },
     {
       label: "Amount Financed",
       amount: `$${amountFinanced.toFixed(2)}`,
@@ -1164,7 +1222,7 @@ function processQuote(quote) {
     id: "59122",
     items: dealItems,
     paymentOptions: {
-      downPaymentOptions: ["$0.00", "$500.00", "$1000.00"],
+      downPaymentOptions: ["$0.00", "$2000.00", "$4000.00"],
       termHeaders,
       calculatedPayments,
     },
@@ -1174,17 +1232,30 @@ function processQuote(quote) {
 // Example Usage
 // const processedDealData = processQuote(sample);
 // console.log(processedDealData);
-const useLocalStorage = (reducer, initialState, vehicle) => {
-  // Retrieve saved state from localStorage, or use initialState
-  const key = `quoteState_${vehicle?.id || "default"}`;
-  const savedState = JSON.parse(localStorage.getItem(key)) || initialState;
 
-  const [state, dispatch] = useReducer(reducer, savedState);
+const useLocalStorage = (reducer, initialState, vehicle) => {
+  const key = vehicle?.vin ? `quoteState_${vehicle.vin}` : `quoteState_default`;
+
+  // Initialize state from localStorage or initialState
+  const initializeState = () => {
+    const savedState = JSON.parse(localStorage.getItem(key));
+    return savedState || initialState;
+  };
+
+  const [state, dispatch] = useReducer(reducer, {}, initializeState);
 
   // Save state to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(state));
   }, [state, key]);
+
+  // Reset state if the vehicle changes and has a `vin`
+  useEffect(() => {
+    if (vehicle?.vin) {
+      const savedState = JSON.parse(localStorage.getItem(key)) || initialState;
+      dispatch({ type: "RESET_STATE", payload: savedState });
+    }
+  }, [vehicle?.vin]); // Only reset if the `vin` changes
 
   return [state, dispatch];
 };
