@@ -1,33 +1,17 @@
 import React from "react";
-import { isMobile } from "react-device-detect";
 
 import {
-  MdApps,
-  MdBugReport,
   MdBusinessCenter,
   MdCategory,
-  MdCheck,
   MdCheckBox,
   MdCheckBoxOutlineBlank,
   MdClear,
-  MdDeleteForever,
-  MdDiscount,
-  MdFilter,
-  MdFilterAlt,
-  MdFilterList,
-  MdGridView,
-  MdKeyboardAlt,
   MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
-  MdList,
   MdLogout,
   MdMenu,
   MdPerson,
-  MdPin,
   MdSearch,
-  MdSettings,
   MdSort,
-  MdVerifiedUser,
 } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
 

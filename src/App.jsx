@@ -9,7 +9,7 @@ import { DevPanel } from "./dev/DevPanel";
 import { SettingsProvider } from "./SettingsContext";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { VehicleProvider } from "./VehicleContext";
-import { Quote } from "./Quote";
+import { Quote } from "./quote/Quote";
 import { CheckRequest } from "./CheckRequest";
 import { BuyersGuide } from "./BuyersGuide";
 import { BarCode } from "./BarCode";

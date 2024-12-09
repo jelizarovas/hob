@@ -636,3 +636,23 @@ export const parseAddress = (inputAddress) => {
     return { value: inputAddress };
   }
 };
+
+
+export const parsePrice = (price) => {
+  if (price === "call") return "Call for Price";
+  const value = parseFloat(price);
+  return isNaN(value) ? null : value;
+};
+
+export function determineCheckboxState(items) {
+  const allChecked = Object.values(items).every((item) => item.include);
+  const someChecked = Object.values(items).some((item) => item.include);
+
+  if (allChecked) {
+    return "uncheck";
+  } else if (someChecked) {
+    return "intermediate";
+  } else {
+    return "check";
+  }
+}
