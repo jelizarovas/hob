@@ -261,8 +261,8 @@ export const AppBar = ({
               className="bg-transparent text-sm px-1 py-1  w-full outline-none"
               value={filters.query}
               onChange={handleChange}
-              placeholder={`Search ${getType(filters)} ${
-                "(" + data?.pages?.[0]?.nbHits + ")" || ""
+              placeholder={`Search ${getType(filters)}${
+                data?.pages?.[0]?.nbHits ? ` (${data.pages[0].nbHits})` : ""
               } Inventory....`}
             />
             {filters.query.length > 0 && (
