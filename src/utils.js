@@ -313,11 +313,12 @@ export function generateLabelArray(label, range, allowedRange) {
 }
 
 export const burienIndexes = [
-  {
-    label: "Price  ⬆️",
-    index:
-      "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
-  },
+  //DECEMBER 2024 THIS INDEX WAS REMOVED
+  // {
+  //   label: "Price  ⬆️",
+  //   index:
+  //     "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+  // },
   {
     label: "Price ⬇️  ",
     index:
@@ -636,7 +637,6 @@ export const parseAddress = (inputAddress) => {
     return { value: inputAddress };
   }
 };
-
 
 export const parsePrice = (price) => {
   if (price === "call") return "Call for Price";
