@@ -1,104 +1,56 @@
+// Building Generator for LiveBackground
 // src/LiveBackground.js
 import React, { useEffect, useRef } from "react";
 
 const LiveBackground = () => {
   const canvasRef = useRef(null);
-  const carColors = ["white", "black", "gray", "silver", "red", "blue"];
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const cars = [];
-    const gridSize = 150; // Larger grid size for roads
-    const roadWidth = 40; // Width of the roads
     const canvasWidth = window.innerWidth;
     const canvasHeight = window.innerHeight;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
-    // Initialize cars
-    for (let i = 0; i < 20; i++) {
-      const x = Math.floor(Math.random() * (canvasWidth / gridSize)) * gridSize + gridSize / 2;
-      const y = Math.floor(Math.random() * (canvasHeight / gridSize)) * gridSize + gridSize / 2;
-      const isHorizontal = Math.random() > 0.5;
-      cars.push({
-        x,
-        y,
-        speed: 0.5 + Math.random() * 0.3, // Slower speed for realistic movement
-        color: carColors[Math.floor(Math.random() * carColors.length)],
-        isHorizontal,
-        direction: Math.random() > 0.5 ? 1 : -1,
-        turnCountdown: Math.floor(200 + Math.random() * 300), // Time before turning
+    // Generate decorations (buildings and grass areas)
+    const decorations = createDecorations(canvasWidth, canvasHeight);
+
+    // Generate roads
+    const roads = createRoads(decorations, canvasWidth, canvasHeight);
+
+    const drawBackground = () => {
+      ctx.fillStyle = "#222"; // Dark background
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    };
+
+    const drawDecorations = () => {
+      decorations.forEach((decoration) => {
+        ctx.fillStyle = decoration.type === "building" ? "#333" : "#2a2a2a";
+        ctx.fillRect(
+          decoration.x,
+          decoration.y,
+          decoration.width,
+          decoration.height
+        );
       });
-    }
+    };
 
     const drawRoads = () => {
-      // Draw grass areas
-      ctx.fillStyle = "#333";
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      // Draw roads
-      ctx.fillStyle = "#444";
-      for (let x = 0; x <= canvasWidth; x += gridSize) {
-        ctx.fillRect(x - roadWidth / 2, 0, roadWidth, canvasHeight); // Vertical roads
-      }
-      for (let y = 0; y <= canvasHeight; y += gridSize) {
-        ctx.fillRect(0, y - roadWidth / 2, canvasWidth, roadWidth); // Horizontal roads
-      }
-    };
-
-    const drawCars = () => {
-      cars.forEach((car) => {
-        ctx.save();
-        ctx.translate(car.x, car.y);
-        if (car.isHorizontal) {
-          ctx.rotate(car.direction === 1 ? 0 : Math.PI);
-        } else {
-          ctx.rotate(car.direction === 1 ? Math.PI / 2 : -Math.PI / 2);
-        }
-
-        ctx.fillStyle = car.color;
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 20; // Thicker roads for visibility
+      roads.forEach((road) => {
         ctx.beginPath();
-        ctx.moveTo(-10, -5);
-        ctx.lineTo(10, -5);
-        ctx.lineTo(10, 5);
-        ctx.lineTo(-10, 5);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      });
-    };
-
-    const updateCars = () => {
-      cars.forEach((car) => {
-        if (car.isHorizontal) {
-          car.x += car.speed * car.direction;
-          if (car.x < gridSize / 2) car.x = canvasWidth - gridSize / 2;
-          if (car.x > canvasWidth - gridSize / 2) car.x = gridSize / 2;
-        } else {
-          car.y += car.speed * car.direction;
-          if (car.y < gridSize / 2) car.y = canvasHeight - gridSize / 2;
-          if (car.y > canvasHeight - gridSize / 2) car.y = gridSize / 2;
-        }
-
-        car.turnCountdown--;
-        if (car.turnCountdown <= 0) {
-          const gridX = Math.round(car.x / gridSize) * gridSize;
-          const gridY = Math.round(car.y / gridSize) * gridSize;
-          car.x = gridX;
-          car.y = gridY;
-          car.isHorizontal = !car.isHorizontal;
-          car.direction = Math.random() > 0.5 ? 1 : -1;
-          car.turnCountdown = Math.floor(200 + Math.random() * 300); // Reset turn countdown
-        }
+        ctx.moveTo(road.start[0], road.start[1]);
+        ctx.lineTo(road.end[0], road.end[1]);
+        ctx.stroke();
       });
     };
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      drawBackground();
+      drawDecorations();
       drawRoads();
-      drawCars();
-      updateCars();
       requestAnimationFrame(animate);
     };
 
@@ -117,3 +69,80 @@ const LiveBackground = () => {
 };
 
 export default LiveBackground;
+
+const createDecorations = (width, height) => {
+  const decorations = [];
+  for (let i = 0; i < 30; i++) { // Reduced number of decorations
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const widthDec = Math.random() * 100 + 50;
+    const heightDec = Math.random() * 100 + 50;
+    const type = Math.random() > 0.5 ? "building" : "grass";
+
+    decorations.push({ x, y, width: widthDec, height: heightDec, type });
+  }
+  return decorations;
+};
+
+const createRoads = (decorations, width, height) => {
+  const roads = [];
+  const mainRoadSpacing = 400; // Wider spacing for major roads
+  const padding = 50; // Increased padding around buildings
+
+  // Generate main grid-like roads
+  for (let x = 0; x < width; x += mainRoadSpacing) {
+    roads.push({ start: [x, 0], end: [x, height], curved: false });
+  }
+  for (let y = 0; y < height; y += mainRoadSpacing) {
+    roads.push({ start: [0, y], end: [width, y], curved: false });
+  }
+
+  // Connect key points (buildings or clusters)
+  decorations.forEach((decoration) => {
+    if (decoration.type === "building") {
+      const centerX = decoration.x + decoration.width / 2;
+      const centerY = decoration.y + decoration.height / 2;
+
+      // Connect to the nearest main road
+      const nearestRoad = roads.reduce((closest, road) => {
+        const distance = Math.min(
+          Math.hypot(centerX - road.start[0], centerY - road.start[1]),
+          Math.hypot(centerX - road.end[0], centerY - road.end[1])
+        );
+        return distance < closest.distance ? { road, distance } : closest;
+      }, { road: null, distance: Infinity });
+
+      if (nearestRoad.road) {
+        roads.push({
+          start: [centerX, centerY],
+          end: nearestRoad.road.start,
+          curved: false, // Curved roads can be added here
+        });
+      }
+    }
+  });
+
+  // Avoid overlaps with decorations
+  return roads.filter((road) => {
+    return !decorations.some((dec) => isRoadOverlapping(road, dec, padding));
+  });
+};
+
+const isRoadOverlapping = (road, decoration, padding) => {
+  const [startX, startY] = road.start;
+  const [endX, endY] = road.end;
+
+  const roadBounds = {
+    x: Math.min(startX, endX) - padding,
+    y: Math.min(startY, endY) - padding,
+    width: Math.abs(endX - startX) + padding * 2,
+    height: Math.abs(endY - startY) + padding * 2,
+  };
+
+  return (
+    roadBounds.x < decoration.x + decoration.width &&
+    roadBounds.x + roadBounds.width > decoration.x &&
+    roadBounds.y < decoration.y + decoration.height &&
+    roadBounds.y + roadBounds.height > decoration.y
+  );
+};

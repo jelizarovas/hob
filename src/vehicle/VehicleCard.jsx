@@ -463,7 +463,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         />
       ) : (
         <ActionButton
-          label="B Guide"
+          label="BGuide"
           Icon={MdListAlt}
           to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${
             v?.make

@@ -57,4 +57,22 @@ export const initialQuote = {
       include: true,
     },
   },
+  paymentMatrix: {
+    totalOTD: 0,
+    downPaymentOptions: ["$0.00", "$2000.00", "$4000.00"],
+    termHeaders: [
+      { payments: 48, type: "monthly", apr: 9.9 },
+      { payments: 60, type: "monthly", apr: 9.9 },
+      { payments: 72, type: "monthly", apr: 9.9 },
+    ],
+    calculatedPayments: [],
+  },
+  totals: {
+    total: 0,
+    salesTax: 0,
+    sumPackages: 0,
+    sumAccessories: 0,
+    sumTradeIns: 0,
+    sumFees: 0,
+  },
 };
