@@ -24,9 +24,9 @@ export const VehiclePriceCard = ({
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-xs opacity-50">{vehicle?.vin}</span>
-            <span className="text-xs opacity-50">{vehicle?.miles} miles</span>
-            <span className="text-xs opacity-50">{vehicle?.ext_color}</span>
+            <span className="text-xs opacity-50 px-2">{vehicle?.vin}</span>
+            <span className="text-xs opacity-50 px-2">{vehicle?.miles} miles</span>
+            <span className="text-xs opacity-50 px-2">{vehicle?.ext_color}</span>
           </div>
         </div>
       </div>

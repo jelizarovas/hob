@@ -12,6 +12,7 @@ import { VehiclePriceCard } from "./VehiclePriceCard";
 import { QuoteInput } from "./QuoteInput";
 import { QuoteGroup } from "./QuoteGroup";
 import { quoteReducer } from "./reducer";
+import { useQuoteCalculations } from "./useQuoteCalculations";
 
 export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,18 +56,6 @@ export const Quote = () => {
     }
   }, [state.listedPrice, state.discount]);
 
-  const handleNavigation = async () => {
-    setIsLoading(true);
-    try {
-      const processedDealData = processQuote(state);
-      history.push("/dev/pencil", { dealData: processedDealData, vehicle });
-    } catch (error) {
-      console.error("Error processing quote:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     const [field, key, subfield] = name.split(".");
@@ -101,8 +90,40 @@ export const Quote = () => {
 
   const toggleTradeIn = () => setShowTradeIn((v) => !v);
 
-  const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] =
-    calculateTotal(state);
+  // const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] =
+  //   calculateTotal(state);
+
+  const {
+    total,
+    salesTax,
+    sumPackages,
+    sumAccessories,
+    sumTradeIns,
+    sumFees,
+    paymentMatrix,
+  } = useQuoteCalculations(state);
+
+  const handleNavigation = async () => {
+    setIsLoading(true);
+    try {
+      const quoteData = {
+        ...state, // raw user inputs
+        total,
+        salesTax,
+        sumPackages,
+        sumAccessories,
+        sumTradeIns,
+        sumFees,
+        paymentMatrix,
+      };
+      const processedDealData = processQuote(quoteData);
+      history.push("/dev/pencil", { dealData: processedDealData, vehicle });
+    } catch (error) {
+      console.error("Error processing quote:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Use the state as needed
   return (
@@ -243,181 +264,38 @@ export const Quote = () => {
             </div>
           </div>
 
-          <PaymentMatrix totalOTD={total} />
+          <PaymentMatrix paymentMatrix={paymentMatrix} dispatch={dispatch} />
         </div>
       </div>
     </>
   );
 };
 
-const calculateTotal = (state) => {
-  const sumValues = (items) => {
-    if (!items || typeof items !== "object") {
-      return 0;
-    }
-
-    return Object.values(items).reduce((sum, item) => {
-      if (item.include) {
-        const itemValue = parseFloat(item.value) || 0;
-        return sum + itemValue;
-      }
-      return sum;
-    }, 0);
-  };
-
-  const sellingPrice = parseFloat(state.sellingPrice) || 0;
-  const sumPackages = sumValues(state.packages);
-  const sumAccessories = sumValues(state.accessories);
-  const sumTradeIns =
-    Number(state.tradeInAllowance) - Number(state.tradeInPayoff) || 0;
-  const sumFees = sumValues(state.fees);
-  const salesTaxRate = parseFloat(state.salesTaxRate) || 0;
-
-  console.log("GAP", getGapAmount(state.packages));
-
-  const taxableAmount =
-    sellingPrice -
-    sumTradeIns +
-    (sumPackages - getGapAmount(state.packages)) +
-    sumAccessories;
-  const salesTax = (salesTaxRate / 100) * taxableAmount;
-
-  const total =
-    sellingPrice +
-    sumPackages +
-    sumAccessories +
-    salesTax +
-    sumFees -
-    sumTradeIns;
-  const downPayment = parseFloat(state.downPayment) || 0;
-  const fin = calculateLoanDetails(
-    total - downPayment || 0,
-    state?.apr || 0,
-    state?.term || 0
-  );
-
-  return [
-    total.toFixed(2),
-    salesTax.toFixed(2),
-    sumPackages.toFixed(2),
-    sumAccessories.toFixed(2),
-    sumTradeIns.toFixed(2),
-    sumFees.toFixed(2),
-    fin.amountFinanced,
-    fin.totalAmountPaid,
-    fin.monthlyPayment,
-  ]; // Formatting the total to two decimal places
-};
-
-const calculateLoanDetails = (amountFinanced, apr, term) => {
-  const monthlyRate = apr / 100 / 12;
-  const monthlyPayment =
-    monthlyRate !== 0
-      ? (amountFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term))
-      : amountFinanced / term;
-  const totalAmountPaid = monthlyPayment * term;
-
-  return {
-    amountFinanced: amountFinanced.toFixed(2),
-    totalAmountPaid: totalAmountPaid.toFixed(2),
-    monthlyPayment: monthlyPayment.toFixed(2),
-  };
-};
-
-function getGapAmount(packages) {
-  // Normalize the search terms for comparison
-  const searchTerms = ["gap", "nas gap"];
-
-  // Iterate over the packages object
-  for (const key in packages) {
-    if (packages.hasOwnProperty(key)) {
-      const pkg = packages[key]; // Use 'pkg' to avoid reserved word conflict
-      // Normalize the label for comparison and check the 'include' property
-      const labelNormalized = pkg?.label?.toLowerCase() || "";
-      if (
-        searchTerms.some((term) => labelNormalized.includes(term)) &&
-        pkg.include
-      ) {
-        return pkg.value; // Return the value if a match is found and 'include' is true
-      }
-    }
-  }
-
-  // Return 0 if no matching label is found or 'include' is not true
-  return 0;
-}
-
 function processQuote(quote) {
-  // 1. Listed Price
   const listedPrice = parseFloat(quote.listedPrice) || 0;
-
-  // 2. Discount
   const discount = parseFloat(quote.discount) || 0;
-
-  // 3. Selling Price
   const sellingPrice = parseFloat(quote.sellingPrice) || 0;
 
-  // 4. Packages
   const includedPackages = Object.values(quote.packages)
     .filter((pkg) => pkg.include)
-    .map((pkg) => ({ label: pkg.label, amount: `$${pkg.value.toFixed(2)}` }));
-  const packagesTotal = includedPackages.reduce(
-    (total, pkg) => total + parseFloat(pkg.amount.replace("$", "")),
-    0
-  );
+    .map((pkg) => ({
+      label: pkg.label,
+      amount: `$${Number(pkg?.value).toFixed(2)}`,
+    }));
 
-  // 5. Accessories
   const includedAccessories = Object.values(quote.accessories)
     .filter((acc) => acc.include)
-    .map((acc) => ({ label: acc.label, amount: `$${acc.value.toFixed(2)}` }));
-  const accessoriesTotal = includedAccessories.reduce(
-    (total, acc) => total + parseFloat(acc.amount.replace("$", "")),
-    0
-  );
+    .map((acc) => ({
+      label: acc.label,
+      amount: `$${Number(acc?.value).toFixed(2)}`,
+    }));
 
-  // 6. Fees
   const includedFees = Object.values(quote.fees)
     .filter((fee) => fee.include)
-    .map((fee) => ({ label: fee.label, amount: `$${fee.value.toFixed(2)}` }));
-  const feesTotal = includedFees.reduce(
-    (total, fee) => total + parseFloat(fee.amount.replace("$", "")),
-    0
-  );
-
-  // 7. Subtotal
-  const salesSubtotal =
-    sellingPrice + packagesTotal + accessoriesTotal + feesTotal;
-
-  // 8. Amount Financed
-  // const downPayment = parseFloat(quote.downPayment) || 0;
-  const amountFinanced = salesSubtotal; //- downPayment;
-
-  // 9. Payment Options Matrix
-  const termHeaders = [
-    { payments: 48, type: "monthly", apr: 9.9 },
-    { payments: 60, type: "monthly", apr: 9.9 },
-    { payments: 72, type: "monthly", apr: 9.9 },
-  ];
-
-  const calculatePayment = (principal, apr, term) => {
-    const monthlyRate = apr / 100 / 12;
-    return (
-      (principal * monthlyRate) /
-      (1 - Math.pow(1 + monthlyRate, -term))
-    ).toFixed(2);
-  };
-
-  const calculatedPayments = [
-    termHeaders.map((term) =>
-      calculatePayment(amountFinanced, term.apr, term.payments)
-    ),
-    termHeaders.map((term) =>
-      calculatePayment(amountFinanced - 200, term.apr, term.payments)
-    ),
-    termHeaders.map((term) =>
-      calculatePayment(amountFinanced - 4000, term.apr, term.payments)
-    ),
-  ];
+    .map((fee) => ({
+      label: fee.label,
+      amount: `$${Number(fee?.value).toFixed(2)}`,
+    }));
 
   // Construct the final dealData object
   const dealItems = [
@@ -429,22 +307,19 @@ function processQuote(quote) {
     ...includedAccessories,
     ...includedPackages,
     ...includedFees,
-    { label: "Sales Subtotal", amount: `$${salesSubtotal.toFixed(2)}` },
-    // { label: "Down Payment", amount: `$${downPayment.toFixed(2)}` },
-    {
-      label: "Amount Financed",
-      amount: `$${amountFinanced.toFixed(2)}`,
-      isBold: true,
-    },
+    { label: `Sales Tax ${quote?.salesTaxRate}`, amount: `$${quote.salesTax}` },
+    { label: "Sales Subtotal", amount: `$${quote.total}` },
+    // { label: "Customer Cash", amount: `$${quote.paymentMatrix}` },
+    // {
+    //   label: "Amount Financed",
+    //   amount: `$${amountFinanced.toFixed(2)}`,
+    //   isBold: true,
+    // },
   ];
 
   return {
     id: "59122",
     items: dealItems,
-    paymentOptions: {
-      downPaymentOptions: ["$0.00", "$2000.00", "$4000.00"],
-      termHeaders,
-      calculatedPayments,
-    },
+    paymentOptions: quote.paymentMatrix,
   };
 }

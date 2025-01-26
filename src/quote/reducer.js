@@ -19,9 +19,8 @@ export function quoteReducer(state, action) {
       };
     case "DELETE_NESTED_FIELD":
       const newState = { ...state };
-
-      // Check if the field exists and is an object
       if (
+        // Check if the field exists and is an object
         newState[action.field] &&
         typeof newState[action.field] === "object"
       ) {
@@ -83,6 +82,97 @@ export function quoteReducer(state, action) {
           discount: delta,
         };
       }
+
+    // ---- PaymentMatrix-type actions: ----
+    case "ADD_DOWN_PAYMENT": {
+      const newDownPayment = {
+        id: Date.now(),
+        amount: 0,
+        selected: true,
+      };
+      return {
+        ...state,
+        paymentMatrix: {
+          ...state.paymentMatrix,
+          downPayments: [...state.paymentMatrix.downPayments, newDownPayment],
+        },
+      };
+    }
+
+    case "ADD_TERM": {
+      const existingIds = state.paymentMatrix.terms.map((term) => term.id);
+      let newId = 1;
+      while (existingIds.includes(newId) && newId <= 10) {
+        newId++;
+      }
+      if (newId > 10) {
+        alert("Cannot add more terms. Maximum limit of 10 reached.");
+        return state;
+      }
+
+      const newTerm = {
+        id: newId,
+        duration: 1,
+        apr: 0,
+        selected: true,
+      };
+
+      return {
+        ...state,
+        paymentMatrix: {
+          ...state.paymentMatrix,
+          terms: [...state.paymentMatrix.terms, newTerm],
+        },
+      };
+    }
+
+    case "DELETE_TERM": {
+      const filteredTerms = state.paymentMatrix.terms.filter(
+        (term) => term.id !== action.payload.id
+      );
+      return {
+        ...state,
+        paymentMatrix: {
+          ...state.paymentMatrix,
+          terms: filteredTerms,
+        },
+      };
+    }
+
+    case "DELETE_DOWN_PAYMENT": {
+      const filteredDownPayments = state.paymentMatrix.downPayments.filter(
+        (dp) => dp.id !== action.payload.id
+      );
+      return {
+        ...state,
+        paymentMatrix: {
+          ...state.paymentMatrix,
+          downPayments: filteredDownPayments,
+        },
+      };
+    }
+
+    case "UPDATE_TERM": {
+      const { id, key, value } = action.payload;
+      const updatedTerms = state.paymentMatrix.terms.map((term) =>
+        term.id === id ? { ...term, [key]: value } : term
+      );
+      return {
+        ...state,
+        paymentMatrix: { ...state.paymentMatrix, terms: updatedTerms },
+      };
+    }
+    case "UPDATE_DOWN_PAYMENT": {
+      const { id, key, value } = action.payload;
+      const updatedDP = state.paymentMatrix.downPayments.map((dp) =>
+        dp.id === id ? { ...dp, [key]: value } : dp
+      );
+      return {
+        ...state,
+        paymentMatrix: { ...state.paymentMatrix, downPayments: updatedDP },
+      };
+    }
+
     case "RESET_STATE":
       return action.payload; // Replace with the new state
     default:

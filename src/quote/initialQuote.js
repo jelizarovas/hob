@@ -58,21 +58,15 @@ export const initialQuote = {
     },
   },
   paymentMatrix: {
-    totalOTD: 0,
-    downPaymentOptions: ["$0.00", "$2000.00", "$4000.00"],
-    termHeaders: [
-      { payments: 48, type: "monthly", apr: 9.9 },
-      { payments: 60, type: "monthly", apr: 9.9 },
-      { payments: 72, type: "monthly", apr: 9.9 },
+    terms: [
+      { id: 1, duration: 48, apr: 9.9, selected: true },
+      { id: 2, duration: 60, apr: 9.9, selected: true },
+      { id: 3, duration: 72, apr: 9.9, selected: true },
     ],
-    calculatedPayments: [],
-  },
-  totals: {
-    total: 0,
-    salesTax: 0,
-    sumPackages: 0,
-    sumAccessories: 0,
-    sumTradeIns: 0,
-    sumFees: 0,
-  },
+    downPayments: [
+      { id: 1, amount: 0, selected: true },
+      { id: 2, amount: 2000, selected: true },
+      { id: 3, amount: 4000, selected: true },
+    ],
+  }
 };

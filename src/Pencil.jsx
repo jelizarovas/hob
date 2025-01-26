@@ -197,9 +197,35 @@ const DynamicDateTimeDiv = () => {
 
 export default DynamicDateTimeDiv;
 
-const PaymentMatrix = ({ paymentOptions }) => {
-  const { downPaymentOptions, termHeaders, calculatedPayments } =
-    paymentOptions;
+function PaymentMatrix({ paymentOptions }) {
+  const { terms = [], downPayments = [] } = paymentOptions;
+
+  // 1) Filter only selected terms
+  const selectedTerms = terms.filter((term) => term.selected);
+
+  // 2) Build the table headers from selected terms
+  const termHeaders = selectedTerms.map((term) => ({
+    payments: term.duration,
+    apr: term.apr,
+  }));
+
+  // 3) Filter only selected downPayments
+  const selectedDownPayments = downPayments.filter((dp) => dp.selected);
+
+  // 4) Convert selectedDownPayments to display strings
+  const downPaymentOptions = selectedDownPayments.map((dp) => {
+    const numericAmount = parseFloat(dp.amount) || 0;
+    return `$${numericAmount.toFixed(2)}`;
+  });
+
+  // 5) Build a 2D array of payments (skipping unselected terms)
+  //    dp.payments indexes match up with the full terms array,
+  //    so we filter them by the same index check.
+  const calculatedPayments = selectedDownPayments.map((dp) => {
+    return dp.payments
+      .filter((_, index) => terms[index]?.selected)
+      .map((val) => (val ? `$${val}` : "N/A"));
+  });
 
   return (
     <div className="w-full md:w-3/5">
@@ -238,7 +264,7 @@ const PaymentMatrix = ({ paymentOptions }) => {
       </table>
     </div>
   );
-};
+}
 
 const PaymentDetailLine = ({ label, amount, isBold, ...props }) => {
   return (
