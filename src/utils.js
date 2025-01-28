@@ -365,6 +365,7 @@ export const burienAPI = {
   "X-Algolia-Application-Id": "SEWJN80HTN",
   index: burienIndexes[0].index,
   indexes: burienIndexes,
+  website: "burienhonda.com",
 };
 
 export const rairdonAPI = {
@@ -373,6 +374,7 @@ export const rairdonAPI = {
   "X-Algolia-Application-Id": "V3ZOVI2QFZ",
   index: rairdonIndexes[0].index,
   indexes: rairdonIndexes,
+  website: "rairdon.com",
 };
 
 export const initialFilters = {
