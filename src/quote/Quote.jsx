@@ -22,11 +22,7 @@ export const Quote = () => {
     search,
     state: { vehicle },
   } = useLocation();
-  const [state, dispatch] = useLocalStorage(
-    quoteReducer,
-    initialQuote,
-    vehicle
-  );
+  const [state, dispatch] = useLocalStorage(quoteReducer, initialQuote, vehicle);
 
   const queryParams = new URLSearchParams(search);
   const listPrice = parsePrice(queryParams.get("listPrice"));
@@ -85,23 +81,15 @@ export const Quote = () => {
     });
   };
 
-  const resetQuote = () =>
-    dispatch({ type: "RESET_STATE", payload: initialQuote });
+  const resetQuote = () => dispatch({ type: "RESET_STATE", payload: initialQuote });
 
   const toggleTradeIn = () => setShowTradeIn((v) => !v);
 
   // const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] =
   //   calculateTotal(state);
 
-  const {
-    total,
-    salesTax,
-    sumPackages,
-    sumAccessories,
-    sumTradeIns,
-    sumFees,
-    paymentMatrix,
-  } = useQuoteCalculations(state);
+  const { total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees, paymentMatrix } =
+    useQuoteCalculations(state);
 
   const handleNavigation = async () => {
     setIsLoading(true);
@@ -167,12 +155,7 @@ export const Quote = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[8px] leading-none"> Tax credit:</span>
-                  <span>
-                    {" "}
-                    {(Number(state.tradeInAllowance || 0) *
-                      Number(state.salesTaxRate || 0)) /
-                      100}
-                  </span>
+                  <span> {(Number(state.tradeInAllowance || 0) * Number(state.salesTaxRate || 0)) / 100}</span>
                 </div>
               </div>
             </div>
@@ -300,15 +283,13 @@ function processQuote(quote) {
   // Construct the final dealData object
   const dealItems = [
     { label: "Listed Price", amount: `$${listedPrice.toFixed(2)}` },
-    ...(discount > 0
-      ? [{ label: "Discount", amount: `$${discount.toFixed(2)}` }]
-      : []),
+    ...(discount > 0 ? [{ label: "Discount", amount: `$${discount.toFixed(2)}` }] : []),
     { label: "Selling Price", amount: `$${sellingPrice.toFixed(2)}` },
     ...includedAccessories,
     ...includedPackages,
     ...includedFees,
     { label: `Sales Tax ${quote?.salesTaxRate}`, amount: `$${quote.salesTax}` },
-    { label: "Sales Subtotal", amount: `$${quote.total}` },
+    { label: "Sales Subtotal", amount: `$${quote.total}`, isBold: true },
     // { label: "Customer Cash", amount: `$${quote.paymentMatrix}` },
     // {
     //   label: "Amount Financed",
