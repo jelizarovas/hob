@@ -3,14 +3,7 @@ import { useMemo } from "react";
 export const useQuoteCalculations = (state) => {
   return useMemo(() => {
     // 1) Calculate base totals:
-    const {
-      total,
-      salesTax,
-      sumPackages,
-      sumAccessories,
-      sumTradeIns,
-      sumFees,
-    } = calculateTotal(state);
+    const { total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees } = calculateTotal(state);
 
     console.log({
       total,
@@ -52,26 +45,14 @@ const calculateTotal = (state) => {
   const sellingPrice = parseFloat(state.sellingPrice) || 0;
   const sumPackages = sumValues(state.packages);
   const sumAccessories = sumValues(state.accessories);
-  const sumTradeIns =
-    Number(state.tradeInAllowance) - Number(state.tradeInPayoff) || 0;
+  const sumTradeIns = Number(state.tradeInAllowance) - Number(state.tradeInPayoff) || 0;
   const sumFees = sumValues(state.fees);
   const salesTaxRate = parseFloat(state.salesTaxRate) || 0;
   //   console.log("GAP", getGapAmount(state.packages));
-  const taxableAmount =
-    sellingPrice -
-    sumTradeIns +
-    (sumPackages - getGapAmount(state.packages)) +
-    sumAccessories;
+  const taxableAmount = sellingPrice - sumTradeIns + (sumPackages - getGapAmount(state.packages)) + sumAccessories;
   const salesTax = (salesTaxRate / 100) * taxableAmount;
 
-  const total = (
-    sellingPrice +
-    sumPackages +
-    sumAccessories +
-    salesTax +
-    sumFees -
-    sumTradeIns
-  ).toFixed(2);
+  const total = (sellingPrice + sumPackages + sumAccessories + salesTax + sumFees - sumTradeIns).toFixed(2);
 
   return {
     total,
@@ -92,10 +73,7 @@ const calculateTotal = (state) => {
         const pkg = packages[key]; // Use 'pkg' to avoid reserved word conflict
         // Normalize the label for comparison and check the 'include' property
         const labelNormalized = pkg?.label?.toLowerCase() || "";
-        if (
-          searchTerms.some((term) => labelNormalized.includes(term)) &&
-          pkg.include
-        ) {
+        if (searchTerms.some((term) => labelNormalized.includes(term)) && pkg.include) {
           return pkg.value; // Return the value if a match is found and 'include' is true
         }
       }
@@ -107,26 +85,39 @@ const calculateTotal = (state) => {
 };
 
 function recalcPayments(paymentMatrix, totalOTD) {
-  console.log({ paymentMatrix, totalOTD });
   const numericTotal = parseFloat(totalOTD) || 0;
-  const { terms, downPayments } = paymentMatrix; // Guaranteed arrays if initialQuote is shaped properly
+  const { terms, downPayments } = paymentMatrix;
 
   const updatedDP = downPayments.map((dp) => {
-    // For each selected term, compute monthly payment
     const payments = terms.map((term) => {
       if (!term.selected) return null;
+
+      // Principal = Total OTD - Down Payment
       const principal = numericTotal - dp.amount;
-      const duration = Number(term.duration) || 0;
+
+      // Loan duration and APR
+      const durationMonths = Number(term.duration) || 0;
       const apr = Number(term.apr) || 0;
-      if (duration <= 0) return "Invalid Duration";
-      const monthlyRate = apr / 100 / 12;
-      return monthlyRate === 0
-        ? (principal / duration).toFixed(2)
-        : (
-            (principal * monthlyRate) /
-            (1 - Math.pow(1 + monthlyRate, -duration))
-          ).toFixed(2);
+
+      if (durationMonths <= 0) return "Invalid Duration";
+
+      // Step 1: Calculate daily interest rate
+      const dailyRate = apr / (100 * 365);
+
+      // Step 2: Convert daily rate to effective monthly rate
+      const effectiveMonthlyRate = Math.pow(1 + dailyRate, 30.44) - 1;
+
+      // Step 3: Amortized payment formula
+      const numerator = principal * effectiveMonthlyRate;
+      const denominator =
+        1 - Math.pow(1 + effectiveMonthlyRate, -durationMonths);
+
+      const monthlyPayment = numerator / denominator;
+
+      // Round to 2 decimals
+      return parseFloat(monthlyPayment.toFixed(2));
     });
+
     return { ...dp, payments };
   });
 

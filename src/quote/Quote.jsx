@@ -282,14 +282,14 @@ function processQuote(quote) {
 
   // Construct the final dealData object
   const dealItems = [
-    { label: "Listed Price", amount: `$${listedPrice.toFixed(2)}` },
+    { label: "Retail Price", amount: `$${listedPrice.toFixed(2)}` },
     ...(discount > 0 ? [{ label: "Discount", amount: `$${discount.toFixed(2)}` }] : []),
-    { label: "Selling Price", amount: `$${sellingPrice.toFixed(2)}` },
+    { label: "Your Price", amount: `$${sellingPrice.toFixed(2)}` },
     ...includedAccessories,
     ...includedPackages,
     ...includedFees,
-    { label: `Sales Tax ${quote?.salesTaxRate}`, amount: `$${quote.salesTax}` },
-    { label: "Sales Subtotal", amount: `$${quote.total}`, isBold: true },
+    { label: `Taxes (${quote?.salesTaxRate})`, amount: `$${quote.salesTax}` },
+    { label: "Sales Subtotal", amount: `$${quote.total}`, isBold: false },
     // { label: "Customer Cash", amount: `$${quote.paymentMatrix}` },
     // {
     //   label: "Amount Financed",
@@ -299,7 +299,7 @@ function processQuote(quote) {
   ];
 
   return {
-    id: "59122",
+    id: "N/A",
     items: dealItems,
     paymentOptions: quote.paymentMatrix,
   };

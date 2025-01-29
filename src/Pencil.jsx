@@ -9,7 +9,7 @@ const dealershipData = {
 };
 
 const managerData = {
-  fullName: "Joshua Wallace",
+  fullName: "Arnas Jelizarovas",
   cell: "206-591-9143",
 };
 
@@ -48,13 +48,13 @@ export const Pencil = ({ customer }) => {
   const vehicle = location.state?.vehicle || vehicleData; // Prioritize location.state
 
   return (
-    <div className="bg-white text-black min-h-screen  flex flex-col md:p-10">
+    <div className="bg-white text-black min-h-screen  flex flex-col md:p-10 font-sans">
       {/* <pre className="text-xs">{JSON.stringify(dealData, null, 2)}</pre> */}
       <div className="flex  justify-evenly  py-2 w-full">
         <div className="flex flex-col w-full md:w-1/2  p-2 leading-none">
-          <strong className="leading-none">{dealership?.legalName}</strong>
-          <span className="text-sm leading-none">{dealership?.addressLine1}</span>
-          <span className="text-sm leading-none">{dealership?.addressLine2}</span>
+          <strong className="text-sm leading-none">{dealership?.legalName}</strong>
+          <span className="text-xs leading-none">{dealership?.addressLine1}</span>
+          <span className="text-xs leading-none">{dealership?.addressLine2}</span>
         </div>
         <div className="flex flex-wrap gap-2 justify-evenly  w-full md:gap-10  md:w-1/2 ">
           <div className="flex flex-col">
@@ -162,7 +162,7 @@ const DynamicDateTimeDiv = () => {
   const currentYear = currentDate.getFullYear();
 
   return (
-    <div className="flex text-xs md:text-sm p-2 border-t-2 border-gray-600 mt-2">
+    <div className="flex text-xs md:text-sm p-2 border-t border-gray-600 mt-2">
       <span className="flex-grow">© HofB App {currentYear}</span>
       <span className="opacity-70">{pacificTime}</span>
     </div>
