@@ -23,6 +23,13 @@
     "site": "hofbapp",
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "redirects": [
+      {
+        "source": "/contact/:vCardFile",
+        "destination": "https://storage.googleapis.com/honda-burien.appspot.com/vcards/:vCardFile",
+        "type": 302
+      }
+    ],
     "rewrites": [
       {
         "source": "**",

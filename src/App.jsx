@@ -17,6 +17,7 @@ import { Pencil } from "./Pencil";
 import Login from "./auth/Login";
 import Account from "./Account";
 import Layout from "./drivecentric/Layout";
+import { BusinessCardGenerator } from "./BusinessCardGenerator";
 
 const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
@@ -38,7 +39,11 @@ function App() {
               <Router>
                 <Switch>
                   <Route path="/login" component={Login} />
-                  <ProtectedRoute path="/account/" component={Account} />
+                  <ProtectedRoute exact path="/account/" component={Account} />
+                  <ProtectedRoute exact
+                    path="/account/vCard"
+                    component={BusinessCardGenerator}
+                  />
                   <ProtectedRoute exact path="/dev/test" component={DevPanel} />
                   <ProtectedRoute exact path="/dev/dc" component={Layout} />
                   <Route exact path="/dev/pencil" component={Pencil} />
