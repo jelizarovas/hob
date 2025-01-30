@@ -67,9 +67,9 @@ export const AppBar = ({
         Icon: MdPerson,
         onClick: (e) => history.push("/account"),
         Component: (props) => (
-          <div className="flex flex-col">
-            <span>Hi, {currentUser?.email?.slice(0, 2)}</span>
-            <Link to="/account">Account</Link>
+          <div className="flex flex-col justify-center items-center bg-indigo-900 w-full text-white">
+            <span className="text-xs py-1">Hi, {currentUser?.email?.slice(0, 2).toUpperCase()}</span>
+            <Link to="/account" className="flex items-center w-full  gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded  p-2"><MdPerson className="mx-1" /> <span>Account</span></Link>
             {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
           </div>
         ),
@@ -229,9 +229,9 @@ export const AppBar = ({
   };
 
   return (
-    <div className=" bg-black  w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
-      <div className="flex flex-col lg:flex-row container  items-center mx-auto ">
-        <div className="flex mb-0.5  pt-1 items-center w-full">
+    <div className="   w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
+      <div className="flex flex-col  max-w-[480px] bg-black rounded items-center mx-auto ">
+        <div className=" flex mb-0.5  pt-1 items-center w-full">
           <div className="flex items-center justify-center">
             <Link
               to="/"
