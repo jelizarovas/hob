@@ -117,11 +117,11 @@ export const Pencil = ({ customer }) => {
       </div>
       <div className="w-full flex items-center justify-evenly px-2">
         <div className="flex flex-col w-full px-4">
-          <span className="text-2xl pt-10">×</span>
+          <span className="text-2xl pt-10">X</span>
           <span className="text-xs border-t-2 p-1 whitespace-nowrap">Customer Signature & Date</span>
         </div>
         <div className="flex flex-col w-full px-4">
-          <span className="text-2xl pt-10">×</span>
+          <span className="text-2xl pt-10">X</span>
           <span className="text-xs border-t-2  p-1 whitespace-nowrap">Manager Signature & Date</span>
         </div>
       </div>
@@ -189,25 +189,31 @@ function PaymentMatrix({ paymentOptions }) {
   // 4) Convert selectedDownPayments to display strings
   const downPaymentOptions = selectedDownPayments.map((dp) => {
     const numericAmount = parseFloat(dp.amount) || 0;
-    return `$${numericAmount.toFixed(2)}`;
+    return `$${numericAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   });
 
   // 5) Build a 2D array of payments (skipping unselected terms)
   //    dp.payments indexes match up with the full terms array,
   //    so we filter them by the same index check.
   const calculatedPayments = selectedDownPayments.map((dp) => {
-    return dp.payments.filter((_, index) => terms[index]?.selected).map((val) => (val ? `$${val}` : "N/A"));
+    return dp.payments
+      .filter((_, index) => terms[index]?.selected)
+      .map((val) =>
+        val
+          ? `$${parseFloat(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : "N/A"
+      );
   });
 
   return (
     <div className="w-full  md:w-3/5 print:w-3/5">
-      <table className="text-center w-full">
+      <table className="text-center ">
         {/* Table Header */}
         <thead>
           <tr>
-            <th></th>
+            <th className="text-left">Finance</th>
             {termHeaders.map((header, index) => (
-              <PaymentMatrixHeader key={index} text={`${header.payments} mos`} subtext={`${header.apr}% APR`} />
+              <PaymentMatrixHeader key={index} text={`${header.payments} mo`} subtext={`${header.apr}% APR`} />
             ))}
           </tr>
         </thead>
@@ -229,21 +235,27 @@ function PaymentMatrix({ paymentOptions }) {
 }
 
 const PaymentDetailLine = ({ label, amount, isBold, ...props }) => {
+  // Ensure amount is a properly formatted number with thousands separators
+  const formattedAmount =
+    amount && !isNaN(amount)
+      ? `$${parseFloat(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : amount; // Keep "N/A" or other non-numeric values as is
+
   return (
     <li
-      className={` p-2 md:p-2 flex border-b-2 border-gray-300 hover:bg-black hover:bg-opacity-5 ${
+      className={`p-2 md:p-2 print:py-1 flex border-b-2 border-gray-300 hover:bg-black hover:bg-opacity-5 ${
         isBold ? "bg-black bg-opacity-10" : "bg-opacity-0"
-      } cursor-pointer print:text-xs `}
+      } cursor-pointer print:text-xs`}
     >
       <span className="flex-grow">{label}</span>
-      <span className={`${isBold ? "font-bold " : ""}`}>{amount}</span>
+      <span className={`${isBold ? "font-bold" : ""}`}>{formattedAmount}</span>
     </li>
   );
 };
 
 const PaymentMatrixHeader = ({ text, subtext, ...props }) => {
   return (
-    <td className="bg-gray-200 px-4 py-2 print:px-2 print:py-1 print:text-xs">
+    <td className="bg-gray-200 px-4 py-2 print:px-2 print:py-3 print:text-xs">
       <div className="flex flex-col items-center">
         <span className="font-bold">{text}</span>
         <span className="text-xs print:text-[10px] leading-none">{subtext}</span>{" "}
@@ -254,7 +266,7 @@ const PaymentMatrixHeader = ({ text, subtext, ...props }) => {
 
 const PaymentMatrixDownpaymentOption = ({ text, subtext, ...props }) => {
   return (
-    <td className="border py-1 px-4 print:px-2 print:py-1">
+    <td className="border py-1 pr-4 print:pr-2 print:py-1">
       <div className="flex flex-col justify-center text-left p-1 leading-none text-sm print:text-xs">
         <strong>{text}</strong>
         <span>{subtext}</span>
@@ -265,8 +277,10 @@ const PaymentMatrixDownpaymentOption = ({ text, subtext, ...props }) => {
 
 const PaymentMatrixSelectOption = ({ text, subtext, ...props }) => {
   return (
-    <td className="border bg-black bg-opacity-0 hover:bg-opacity-10 cursor-pointer">
-      <strong className=" flex items-center justify-center h-16 text-sm print:text-xs">{text}</strong>
+    <td className="border px-4 bg-black bg-opacity-0 hover:bg-opacity-10 cursor-pointer px-2">
+      <strong className=" flex items-center justify-center h-16 text-sm print:text-xs">
+        {text.toLocaleString()}/mo
+      </strong>
     </td>
   );
 };

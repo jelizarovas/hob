@@ -263,37 +263,37 @@ function processQuote(quote) {
     .filter((pkg) => pkg.include)
     .map((pkg) => ({
       label: pkg.label,
-      amount: `$${Number(pkg?.value).toFixed(2)}`,
+      amount: `${Number(pkg?.value).toFixed(2)}`,
     }));
 
   const includedAccessories = Object.values(quote.accessories)
     .filter((acc) => acc.include)
     .map((acc) => ({
       label: acc.label,
-      amount: `$${Number(acc?.value).toFixed(2)}`,
+      amount: `${Number(acc?.value).toFixed(2)}`,
     }));
 
   const includedFees = Object.values(quote.fees)
     .filter((fee) => fee.include)
     .map((fee) => ({
       label: fee.label,
-      amount: `$${Number(fee?.value).toFixed(2)}`,
+      amount: `${Number(fee?.value).toFixed(2)}`,
     }));
 
   // Construct the final dealData object
   const dealItems = [
-    { label: "Retail Price", amount: `$${listedPrice.toFixed(2)}` },
-    ...(discount > 0 ? [{ label: "Discount", amount: `$${discount.toFixed(2)}` }] : []),
-    { label: "Your Price", amount: `$${sellingPrice.toFixed(2)}` },
+    { label: "Retail Price", amount: `${listedPrice.toFixed(2)}` },
+    ...(discount > 0 ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }] : []),
+    { label: "Your Price", amount: `${sellingPrice.toFixed(2)}` },
     ...includedAccessories,
     ...includedPackages,
     ...includedFees,
-    { label: `Taxes (${quote?.salesTaxRate})`, amount: `$${quote.salesTax}` },
-    { label: "Sales Subtotal", amount: `$${quote.total}`, isBold: false },
-    // { label: "Customer Cash", amount: `$${quote.paymentMatrix}` },
+    { label: `Taxes (${quote?.salesTaxRate})`, amount: `${quote.salesTax}` },
+    { label: "Sales Subtotal", amount: `${quote.total}`, isBold: false },
+    // { label: "Customer Cash", amount: `${quote.paymentMatrix}` },
     // {
     //   label: "Amount Financed",
-    //   amount: `$${amountFinanced.toFixed(2)}`,
+    //   amount: `${amountFinanced.toFixed(2)}`,
     //   isBold: true,
     // },
   ];
