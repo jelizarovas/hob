@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import {
   updateProfile,
   reauthenticateWithCredential,
@@ -69,12 +69,23 @@ const Account = () => {
       try {
         const docRef = doc(db, "users", currentUser.uid);
         const snapshot = await getDoc(docRef);
+
         if (snapshot.exists()) {
           setUserData(snapshot.data());
           setOriginalData(snapshot.data());
+        } else {
+          // If no doc, create it with default fields:
+          const defaults = {
+            firstName: "",
+            lastName: "",
+            // any required fields...
+          };
+          await setDoc(docRef, defaults);
+          setUserData(defaults);
+          setOriginalData(defaults);
         }
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        console.error("Error fetching or creating user doc:", err);
       }
     })();
   }, [currentUser]);
@@ -94,16 +105,13 @@ const Account = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      // Update Firestore
       const docRef = doc(db, "users", currentUser.uid);
       await updateDoc(docRef, { ...userData });
 
-      // Update Firebase Auth displayName
       await updateProfile(currentUser, {
         displayName: `${userData.firstName} ${userData.lastName}`,
       });
 
-      // Reflect new changes as “originalData” so the Save button re-disables
       setOriginalData(userData);
       alert("Profile updated successfully!");
     } catch (error) {
