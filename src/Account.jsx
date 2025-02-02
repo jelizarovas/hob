@@ -11,6 +11,8 @@ import {
 import { db, auth } from "./firebase";
 import { useAuth } from "./auth/AuthProvider";
 import ProfilePhotoUpload from "./ProfilePhotoUpload";
+import QRCode from "react-qr-code";
+import { MyQRCode } from "./MyQRCode";
 
 const Account = () => {
   const { currentUser } = useAuth();
@@ -232,6 +234,8 @@ const Account = () => {
               originalValue={originalData.contactUrl}
               onChange={handleChange}
             />
+
+            <MyQRCode value={userData.contactUrl} />
 
             <button
               type="submit"
