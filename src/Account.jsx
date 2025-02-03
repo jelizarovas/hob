@@ -11,8 +11,11 @@ import {
 import { db, auth } from "./firebase";
 import { useAuth } from "./auth/AuthProvider";
 import ProfilePhotoUpload from "./ProfilePhotoUpload";
-import QRCode from "react-qr-code";
 import { MyQRCode } from "./MyQRCode";
+
+// 1) Import Skeleton
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Account = () => {
   const { currentUser } = useAuth();
@@ -31,22 +34,22 @@ const Account = () => {
     profilePhoto: "",
   });
 
+  // 2) Loading state specifically for user doc fetch
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+  // For photo upload
   const handlePhotoUploadComplete = async ({ mainURL, thumbURL }) => {
     try {
-      // Save in Firestore
       const docRef = doc(db, "users", currentUser.uid);
       await updateDoc(docRef, {
         profilePhotoURL: mainURL,
         profilePhotoThumbURL: thumbURL,
       });
-      // Update local state
       setUserData((prev) => ({
         ...prev,
         profilePhotoURL: mainURL,
         profilePhotoThumbURL: thumbURL,
       }));
-
-      // Optionally update user photo in Auth:
       await updateProfile(currentUser, { photoURL: mainURL });
       alert("Photo updated!");
     } catch (err) {
@@ -55,19 +58,21 @@ const Account = () => {
     }
   };
 
-  // Loading states for both user data save and password update
+  // Loading states for saving user data & updating password
   const [isSaving, setIsSaving] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
-  // For password re-auth + updates
+  // Password fields
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Fetch user doc on mount
+  // 3) Fetch user doc on mount
   useEffect(() => {
     if (!currentUser) return;
+    
     (async () => {
+      setIsLoadingUser(true); // start loading
       try {
         const docRef = doc(db, "users", currentUser.uid);
         const snapshot = await getDoc(docRef);
@@ -76,33 +81,33 @@ const Account = () => {
           setUserData(snapshot.data());
           setOriginalData(snapshot.data());
         } else {
-          // If no doc, create it with default fields:
-          const defaults = {
-            firstName: "",
-            lastName: "",
-            // any required fields...
-          };
+          // If no doc, create a default
+          const defaults = { firstName: "", lastName: "" };
           await setDoc(docRef, defaults);
           setUserData(defaults);
           setOriginalData(defaults);
         }
       } catch (err) {
         console.error("Error fetching or creating user doc:", err);
+      } finally {
+        // End loading
+        setIsLoadingUser(false);
       }
     })();
   }, [currentUser]);
 
-  // Form changes
+  // Track changes in form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Determine if anything has changed by comparing userData to originalData
+  // Check if any field is modified
   const isModified = Object.keys(userData).some(
     (key) => userData[key] !== originalData[key]
   );
 
+  // Save form to Firestore
   const handleSave = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -123,8 +128,8 @@ const Account = () => {
     }
   };
 
+  // Update password
   const handlePasswordChange = async () => {
-    // Basic checks
     if (!currentPassword || !newPassword || !confirmPassword) {
       alert("Please fill out all password fields.");
       return;
@@ -135,16 +140,13 @@ const Account = () => {
     }
     setIsUpdatingPassword(true);
     try {
-      // Re-authenticate user with current password
       const user = auth.currentUser;
       const cred = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, cred);
 
-      // Now we can safely update the password
       await updatePassword(user, newPassword);
       alert("Password updated successfully!");
 
-      // Clear the fields
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -170,7 +172,21 @@ const Account = () => {
         <h2 className="flex-grow px-4">Account Settings</h2>
       </div>
 
-      {currentUser ? (
+      {/* 4) If we are loading user data, show skeletons, otherwise show the main form */}
+      {isLoadingUser ? (
+        <div className="max-w-md">
+          <Skeleton height={20} width={200} className="mb-2" />
+          <Skeleton height={30} className="mb-4" />
+          <Skeleton height={20} width={100} className="mb-2" />
+          <Skeleton height={30} className="mb-4" />
+          <Skeleton height={20} width={100} className="mb-2" />
+          <Skeleton height={30} className="mb-4" />
+          <Skeleton height={20} width={180} className="mb-2" />
+          <Skeleton height={30} className="mb-4" />
+          <Skeleton height={20} width={150} className="mb-2" />
+          <Skeleton height={30} className="mb-4" />
+        </div>
+      ) : currentUser ? (
         <>
           <p className="text-lg mb-2">Email: {currentUser.email}</p>
 
@@ -308,13 +324,13 @@ const Account = () => {
           </div>
         </>
       ) : (
-        <p>Loading user...</p>
+        <p>No user found</p>
       )}
     </div>
   );
 };
 
-// Updated input component to highlight fields if value != originalValue
+// The rest of the code remains the same
 const AccountInput = ({
   label,
   name,
@@ -324,7 +340,6 @@ const AccountInput = ({
   type = "text",
 }) => {
   const hasChanged = value !== originalValue;
-  // Tailwind classes to highlight changes (green border & label text)
   const highlightClass = hasChanged
     ? "border-green-400"
     : "border-white border-opacity-10";
