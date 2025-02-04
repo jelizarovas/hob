@@ -70,7 +70,7 @@ const Account = () => {
   // 3) Fetch user doc on mount
   useEffect(() => {
     if (!currentUser) return;
-    
+
     (async () => {
       setIsLoadingUser(true); // start loading
       try {
@@ -113,7 +113,17 @@ const Account = () => {
     setIsSaving(true);
     try {
       const docRef = doc(db, "users", currentUser.uid);
-      await updateDoc(docRef, { ...userData });
+      // Prepare updated data with lastUpdatedBy included
+      const updatedData = {
+        ...userData,
+        lastUpdatedBy: {
+          userId: currentUser.uid,
+          displayName:
+            currentUser.displayName ||
+            `${userData.firstName} ${userData.lastName}`,
+        },
+      };
+      await updateDoc(docRef, updatedData);
 
       await updateProfile(currentUser, {
         displayName: `${userData.firstName} ${userData.lastName}`,
