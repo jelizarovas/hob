@@ -27,6 +27,11 @@ import { onCall } from "firebase-functions/v2/https";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import admin from "firebase-admin";
 import * as functions from "firebase-functions";
+import { listAuthUsers } from "./src/listAuthUsers.js";
+import { makeMeAdmin } from "./src/makeMeAdmin.js";
+export { makeMeAdmin };
+
+export { listAuthUsers };
 
 admin.initializeApp();
 const db = getFirestore();
