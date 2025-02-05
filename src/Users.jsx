@@ -1,87 +1,123 @@
-import React, { useState, useEffect } from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import React, { useState, useEffect } from "react";
+import { collection, onSnapshot, addDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 export function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [updatingUid, setUpdatingUid] = useState(null);
-  const functions = getFunctions();
+  const [error, setError] = useState(null);
+  const [newUid, setNewUid] = useState("");
+  const [newEmail, setNewEmail] = useState("");
 
-  // Fetch all auth users via callable function
+  // Listen to the users collection
   useEffect(() => {
-    const listAuthUsers = httpsCallable(functions, 'listAuthUsers');
-    listAuthUsers()
-      .then((result) => {
-        setUsers(result.data);
+    const unsubscribe = onSnapshot(
+      collection(db, "users"),
+      (snapshot) => {
+        const usersData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setUsers(usersData);
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error listing users:', error);
+      },
+      (err) => {
+        console.error("Error fetching users:", err);
+        setError(err);
         setLoading(false);
-      });
-  }, [functions]);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
-  const handleToggleUser = (user) => {
-    setUpdatingUid(user.uid);
-    const setUserLoginEnabled = httpsCallable(functions, 'setUserLoginEnabled');
-    setUserLoginEnabled({
-      targetUid: user.uid,
-      disable: !user.disabled,
-    })
-      .then(() => {
-        // Update the local state to reflect change
-        setUsers((prevUsers) =>
-          prevUsers.map((u) =>
-            u.uid === user.uid ? { ...u, disabled: !u.disabled } : u
-          )
-        );
-      })
-      .catch((error) => {
-        console.error('Error updating user status:', error);
-      })
-      .finally(() => {
-        setUpdatingUid(null);
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    try {
+      // Add a new document to the "users" collection.
+      await addDoc(collection(db, "users"), {
+        uid: newUid || null,
+        email: newEmail || null,
       });
+      // Clear the form
+      setNewUid("");
+      setNewEmail("");
+    } catch (err) {
+      console.error("Error adding user:", err);
+      setError(err);
+    }
   };
-
-  if (loading) {
-    return <p className="text-center text-gray-300">Loading users...</p>;
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Auth Users</h1>
-      <ul className="space-y-4">
-        {users.map((user) => (
-          <li key={user.uid} className="bg-gray-800 p-4 rounded-lg shadow-md">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-              <div>
-                <h2 className="text-xl font-semibold">
-                  {user.displayName || 'No Name'}
-                </h2>
-                <p className="text-gray-400">{user.email}</p>
-                <p className="mt-1">
-                  Status:{' '}
-                  <span className={user.disabled ? 'text-red-400' : 'text-green-400'}>
-                    {user.disabled ? 'Disabled' : 'Enabled'}
-                  </span>
-                </p>
-              </div>
-              <button
-                onClick={() => handleToggleUser(user)}
-                disabled={updatingUid === user.uid}
-                className="mt-2 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
-              >
-                {updatingUid === user.uid
-                  ? 'Updating...'
-                  : user.disabled
-                  ? 'Enable Login'
-                  : 'Disable Login'}
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-2xl font-bold text-center mb-4">Users Collection</h1>
+
+      {loading ? (
+        <p className="text-center text-gray-400">Loading users...</p>
+      ) : error ? (
+        <p className="text-center text-red-400">Error: {error.message}</p>
+      ) : (
+        <ul className="space-y-4">
+          {users.map((user) => (
+            <li key={user.id} className="bg-gray-800 p-4 rounded-lg shadow">
+              <p>
+                <span className="font-semibold">UID:</span>{" "}
+                {user.id ? user.id : "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span>{" "}
+                {user.email ? user.email : "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">First Name:</span>{" "}
+                {user.firstName ? user.firstName : "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span>{" "}
+                {user.lastName ? user.lastName : "N/A"}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <form
+        onSubmit={handleAddUser}
+        className="mt-8 max-w-md mx-auto bg-gray-800 p-4 rounded-lg shadow-md"
+      >
+        <h2 className="text-xl font-semibold text-center mb-4">Add New User</h2>
+        <div className="mb-4">
+          <label htmlFor="uid" className="block mb-1">
+            UID
+          </label>
+          <input
+            id="uid"
+            type="text"
+            value={newUid}
+            onChange={(e) => setNewUid(e.target.value)}
+            placeholder="Enter UID (optional)"
+            className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="email" className="block mb-1">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="Enter email (optional)"
+            className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none"
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+        >
+          Add User
+        </button>
+      </form>
     </div>
   );
 }
