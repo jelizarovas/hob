@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, addDoc } from "firebase/firestore";
+import { Link } from "react-router-dom";
 import { db } from "./firebase";
 
 export function Users() {
@@ -61,7 +62,9 @@ export function Users() {
             <li key={user.id} className="bg-gray-800 p-4 rounded-lg shadow">
               <p>
                 <span className="font-semibold">UID:</span>{" "}
-                {user.id ? user.id : "N/A"}
+                <Link to={`/account/${user?.id}`}>
+                  {user.id ? user.id : "N/A"}
+                </Link>
               </p>
               <p>
                 <span className="font-semibold">Email:</span>{" "}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import {
@@ -19,8 +19,10 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 const Account = () => {
   const { currentUser } = useAuth();
+  // Get :uid from the URL (if present)
+  const { uid } = useParams();
 
-  // Keep two copies: one for the original from DB, one for the current user edits
+  // Keep two copies: one for the original from DB, one for current user edits.
   const [originalData, setOriginalData] = useState({});
   const [userData, setUserData] = useState({
     firstName: "",
@@ -32,15 +34,16 @@ const Account = () => {
     apptScheduleUrl: "",
     contactUrl: "",
     profilePhoto: "",
+    role: "", // e.g., "admin", "sales", etc.
   });
 
-  // 2) Loading state specifically for user doc fetch
+  // 2) Loading state for user doc fetch
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   // For photo upload
   const handlePhotoUploadComplete = async ({ mainURL, thumbURL }) => {
     try {
-      const docRef = doc(db, "users", currentUser.uid);
+      const docRef = doc(db, "users", targetUid());
       await updateDoc(docRef, {
         profilePhotoURL: mainURL,
         profilePhotoThumbURL: thumbURL,
@@ -50,7 +53,9 @@ const Account = () => {
         profilePhotoURL: mainURL,
         profilePhotoThumbURL: thumbURL,
       }));
-      await updateProfile(currentUser, { photoURL: mainURL });
+      if (isViewingOwnProfile()) {
+        await updateProfile(auth.currentUser, { photoURL: mainURL });
+      }
       alert("Photo updated!");
     } catch (err) {
       console.error("Failed to save photo:", err);
@@ -67,22 +72,30 @@ const Account = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 3) Fetch user doc on mount
+  // Utility: determine which user document to read
+  const targetUid = () => {
+    if (uid) return uid;
+    return currentUser?.uid || null;
+  };
+
+  // Utility: check if viewing your own profile
+  const isViewingOwnProfile = () => {
+    return currentUser && currentUser.uid === targetUid();
+  };
+
+  // 3) Fetch user doc on mount or when uid/currentUser changes
   useEffect(() => {
-    if (!currentUser) return;
-
-    (async () => {
-      setIsLoadingUser(true); // start loading
+    const fetchData = async () => {
+      if (!targetUid()) return;
+      setIsLoadingUser(true);
       try {
-        const docRef = doc(db, "users", currentUser.uid);
+        const docRef = doc(db, "users", targetUid());
         const snapshot = await getDoc(docRef);
-
         if (snapshot.exists()) {
           setUserData(snapshot.data());
           setOriginalData(snapshot.data());
         } else {
-          // If no doc, create a default
-          const defaults = { firstName: "", lastName: "" };
+          const defaults = { firstName: "", lastName: "", role: "" };
           await setDoc(docRef, defaults);
           setUserData(defaults);
           setOriginalData(defaults);
@@ -90,11 +103,11 @@ const Account = () => {
       } catch (err) {
         console.error("Error fetching or creating user doc:", err);
       } finally {
-        // End loading
         setIsLoadingUser(false);
       }
-    })();
-  }, [currentUser]);
+    };
+    fetchData();
+  }, [uid, currentUser]);
 
   // Track changes in form
   const handleChange = (e) => {
@@ -112,8 +125,7 @@ const Account = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const docRef = doc(db, "users", currentUser.uid);
-      // Prepare updated data with lastUpdatedBy included
+      const docRef = doc(db, "users", targetUid());
       const updatedData = {
         ...userData,
         lastUpdatedBy: {
@@ -124,11 +136,11 @@ const Account = () => {
         },
       };
       await updateDoc(docRef, updatedData);
-
-      await updateProfile(currentUser, {
-        displayName: `${userData.firstName} ${userData.lastName}`,
-      });
-
+      if (isViewingOwnProfile()) {
+        await updateProfile(auth.currentUser, {
+          displayName: `${userData.firstName} ${userData.lastName}`,
+        });
+      }
       setOriginalData(userData);
       alert("Profile updated successfully!");
     } catch (error) {
@@ -138,7 +150,7 @@ const Account = () => {
     }
   };
 
-  // Update password
+  // Update password (only if viewing own profile)
   const handlePasswordChange = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       alert("Please fill out all password fields.");
@@ -153,10 +165,8 @@ const Account = () => {
       const user = auth.currentUser;
       const cred = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, cred);
-
       await updatePassword(user, newPassword);
       alert("Password updated successfully!");
-
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -170,6 +180,10 @@ const Account = () => {
     }
   };
 
+  if (!targetUid()) {
+    return <p>No user found or not logged in.</p>;
+  }
+
   return (
     <div className="container mx-auto p-8">
       <div className="flex space-x-4 text-2xl font-bold mb-4">
@@ -182,7 +196,6 @@ const Account = () => {
         <h2 className="flex-grow px-4">Account Settings</h2>
       </div>
 
-      {/* 4) If we are loading user data, show skeletons, otherwise show the main form */}
       {isLoadingUser ? (
         <div className="max-w-md">
           <Skeleton height={20} width={200} className="mb-2" />
@@ -196,9 +209,24 @@ const Account = () => {
           <Skeleton height={20} width={150} className="mb-2" />
           <Skeleton height={30} className="mb-4" />
         </div>
-      ) : currentUser ? (
+      ) : (
         <>
           <p className="text-lg mb-2">Email: {currentUser.email}</p>
+          {/* Display role if available */}
+          {userData.role && (
+            <p className="text-sm text-gray-400 mb-2">
+              Role: <span className="font-semibold">{userData.role}</span>
+            </p>
+          )}
+          <p className="text-lg mb-2">
+            Viewing profile for UID: <strong>{targetUid()}</strong>
+          </p>
+          {!isViewingOwnProfile() && (
+            <p className="text-sm text-gray-500 mb-4">
+              You are viewing someone else’s profile. Some actions may be
+              disabled unless you’re an admin.
+            </p>
+          )}
 
           <form
             onSubmit={handleSave}
@@ -261,7 +289,9 @@ const Account = () => {
               onChange={handleChange}
             />
 
-            <MyQRCode value={userData.contactUrl} />
+            {userData?.contactUrl?.length > 0 && (
+              <MyQRCode value={userData?.contactUrl} />
+            )}
 
             <button
               type="submit"
@@ -272,21 +302,22 @@ const Account = () => {
             </button>
           </form>
 
-          <Link
-            to="/account/vCard"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 inline-block"
-          >
-            Generate Business Card
-          </Link>
+          {isViewingOwnProfile() && (
+            <Link
+              to="/account/vCard"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 inline-block"
+            >
+              Generate Business Card
+            </Link>
+          )}
 
           <div className="p-4">
             <div className="mt-6">
               <ProfilePhotoUpload
-                userId={currentUser.uid}
+                userId={targetUid()}
                 onUploadComplete={handlePhotoUploadComplete}
               />
             </div>
-
             {userData.profilePhotoThumbURL && (
               <img
                 src={userData.profilePhotoThumbURL}
@@ -296,51 +327,49 @@ const Account = () => {
             )}
           </div>
 
-          {/* Change Password Section */}
-          <div className="mt-8 max-w-md">
-            <h3 className="text-xl mb-2">Change Password</h3>
-            <div className="flex flex-col space-y-2">
-              <input
-                type="password"
-                placeholder="Current Password"
-                className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="New Password"
-                autoComplete="new-password"
-                className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Confirm New Password"
-                autoComplete="new-password"
-                className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
+          {isViewingOwnProfile() && (
+            <div className="mt-8 max-w-md">
+              <h3 className="text-xl mb-2">Change Password</h3>
+              <div className="flex flex-col space-y-2">
+                <input
+                  type="password"
+                  placeholder="Current Password"
+                  className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+                <input
+                  type="password"
+                  placeholder="New Password"
+                  autoComplete="new-password"
+                  className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm New Password"
+                  autoComplete="new-password"
+                  className="bg-transparent px-2 py-1 border border-white border-opacity-10 rounded"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+              <button
+                onClick={handlePasswordChange}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isUpdatingPassword}
+              >
+                {isUpdatingPassword ? "Updating..." : "Update Password"}
+              </button>
             </div>
-            <button
-              onClick={handlePasswordChange}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isUpdatingPassword}
-            >
-              {isUpdatingPassword ? "Updating..." : "Update Password"}
-            </button>
-          </div>
+          )}
         </>
-      ) : (
-        <p>No user found</p>
       )}
     </div>
   );
 };
 
-// The rest of the code remains the same
 const AccountInput = ({
   label,
   name,

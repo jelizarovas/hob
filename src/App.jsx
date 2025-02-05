@@ -44,6 +44,11 @@ function App() {
                   <ProtectedRoute exact path="/account/" component={Account} />
                   <ProtectedRoute
                     exact
+                    path="/account/:uid"
+                    component={Account}
+                  />
+                  <ProtectedRoute
+                    exact
                     path="/account/vCard"
                     component={BusinessCardGenerator}
                   />
