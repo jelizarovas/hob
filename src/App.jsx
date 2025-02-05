@@ -49,7 +49,7 @@ function App() {
                   />
                   <ProtectedRoute
                     exact
-                    path="/account/vCard"
+                    path="/account/:uid/vCard"
                     component={BusinessCardGenerator}
                   />
                   <ProtectedRoute exact path="/dev/test" component={DevPanel} />

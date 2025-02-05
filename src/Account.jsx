@@ -304,7 +304,7 @@ const Account = () => {
 
           {isViewingOwnProfile() && (
             <Link
-              to="/account/vCard"
+              to={`/account/${uid || currentUser?.uid}/vCard`}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 inline-block"
             >
               Generate Business Card
