@@ -268,6 +268,20 @@ const Account = () => {
               onChange={handleChange}
             />
             <AccountInput
+              label="Extension"
+              name="extension"
+              value={userData.extension}
+              originalValue={originalData.extension}
+              onChange={handleChange}
+            />
+            <AccountInput
+              label="DriveCentric Email"
+              name="driveCentricEmail"
+              value={userData.driveCentricEmail}
+              originalValue={originalData.driveCentricEmail}
+              onChange={handleChange}
+            />
+            <AccountInput
               label="Website"
               name="website"
               value={userData.website}
