@@ -20,6 +20,7 @@ import {
   MdBarcodeReader,
   MdDirectionsCar,
   MdNewReleases,
+  MdFileOpen,
 } from "react-icons/md";
 import { RxExternalLink } from "react-icons/rx";
 import { BsPinFill } from "react-icons/bs";
@@ -403,7 +404,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
   // console.log(state.filters.api.website);
 
   return (
-    <div className="w-full flex items-center justify-around rounded-b-lg lg:rounded border mb-4 print:hidden">
+    <div className="w-full flex-wrap flex items-center justify-center gap-2 rounded-b-lg lg:rounded border mb-4 print:hidden">
       <ActionButton
         label="Details"
         Icon={MdDirectionsCar}
@@ -461,6 +462,14 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         }}
         // state={{ key: "value", ...v }}
       />
+      <ActionButton
+        label="Take-In"
+        Icon={MdFileOpen}
+        to={{
+          pathname: `/take-in/${v?.vin}/`,
+          state: { vehicle: v },
+        }}
+      />
       {v?.type === "New" ? (
         <ActionButton
           label="Barcode"
@@ -469,7 +478,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         />
       ) : (
         <ActionButton
-          label="BGuide"
+          label="Buyer's Guide"
           Icon={MdListAlt}
           to={`buyers/guide/?vin=${v?.vin}&year=${v?.year}&make=${
             v?.make
@@ -491,12 +500,12 @@ const ActionButton = ({
   ...props
 }) => {
   const className =
-    "p-0 flex px-2 flex-col hover:bg-white hover:bg-opacity-20 transition-all justify-center items-center disabled:opacity-60 disabled:hover:bg-transparent  w-full py-1";
+    "p-0 flex px-2 flex-col hover:bg-white hover:bg-opacity-20 transition-all justify-center items-center disabled:opacity-60 disabled:hover:bg-transparent rounded  min-w-16 py-1";
 
   const Content = () => (
     <>
       {Icon && <Icon className={`text-2xl ${iconClassName}`} />}{" "}
-      <span className="text-xs">{label}</span>
+      <span className="text-xs text-nowrap">{label}</span>
     </>
   );
 

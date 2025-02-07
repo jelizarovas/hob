@@ -19,6 +19,7 @@ import Account from "./Account";
 import Layout from "./drivecentric/Layout";
 import { BusinessCardGenerator } from "./BusinessCardGenerator";
 import { Users } from "./Users";
+import TakeIn from "./vehicle/Take-In";
 
 const queryClient = new QueryClient();
 // import useSettings from "./hooks/useSettings";
@@ -68,6 +69,10 @@ function App() {
                   <ProtectedRoute
                     path="/buyers/guide/:vin"
                     component={BuyersGuide}
+                  />
+                  <ProtectedRoute
+                    path="/take-in/:vin"
+                    component={TakeIn}
                   />
 
                   <ProtectedRoute
