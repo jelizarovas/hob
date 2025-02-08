@@ -2,26 +2,17 @@ import React from "react";
 
 import {
   MdBusinessCenter,
-  MdCategory,
-  MdCheckBox,
-  MdCheckBoxOutlineBlank,
   MdClear,
   MdKeyboardArrowDown,
-  MdLogout,
-  MdMenu,
-  MdPerson,
   MdSearch,
-  MdSort,
 } from "react-icons/md";
-import { FaFilePdf } from "react-icons/fa6";
 
 import { useVehicles } from "./VehicleContext";
 import { FilterPanel } from "./FilterPanel";
-import { Link, useHistory } from "react-router-dom";
-import { useAuth } from "./auth/AuthProvider";
-import { signOut } from "firebase/auth";
-import { auth } from "./firebase";
+import { Link } from "react-router-dom";
+
 import { DropDown } from "./components/Dropdown";
+import { MenuButton } from "./MenuButton";
 
 export const AppBar = ({
   settingsOpen,
@@ -36,95 +27,20 @@ export const AppBar = ({
     defaultFacets,
     defaultFacetsStats,
     filtersDispatch,
-    updateFilters,
+    // updateFilters,
   } = useVehicles();
 
-  const { currentUser } = useAuth();
-  const history = useHistory();
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      history.push("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
 
   function handleChange(event) {
     updateQuery(event.target.value);
   }
 
-  const handleTypeChange = (option, value) => {
-    updateFilters({ type: { ...filters.type, [option]: !value } });
-  };
+  // const handleTypeChange = (option, value) => {
+  //   updateFilters({ type: { ...filters.type, [option]: !value } });
+  // };
 
-  const dd = {
-    popperPlacement: "bottom-end",
-    options: [
-      {
-        label: "Account",
-        Icon: MdPerson,
-        onClick: (e) => history.push("/account"),
-        Component: (props) => (
-          <div className="flex flex-col justify-center items-center bg-indigo-900 w-full text-white">
-            <span className="text-xs py-1">Hi, {currentUser?.email?.slice(0, 2).toUpperCase()}</span>
-            <Link to="/account" className="flex items-center w-full  gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded  p-2"><MdPerson className="mx-1" /> <span>Account</span></Link>
-            {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
-          </div>
-        ),
-      },
-      {
-        label: "Take-In Sheet",
-        Icon: FaFilePdf,
-        onClick: (e) =>
-          window.open(
-            "pdf/Take-in Sheet Form.pdf",
-            "_blank",
-            "noopener,noreferrer"
-          ),
-      },
-      {
-        label: "Check Request",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/check/req"),
-      },
-      {
-        label: "Buyers Guide",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/buyers/guide/"),
-      },
-      {
-        label: "Barcode",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/bar/code/"),
-      },
-      {
-        label: "Log Out",
-        Icon: MdLogout,
-        onClick: handleLogout,
-      },
-    ],
-    renderItem: ({ label, Icon, ...props }) => (
-      <div
-        className="min-w-32 w-full flex   items-center space-x-2 px-4 py-1 bg-black hover:bg-slate-900 text-white"
-        {...props}
-      >
-        {Icon && <Icon />} <span>{label}</span>
-      </div>
-    ),
-    renderButton: ({ isOpen, open, close, props }) => (
-      <AppBarButton
-        {...props}
-        Icon={MdMenu}
-        onClick={isOpen ? close : open}
-        isActive={isOpen}
-        // label="menu"
-      />
-    ),
-    onSelect: console.log,
-    disableSearch: true,
-  };
+ 
 
   const stores = {
     popperPlacement: "bottom-end",
@@ -163,70 +79,70 @@ export const AppBar = ({
     disableSearch: true,
   };
 
-  const vehicleTypes = {
-    popperPlacement: "bottom-end",
-    options: [
-      { label: "New", bg: "bg-indigo-900", value: "new" },
-      { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
-      { label: "Used", bg: "bg-orange-900", value: "used" },
-    ],
-    renderItem: ({ label, value, bg, ...props }) => (
-      <div
-        className="min-w-32 w-full flex   items-center space-x-2 px-2 py-1 bg-black hover:bg-slate-900 text-white"
-        {...props}
-      >
-        {filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}{" "}
-        <span>{label}</span>
-      </div>
-    ),
-    renderButton: ({ isOpen, open, close, props }) => (
-      <AppBarButton
-        {...props}
-        Icon={MdCategory}
-        label="Types"
-        onClick={isOpen ? close : open}
-        isActive={isOpen}
-      />
-    ),
-    onSelect: ({ value }) => handleTypeChange(value, filters.type[value]),
-    disableSearch: true,
-  };
+  // const vehicleTypes = {
+  //   popperPlacement: "bottom-end",
+  //   options: [
+  //     { label: "New", bg: "bg-indigo-900", value: "new" },
+  //     { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
+  //     { label: "Used", bg: "bg-orange-900", value: "used" },
+  //   ],
+  //   renderItem: ({ label, value, bg, ...props }) => (
+  //     <div
+  //       className="min-w-32 w-full flex   items-center space-x-2 px-2 py-1 bg-black hover:bg-slate-900 text-white"
+  //       {...props}
+  //     >
+  //       {filters.type[value] ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}{" "}
+  //       <span>{label}</span>
+  //     </div>
+  //   ),
+  //   renderButton: ({ isOpen, open, close, props }) => (
+  //     <AppBarButton
+  //       {...props}
+  //       Icon={MdCategory}
+  //       label="Types"
+  //       onClick={isOpen ? close : open}
+  //       isActive={isOpen}
+  //     />
+  //   ),
+  //   onSelect: ({ value }) => handleTypeChange(value, filters.type[value]),
+  //   disableSearch: true,
+  // };
 
-  const sortTypes = {
-    popperPlacement: "bottom-end",
-    options: [
-      ...filters.api.indexes,
-      { label: "Age ⬆️", value: "DESC" },
-      { label: "Age ⬇️", value: "ASC" },
-    ], // label, index
-    renderItem: ({ label, index, ...props }) => (
-      <div
-        className="min-w-32 w-full flex   items-center space-x-2 px-2 py-1 bg-black hover:bg-slate-900 text-white"
-        {...props}
-      >
-        <span>{label}</span>
-      </div>
-    ),
-    renderButton: ({ isOpen, open, close, props }) => (
-      <AppBarButton
-        {...props}
-        Icon={MdSort}
-        onClick={isOpen ? close : open}
-        isActive={isOpen}
-        label="Sort"
-      />
-    ),
-    onSelect: ({ index, value }) => {
-      if (value)
-        return filtersDispatch({ type: "SORT_BY_AGE", payload: value });
-      if (index)
-        return filtersDispatch({
-          type: "UPDATE_INDEX",
-          payload: index,
-        });
-    },
-    disableSearch: true,
-  };
+  // const sortTypes = {
+  //   popperPlacement: "bottom-end",
+  //   options: [
+  //     ...filters.api.indexes,
+  //     { label: "Age ⬆️", value: "DESC" },
+  //     { label: "Age ⬇️", value: "ASC" },
+  //   ], // label, index
+  //   renderItem: ({ label, index, ...props }) => (
+  //     <div
+  //       className="min-w-32 w-full flex   items-center space-x-2 px-2 py-1 bg-black hover:bg-slate-900 text-white"
+  //       {...props}
+  //     >
+  //       <span>{label}</span>
+  //     </div>
+  //   ),
+  //   renderButton: ({ isOpen, open, close, props }) => (
+  //     <AppBarButton
+  //       {...props}
+  //       Icon={MdSort}
+  //       onClick={isOpen ? close : open}
+  //       isActive={isOpen}
+  //       label="Sort"
+  //     />
+  //   ),
+  //   onSelect: ({ index, value }) => {
+  //     if (value)
+  //       return filtersDispatch({ type: "SORT_BY_AGE", payload: value });
+  //     if (index)
+  //       return filtersDispatch({
+  //         type: "UPDATE_INDEX",
+  //         payload: index,
+  //       });
+  //   },
+  //   disableSearch: true,
+  // };
 
   return (
     <div className="   w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
@@ -280,11 +196,7 @@ export const AppBar = ({
         } `}
       > */}
 
-          {currentUser && (
-            <div className="relative">
-              <DropDown {...dd} />
-            </div>
-          )}
+         <MenuButton />
         </div>
 
         {filterPanelOpen && (
@@ -320,30 +232,7 @@ export const AppBar = ({
   );
 };
 
-export const AppBarButton = ({
-  Icon,
-  onClick = () => {},
-  isActive,
-  label,
-  ...props
-}) => {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex flex-col group relative rounded-lg p-1 mx-1 text-xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
-        isActive
-          ? "bg-opacity-80 text-black hover:text-white"
-          : "bg-opacity-0 text-white"
-      } `}
-    >
-      {isActive ? <Icon /> : <Icon />}
-      {label && (
-        <span className="text-[8px] leading-none uppercase">{label}</span>
-      )}
-    </button>
-  );
-};
+
 
 function getType(filters) {
   const { new: isNew, certifiedUsed, used } = filters.type;

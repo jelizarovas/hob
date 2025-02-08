@@ -243,14 +243,9 @@ export const BuyersGuide = ({ data }) => {
 
   return (
     <div className="flex flex-col">
-      <Link
-        to="/"
-        className="uppercase text-center items-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
-      >
-        Go to Main
-      </Link>
+    
       <form
-        className="flex bg-slate-800 py-10 px-4 rounded mx-auto my-10 flex-col w-96 text-black"
+        className="flex bg-slate-800 py-10 px-4 rounded mx-auto my-4 flex-col w-96 text-black"
         onSubmit={handleSubmit}
       >
         <Input

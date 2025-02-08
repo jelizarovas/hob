@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { useLocation, useHistory, Link, useParams } from "react-router-dom";
-import { FaPaperPlane } from "react-icons/fa";
+import { FaFilePdf, FaPaperPlane, FaSpinner } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
+import { MdDelete, MdFileDownload, MdHistory } from "react-icons/md";
 
 // Reusable header component for collapsible sections
 const SectionHeader = ({ title, isOpen, onToggle, onClear }) => (
-  <div className="flex items-center bg-gray-700 dark:bg-gray-900 p-2 rounded mb-2">
+  <div className="flex items-center bg-blue-950 hover:bg-blue-900  px-4 p-2 rounded border border-black border-opacity-40 mt-2 ">
     <button
       type="button"
       onClick={(e) => {
         e.preventDefault();
         onToggle();
       }}
-      className="flex-grow text-left text-white focus:outline-none"
+      className="flex-grow text-left text-white uppercase text-xs font-semibold focus:outline-none"
     >
       {title}
     </button>
@@ -23,12 +24,12 @@ const SectionHeader = ({ title, isOpen, onToggle, onClear }) => (
         e.preventDefault();
         onClear();
       }}
-      className="text-xs text-blue-300 px-2 py-1 rounded bg-white bg-opacity-0 hover:bg-opacity-10 transition-all focus:outline-none"
+      className="text-xs text-white text-opacity-80 px-2 py-1 rounded bg-white bg-opacity-0 hover:bg-opacity-10 transition-all focus:outline-none"
     >
       Clear
     </button>
     <BsChevronDown
-      className={`text-white transition-all ${isOpen ? "rotate-90" : ""}`}
+      className={`mx-2 text-white transition-all ${isOpen ? "" : "-rotate-90"}`}
     />
   </div>
 );
@@ -87,6 +88,19 @@ const TakeIn = () => {
     const stored = localStorage.getItem("takeInRecords");
     return stored ? JSON.parse(stored) : [];
   });
+
+  const removeRecord = (index) => {
+    const updated = recentRecords.filter((_, i) => i !== index);
+    setRecentRecords(updated);
+    localStorage.setItem("takeInRecords", JSON.stringify(updated));
+  };
+  
+  const clearAllRecords = () => {
+    if (window.confirm("Clear all records?")) {
+      setRecentRecords([]);
+      localStorage.removeItem("takeInRecords");
+    }
+  };
 
   // Manage tab state: "current" shows the form, "recent" shows saved records.
   const [activeTab, setActiveTab] = useState("current");
@@ -352,41 +366,54 @@ const TakeIn = () => {
     return (
       <div className="space-y-2">
         {recentRecords.map((record, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              setFormData(record);
-              setActiveTab("current");
-            }}
-            className="w-full text-left p-2 bg-gray-700 dark:bg-gray-900 rounded text-white hover:bg-gray-600 transition-all"
-          >
-            {record.vin || "No VIN"} — {record.year} {record.make} {record.model} <span className="text-xs italic">({new Date(record.timestamp).toLocaleString()})</span>
-          </button>
+          <div key={index} className="flex items-center justify-between text-left p-2 bg-gray-700 dark:bg-gray-900 rounded text-white hover:bg-gray-700 transition-all">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setFormData(record);
+                setActiveTab("current");
+              }}
+              className="w-full flex flex-col "
+            >
+             
+              <span>{record.year} {record.make} {record.model} {record.trim}</span>
+              {record.vin || "No VIN"}
+              <span className="text-xs italic">
+                ({new Date(record.timestamp).toLocaleString()})
+              </span>
+            </button>
+            <button
+              onClick={() => removeRecord(index)}
+              className="ml-2 px-2 py-2 rounded-full border text-white hover:border-red-500 transition-all hover:text-red-700"
+              title="Remove this record"
+            >
+              <MdDelete />
+            </button>
+          </div>
         ))}
+        <button
+          onClick={clearAllRecords}
+          className="mt-2 w-full p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+        >
+          Clear All
+        </button>
       </div>
     );
   };
 
   return (
     <div className="flex flex-col">
-      <Link
-        to="/"
-        className="uppercase text-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto"
-      >
-        Go to Main
-      </Link>
-
-      {/* Tabs for CURRENT and RECENT */}
-      <div className="flex mb-4 w-96 mx-auto">
+      <div className="container mx-auto flex px-2 pb-2 items-center  bg-white bg-opacity-5 rounded-t pt-2 uppercase text-gray-300">
+        <h1 className="flex-grow text-sm px-2 leading-tight">Take-in Form</h1>
+        <div className="flex text-xs  ">
         <button
           type="button"
           onClick={(e) => {
             e.preventDefault();
             setActiveTab("current");
           }}
-          className={`flex-grow p-2 text-center transition-all ${activeTab === "current" ? "bg-blue-600 text-white" : "bg-blue-300 bg-opacity-10 text-white"}`}
+          className={`flex-grow p-1 px-2 text-center rounded-l transition-all ${activeTab === "current" ? "bg-blue-600 text-white" : "bg-blue-300 bg-opacity-10 text-white hover:bg-opacity-20"}`}
         >
           CURRENT
         </button>
@@ -396,28 +423,37 @@ const TakeIn = () => {
             e.preventDefault();
             setActiveTab("recent");
           }}
-          className={`flex-grow p-2 text-center transition-all ${activeTab === "recent" ? "bg-blue-600 text-white" : "bg-blue-300 bg-opacity-10 text-white"}`}
+          className={`flex-grow flex items-center gap-2 p-1 px-2 text-center rounded-r  transition-all ${activeTab === "recent" ? "bg-blue-600 text-white" : "bg-blue-300 bg-opacity-10 text-white hover:bg-opacity-20"}`}
         >
-          RECENT
+        <MdHistory />  <span>RECENT</span>
         </button>
       </div>
 
+        <span className="px-2 select-none opacity-20">|</span>
+        <button 
+        onClick={(e) => window.open("/pdf/Take-in Sheet Form.pdf", "_blank", "noopener,noreferrer")}
+        className="flex items-center gap-2 text-xs hover:underline bg-white bg-opacity-0 hover:bg-opacity-15 transition-all p-2 px-4 rounded">  <FaFilePdf /> <span>PDF</span></button>
+      </div>
+
+      {/* Tabs for CURRENT and RECENT */}
+     
       {activeTab === "recent" ? (
-        <div className="w-96 mx-auto mb-4">{renderRecentRecords()}</div>
+        <div className="container mx-auto px-2 py-2 bg-white rounded-b bg-opacity-10 mb-4">{renderRecentRecords()}</div>
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col bg-slate-800 py-10 px-4 rounded mx-auto my-10 w-96 text-black"
+          className="flex flex-col bg-white bg-opacity-10 py-2 px-4 rounded-b mb-4 container mx-auto  text-black"
         >
           {/* Sold Main Information Section */}
           <SectionHeader
-            title="Sold Vehicle Information"
+            title="Sold Vehicle"
             isOpen={showSoldMain}
             onToggle={() => setShowSoldMain((prev) => !prev)}
             onClear={clearSoldMainData}
           />
           {showSoldMain && (
-            <div className="mb-4">
+                      <div className="bg-white bg-opacity-5 p-2 mx-1 mb-4 rounded-b">
+
               <Input
                 label="VIN"
                 name="vin"
@@ -455,7 +491,7 @@ const TakeIn = () => {
                 placeholder="Trim"
               />
               <Input
-                label="Miles (Enter sold vehicle miles)"
+                label={`Miles ${state?.vehicle?.miles ? `(Listed ${state?.vehicle?.miles} miles)` : ""} `}
                 name="mileage"
                 value={formData.mileage}
                 onChange={handleChange}
@@ -472,7 +508,8 @@ const TakeIn = () => {
             onClear={clearAdditionalSoldData}
           />
           {showAdditionalSoldData && (
-            <div className="border p-2 mb-4">
+                      <div className="bg-white bg-opacity-5 p-2 mx-1 mb-4 rounded-b">
+
               {soldTextFields.map(({ key, label }) => (
                 <Input
                   key={key}
@@ -508,7 +545,7 @@ const TakeIn = () => {
             onClear={clearTradeData}
           />
           {showTradeData && (
-            <div className="border p-2 mb-4">
+            <div className="bg-white bg-opacity-5 p-2 mx-1 mb-4 rounded-b">
               <Input
                 label="VIN"
                 name="tradeVin"
@@ -559,12 +596,12 @@ const TakeIn = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded text-white bg-green-600 hover:bg-green-700 transition-all flex items-center justify-center ${
+            className={`w-full py-2 rounded text-white mt-4 mb-6 bg-green-600 hover:bg-green-700 transition-all flex items-center justify-center ${
               loading ? "cursor-not-allowed" : ""
             }`}
           >
             {loading ? (
-              <FaPaperPlane className="inline mr-2 animate-spin" />
+              <FaSpinner className="inline mr-2 animate-spin" />
             ) : (
               <FaPaperPlane className="inline mr-2" />
             )}
@@ -587,7 +624,8 @@ const Input = ({ label, name, value, onChange, onBlur, placeholder, autoFocus = 
       onBlur={onBlur}
       placeholder={placeholder}
       autoFocus={autoFocus}
-      className="px-2 py-1 rounded focus:outline-none"
+      autoComplete={"off"}
+      className="text-sm px-2 py-1 rounded outline-none bg-white bg-opacity-10 text-white hover:bg-opacity-15 transition-all focus:bg-opacity-15"
     />
   </label>
 );

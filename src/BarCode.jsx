@@ -73,12 +73,7 @@ export const BarCode = () => {
 
   return (
     <div className="flex flex-col">
-      <Link
-        to="/"
-        className="uppercase text-center items-center bg-white bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg w-96 mx-auto "
-      >
-        Go to Main
-      </Link>
+      
       <div className="flex flex-col w-96 mx-auto my-10 bg-slate-800 text-black rounded py-2 px-2">
         <input
           type="text"

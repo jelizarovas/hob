@@ -269,13 +269,8 @@ export const CheckRequest = () => {
   };
 
   return (
-    <div className="flex flex-col px-4">
-      <Link
-        to="/"
-        className="uppercase text-center w-full items-center bg-white my-3 bg-opacity-10 hover:bg-opacity-25 text-xs py-1 rounded-lg  mx-auto "
-      >
-        Go to Main
-      </Link>
+    <div className="flex flex-col mt-2 px-4">
+      
       <h1 className="bg-slate-800 py-2 uppercase text-sm text-center rounded-t"> Check Request</h1>
       <div className="flex flex-col bg-slate-700 px-2 rounded-b py-4">
 
@@ -288,12 +283,12 @@ export const CheckRequest = () => {
         onChange={handleOnChange}
         />
       <Input label="Name" name="name" value={state.name} placeholder="John Doe" onChange={handleOnChange} />
-      <Input label="Address" name="address" value={state.address} placeholder="25" onChange={handleOnChange} />
+      <Input label="Address" name="address" value={state.address} placeholder="123 John St, Seattle" onChange={handleOnChange} />
       <Input
         label="Explanation"
         name="explanation"
         value={state.explanation}
-        placeholder="25"
+        placeholder="Google Review"
         onChange={handleOnChange}
       />
       <div>

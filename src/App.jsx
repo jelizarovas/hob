@@ -16,13 +16,13 @@ import { BarCode } from "./BarCode";
 import { Pencil } from "./Pencil";
 import Login from "./auth/Login";
 import Account from "./Account";
-import Layout from "./drivecentric/Layout";
+// import Layout from "./drivecentric/Layout";
 import { BusinessCardGenerator } from "./BusinessCardGenerator";
 import { Users } from "./Users";
+import Layout from "./Layout";
 import TakeIn from "./vehicle/Take-In";
 
 const queryClient = new QueryClient();
-// import useSettings from "./hooks/useSettings";
 
 const darkTheme = createTheme({
   palette: {
@@ -41,49 +41,26 @@ function App() {
               <Router>
                 <Switch>
                   <Route path="/login" component={Login} />
-                  <ProtectedRoute exact path="/users/" component={Users} />
-                  <ProtectedRoute exact path="/account/" component={Account} />
-                  <ProtectedRoute
-                    exact
-                    path="/account/:uid"
-                    component={Account}
-                  />
-                  <ProtectedRoute
-                    exact
-                    path="/account/:uid/vCard"
-                    component={BusinessCardGenerator}
-                  />
-                  <ProtectedRoute exact path="/dev/test" component={DevPanel} />
-                  <ProtectedRoute exact path="/dev/dc" component={Layout} />
-                  <Route exact path="/dev/pencil" component={Pencil} />
-                  <ProtectedRoute
-                    exact
-                    path="/check/req"
-                    component={CheckRequest}
-                  />
-                  <ProtectedRoute
-                    path="/buyers/guide/"
-                    component={BuyersGuide}
-                  />
-                  <ProtectedRoute path="/bar/code/" component={BarCode} />
-                  <ProtectedRoute
-                    path="/buyers/guide/:vin"
-                    component={BuyersGuide}
-                  />
-                  <ProtectedRoute
-                    path="/take-in/:vin"
-                    component={TakeIn}
-                  />
-
-                  <ProtectedRoute
-                    exact
-                    path="/:stock"
-                    component={VehiclePage}
-                  />
-
-                  <Route exact path="/quote/:vin" component={Quote} />
-
                   <ProtectedRoute exact path="/" component={Dashboard} />
+                  <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
+                  <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
+
+                  <Layout>
+                    <ProtectedRoute exact path="/users/" component={Users} />
+                    <ProtectedRoute exact path="/account/" component={Account} />
+                    <ProtectedRoute exact path="/account/:uid" component={Account} />
+                    <ProtectedRoute exact path="/account/:uid/vCard" component={BusinessCardGenerator} />
+                    <ProtectedRoute exact path="/check" component={CheckRequest} />
+                    <ProtectedRoute exact path="/buyers/guide/" component={BuyersGuide} />
+                    <ProtectedRoute exact path="/buyers/guide/:vin" component={BuyersGuide} />
+                    <ProtectedRoute exact path="/bar/code/" component={BarCode} />
+                    <ProtectedRoute exact path="/take-in/" component={TakeIn} />
+                    <ProtectedRoute exact path="/take-in/:vin" component={TakeIn} />
+                    <ProtectedRoute exact path="/quote/:vin" component={Quote} />
+
+                    <ProtectedRoute exact path="/dev/test" component={DevPanel} />
+                    {/* <ProtectedRoute exact path="/dev/dc" component={Layout} /> */}
+                  </Layout>
                 </Switch>
               </Router>
             </ThemeProvider>

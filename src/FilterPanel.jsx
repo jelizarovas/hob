@@ -11,7 +11,7 @@ import { SettingsSlider } from "./settings/SettingsSlider";
 // import { FilterListSelection } from "./settings/FilterListSelection";
 import { FilterListSelection } from "./dev/FilterListSelection";
 import { useVehicles } from "./VehicleContext";
-import { AppBarButton } from "./Appbar";
+import { AppBarButton } from "./MenuButton";
 
 export const FilterPanel = ({
   setFilterPanelOpen,
