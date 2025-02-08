@@ -23,7 +23,7 @@ import {
   MdFileOpen,
 } from "react-icons/md";
 import { RxExternalLink } from "react-icons/rx";
-import { BsPinFill } from "react-icons/bs";
+import { BsClipboard, BsPinFill } from "react-icons/bs";
 import { formatCurrency } from "../utils";
 import QRCode from "react-qr-code";
 import { isNumber } from "lodash";
@@ -486,6 +486,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         />
       )}
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
+      <CopyDataButton v={v} />
     </div>
   );
 };
@@ -647,3 +648,26 @@ export function determinePrice(ourPrice) {
   // Default case
   return "OTHER";
 }
+
+
+const CopyDataButton = ({ v }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(v, null, 2));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
+  };
+
+  return (
+    <ActionButton
+      label={copied ? "Copied!" : "Copy Data"}
+      Icon={BsClipboard}
+      onClick={handleCopy}
+    />
+  );
+};
