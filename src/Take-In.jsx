@@ -4,17 +4,18 @@ import { useLocation, useHistory, Link, useParams } from "react-router-dom";
 import { FaFilePdf, FaPaperPlane, FaSpinner } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
 import { MdDelete, MdFileDownload, MdHistory } from "react-icons/md";
+import VinInputWithScanner from "./VinInputWithScanner";
 
 // Reusable header component for collapsible sections
 const SectionHeader = ({ title, isOpen, onToggle, onClear }) => (
-  <div className="flex items-center bg-blue-950 hover:bg-blue-900  px-4 p-2 rounded border border-black border-opacity-40 mt-2 ">
+  <div className="flex items-center bg-blue-950 hover:bg-blue-900   rounded border border-black border-opacity-40 mt-2 ">
     <button
       type="button"
       onClick={(e) => {
         e.preventDefault();
         onToggle();
       }}
-      className="flex-grow text-left text-white uppercase text-xs font-semibold focus:outline-none"
+      className="flex-grow text-left px-4 py-2 text-white uppercase text-xs font-semibold focus:outline-none"
     >
       {title}
     </button>
@@ -28,9 +29,20 @@ const SectionHeader = ({ title, isOpen, onToggle, onClear }) => (
     >
       Clear
     </button>
+    <button
+    onClick={(e) => {
+      e.preventDefault();
+      onToggle();
+
+    }}
+    className="px-2 "
+    >
+
     <BsChevronDown
-      className={`mx-2 text-white transition-all ${isOpen ? "" : "-rotate-90"}`}
+    
+      className={` text-white transition-all ${isOpen ? "" : "-rotate-90"}`}
     />
+    </button>
   </div>
 );
 
@@ -454,14 +466,15 @@ const TakeIn = () => {
           {showSoldMain && (
                       <div className="bg-white bg-opacity-5 p-2 mx-1 mb-4 rounded-b">
 
-              <Input
-                label="VIN"
-                name="vin"
-                value={formData.vin}
-                onChange={handleChange}
-                onBlur={handleVinBlur}
-                placeholder="VIN"
-              />
+<VinInputWithScanner
+  label="VIN"
+  name="vin"
+  value={formData.vin}
+  onChange={handleChange}
+  onBlur={handleVinBlur}
+  placeholder="VIN"
+/>
+
               <Input
                 label="Year"
                 name="year"

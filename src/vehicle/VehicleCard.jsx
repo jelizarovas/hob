@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import ReactDOMServer from "react-dom/server";
 import { getColorNameByCode, getGenericColor, parseAddress, parseMileage } from "../utils";
 import { useSettings } from "../SettingsContext";
 import {
@@ -16,6 +17,7 @@ import {
   MdDirectionsCar,
   MdNewReleases,
   MdFileOpen,
+  MdQrCode,
 } from "react-icons/md";
 import { RxExternalLink } from "react-icons/rx";
 import { BsClipboard, BsPinFill } from "react-icons/bs";
@@ -344,8 +346,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
 
   return (
     <div className="w-full flex-wrap flex items-center justify-center gap-2 rounded-b-lg lg:rounded border mb-4 print:hidden">
-    
-    <ActionButton
+      <ActionButton
         label={isPinned ? "Unpin" : "Pin"}
         Icon={BsPinFill}
         onClick={() => {
@@ -381,7 +382,7 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         }}
       />
       {/* <ActionButton label="Note" Icon={MdAddCircle} disabled /> */}
-      
+
       <ActionButton
         label="Quote"
         Icon={MdRequestQuote}
@@ -412,6 +413,20 @@ const ActionBar = ({ v, togglePinnedCar, isPinned, ...props }) => {
         />
       )}
       {/* <ActionButton label="Hide" Icon={MdVisibilityOff} disabled /> */}
+      <ActionButton
+        label="VinQR"
+        Icon={MdQrCode}
+        onClick={() => {
+          if (v?.vin) {
+            const svgString = ReactDOMServer.renderToStaticMarkup(<QRCode value={v.vin} />);
+            const blob = new Blob([svgString], { type: "image/svg+xml" });
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
+          }
+          togglePinnedCar(v);
+        }}
+      />
+
       <CopyDataButton v={v} />
     </div>
   );

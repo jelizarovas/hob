@@ -20,7 +20,8 @@ import Account from "./Account";
 import { BusinessCardGenerator } from "./BusinessCardGenerator";
 import { Users } from "./Users";
 import Layout from "./Layout";
-import TakeIn from "./vehicle/Take-In";
+import TakeIn from "./Take-In";
+// import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ function App() {
                 <Switch>
                   <Route path="/login" component={Login} />
                   <ProtectedRoute exact path="/" component={Dashboard} />
+                  {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
                   <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
 
