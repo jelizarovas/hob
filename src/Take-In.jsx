@@ -417,7 +417,7 @@ const TakeIn = () => {
   return (
     <div className="flex flex-col">
       <div className="container mx-auto flex px-2 pb-2 items-center  bg-white bg-opacity-5 rounded-t pt-2 uppercase text-gray-300">
-        <h1 className="flex-grow text-sm px-2 leading-tight">Take-in Form</h1>
+        <h1 className="flex-grow text-sm px-2 leading-tight"></h1>
         <div className="flex text-xs  ">
         <button
           type="button"

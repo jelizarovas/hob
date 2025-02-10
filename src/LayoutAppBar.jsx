@@ -30,13 +30,13 @@ export const LayoutAppBar = ({ dropdownOptions }) => {
         <LogoLink />
         {displayCrumbs.map((crumb, index) => (
           <React.Fragment key={index}>
-            <span className="pr-2 opacity-25">/</span>
+            <span className="px-2 opacity-25">/</span>
             {crumb[1] !== "#" ? (
               <Link className="hover:text-blue-100 transition-all hover:underline" to={crumb[1]}>{crumb[0]}</Link>
             ) : (
               <span>{crumb[0]}</span>
             )}
-            {index < displayCrumbs.length - 1 && <span> / </span>}
+            {/* {index < displayCrumbs.length - 1 && <span> / </span>} */}
           </React.Fragment>
         ))}
         </div>
@@ -51,7 +51,7 @@ const LogoLink = () => {
     <>
       <Link
         to="/"
-        className="text-blue-500 hover:text-blue-300 hover:underline transition-all font-bold  px-2"
+        className="text-blue-500 hover:text-blue-300 hover:underline transition-all font-bold  pl-2"
       >
         HOFB
       </Link>

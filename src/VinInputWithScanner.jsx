@@ -185,7 +185,7 @@ export default function VinInputWithScanner({
         />
       </label>
 
-      {!scanning && (
+      {/* {!scanning && (
         <button
           onClick={startScanning}
           style={{
@@ -198,7 +198,7 @@ export default function VinInputWithScanner({
         >
           Scan QR/Barcode
         </button>
-      )}
+      )} */}
 
       {scanning && (
         <div
