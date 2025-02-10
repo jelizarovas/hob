@@ -41,15 +41,23 @@ export const CheckRequest = () => {
         currentUser.displayName ||
         `${profile?.firstName || ""} ${profile?.lastName || ""}`.trim();
       if (prefillName && !state.name)
-        dispatch({ type: "UPDATE_INPUT", payload: { field: "name", value: prefillName } });
+        dispatch({
+          type: "UPDATE_INPUT",
+          payload: { field: "name", value: prefillName },
+        });
       if (profile?.address && !state.address)
-        dispatch({ type: "UPDATE_INPUT", payload: { field: "address", value: profile.address } });
+        dispatch({
+          type: "UPDATE_INPUT",
+          payload: { field: "address", value: profile.address },
+        });
     }
-  }, [currentUser, profile, state.name, state.address]);
+  }, [currentUser, profile]);
 
   // Handle image files
   const handleFiles = (files) => {
-    const fileArray = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    const fileArray = Array.from(files).filter((file) =>
+      file.type.startsWith("image/")
+    );
     if (fileArray.length > 0) setImages((prev) => [...prev, ...fileArray]);
   };
 
@@ -118,7 +126,10 @@ export const CheckRequest = () => {
     const parseAddress = (address) => {
       const index = address.indexOf(",");
       if (index === -1) return [address, ""];
-      return [address.substring(0, index).trim(), address.substring(index + 1).trim()];
+      return [
+        address.substring(0, index).trim(),
+        address.substring(index + 1).trim(),
+      ];
     };
     const [add1, add2] = parseAddress(data.address);
     firstPage.drawText(add1, {
@@ -148,7 +159,7 @@ export const CheckRequest = () => {
       const { width: pageWidth, height: pageHeight } = firstPage.getSize();
       const margin = 20;
       const availableWidth = pageWidth - 2 * margin;
-      const availableHeight = (pageHeight / 2) - 2 * margin;
+      const availableHeight = pageHeight / 2 - 2 * margin;
       for (let i = 0; i < images.length; i += 2) {
         const newPage = pdfDoc.addPage([pageWidth, pageHeight]);
         // First image (top half)
@@ -159,12 +170,20 @@ export const CheckRequest = () => {
           : await pdfDoc.embedJpg(imageBytes1);
         const origWidth1 = embeddedImage1.width;
         const origHeight1 = embeddedImage1.height;
-        const scaleFactor1 = Math.min(availableWidth / origWidth1, availableHeight / origHeight1);
+        const scaleFactor1 = Math.min(
+          availableWidth / origWidth1,
+          availableHeight / origHeight1
+        );
         const imgWidth1 = origWidth1 * scaleFactor1;
         const imgHeight1 = origHeight1 * scaleFactor1;
         const x1 = margin + (availableWidth - imgWidth1) / 2;
         const y1 = pageHeight - margin - imgHeight1;
-        newPage.drawImage(embeddedImage1, { x: x1, y: y1, width: imgWidth1, height: imgHeight1 });
+        newPage.drawImage(embeddedImage1, {
+          x: x1,
+          y: y1,
+          width: imgWidth1,
+          height: imgHeight1,
+        });
 
         // Second image (bottom half) if available
         if (i + 1 < images.length) {
@@ -175,12 +194,20 @@ export const CheckRequest = () => {
             : await pdfDoc.embedJpg(imageBytes2);
           const origWidth2 = embeddedImage2.width;
           const origHeight2 = embeddedImage2.height;
-          const scaleFactor2 = Math.min(availableWidth / origWidth2, availableHeight / origHeight2);
+          const scaleFactor2 = Math.min(
+            availableWidth / origWidth2,
+            availableHeight / origHeight2
+          );
           const imgWidth2 = origWidth2 * scaleFactor2;
           const imgHeight2 = origHeight2 * scaleFactor2;
           const x2 = margin + (availableWidth - imgWidth2) / 2;
-          const y2 = (pageHeight / 2) - margin - imgHeight2;
-          newPage.drawImage(embeddedImage2, { x: x2, y: y2, width: imgWidth2, height: imgHeight2 });
+          const y2 = pageHeight / 2 - margin - imgHeight2;
+          newPage.drawImage(embeddedImage2, {
+            x: x2,
+            y: y2,
+            width: imgWidth2,
+            height: imgHeight2,
+          });
         }
       }
     }
@@ -193,7 +220,10 @@ export const CheckRequest = () => {
       const now = new Date();
       return download(
         pdfBytes,
-        `Check Request ${data.name} ${data.amount} ${getFormattedDate(now, " ")}.pdf`,
+        `Check Request ${data.name} ${data.amount} ${getFormattedDate(
+          now,
+          " "
+        )}.pdf`,
         "application/pdf"
       );
     }
@@ -201,10 +231,8 @@ export const CheckRequest = () => {
 
   return (
     <div className="flex flex-col mt-2 px-4">
-      <h1 className="bg-slate-800 py-2 uppercase text-sm text-center rounded-t">
-        Check Request
-      </h1>
-      <div className="flex flex-col bg-slate-700 px-2 rounded-b py-4">
+      
+      <div className="flex flex-col bg-white px-4 rounded bg-opacity-10 py-4 ">
         <CheckInput
           label="Amount"
           name="amount"
@@ -236,7 +264,26 @@ export const CheckRequest = () => {
         />
 
         {/* Dedicated Upload Button */}
-        <button
+       
+
+        {/* Drag & Drop / Paste Zone */}
+        <div
+          className={`border-2 rounded border-opacity-20 p-4 my-2 text-center cursor-default transition-all ${
+            dropActive ? "bg-orange-200 bg-opacity-30" : "bg-gray-100 bg-opacity-10"
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => {
+            // On click, flash the orange background to signal paste capability.
+            setDropActive(true);
+            setTimeout(() => setDropActive(false), 3000);
+          }}
+          onPaste={handlePasteImage}
+        >
+          Drag & drop images here or paste an image.
+
+          <button
           type="button"
           className="bg-blue-600 text-white px-4 py-2 rounded my-2"
           onClick={() => document.getElementById("fileInput").click()}
@@ -251,23 +298,6 @@ export const CheckRequest = () => {
           onChange={handleFileSelect}
           style={{ display: "none" }}
         />
-
-        {/* Drag & Drop / Paste Zone */}
-        <div
-          className={`border-2 p-4 my-2 text-center cursor-default ${
-            dropActive ? "bg-orange-200" : "bg-gray-100"
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => {
-            // On click, flash the orange background to signal paste capability.
-            setDropActive(true);
-            setTimeout(() => setDropActive(false), 300);
-          }}
-          onPaste={handlePasteImage}
-        >
-          Drag & drop images here or paste an image.
         </div>
 
         {/* Thumbnails Preview */}

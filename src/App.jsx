@@ -45,24 +45,107 @@ function App() {
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
-                  <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
+                  <ProtectedRoute
+                    exact
+                    path="/#:stock"
+                    component={VehiclePage}
+                  />
 
-                  <Layout>
-                    <ProtectedRoute exact path="/users/" component={Users} />
-                    <ProtectedRoute exact path="/account/" component={Account} />
-                    <ProtectedRoute exact path="/account/:uid" component={Account} />
-                    <ProtectedRoute exact path="/account/:uid/vCard" component={BusinessCardGenerator} />
-                    <ProtectedRoute exact path="/check" component={CheckRequest} />
-                    <ProtectedRoute exact path="/buyers/guide/" component={BuyersGuide} />
-                    <ProtectedRoute exact path="/buyers/guide/:vin" component={BuyersGuide} />
-                    <ProtectedRoute exact path="/bar/code/" component={BarCode} />
-                    <ProtectedRoute exact path="/take-in/" component={TakeIn} />
-                    <ProtectedRoute exact path="/take-in/:vin" component={TakeIn} />
-                    <ProtectedRoute exact path="/quote/:vin" component={Quote} />
-
-                    <ProtectedRoute exact path="/dev/test" component={DevPanel} />
-                    {/* <ProtectedRoute exact path="/dev/dc" component={Layout} /> */}
-                  </Layout>
+<Layout>
+  <ProtectedRoute 
+    exact 
+    path="/users/" 
+    component={Users} 
+    title={[["HOFB", "/"], ["USERS", "/users"]]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/account/" 
+    component={Account} 
+    title={[["HOFB", "/"], ["ACCOUNT", "/account"]]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/account/:uid" 
+    component={Account} 
+    title={(params) => [
+      ["HOFB", "/"],
+      ["ACCOUNT", "/account"],
+      [params.uid, `/account/${params.uid}`],
+    ]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/account/:uid/vCard" 
+    component={BusinessCardGenerator} 
+    title={(params) => [
+      ["HOFB", "/"],
+      ["ACCOUNT", "/account"],
+      [params.uid, `/account/${params.uid}`],
+      ["vCard", `/account/${params.uid}/vCard`],
+    ]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/check" 
+    component={CheckRequest} 
+    title={[["HOFB", "/"], ["CHECK REQUEST", "/check"]]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/buyers/guide/" 
+    component={BuyersGuide} 
+    title={[["HOFB", "/"], ["BUYERS GUIDE", "/buyers/guide"]]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/buyers/guide/:vin" 
+    component={BuyersGuide} 
+    title={(params) => [
+      ["HOFB", "/"],
+      ["BUYERS GUIDE", "/buyers/guide"],
+      [params.vin, `/buyers/guide/${params.vin}`],
+    ]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/bar/code/" 
+    component={BarCode} 
+    title={[["HOFB", "/"], ["BAR CODE", "/bar/code"]]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/take-in/" 
+    component={TakeIn} 
+    title={[["HOFB", "/"], ["TAKE IN", "/take-in"]]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/take-in/:vin" 
+    component={TakeIn} 
+    title={(params) => [
+      ["HOFB", "/"],
+      ["TAKE IN", "/take-in"],
+      [params.vin, `/take-in/${params.vin}`],
+    ]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/quote/:vin" 
+    component={Quote} 
+    title={(params) => [
+      ["QUOTE", "/quote"],
+      [params.vin, `/quote/${params.vin}`],
+    ]} 
+  />
+  <ProtectedRoute 
+    exact 
+    path="/dev/test" 
+    component={DevPanel} 
+    title={[["HOFB", "/"], ["DEV TEST", "/dev/test"]]} 
+  />
+  {/* <ProtectedRoute exact path="/dev/dc" component={Layout} /> */}
+</Layout>
                 </Switch>
               </Router>
             </ThemeProvider>

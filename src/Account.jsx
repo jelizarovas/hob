@@ -186,16 +186,7 @@ const Account = () => {
 
   return (
     <div className="container mx-auto p-8">
-      <div className="flex space-x-4 text-2xl font-bold mb-4">
-        <Link
-          className="w-24 bg-white bg-opacity-5 flex items-center justify-center rounded hover:bg-opacity-20 transition-all"
-          to="/"
-        >
-          <MdKeyboardArrowLeft />
-        </Link>
-        <h2 className="flex-grow px-4">Account Settings</h2>
-      </div>
-
+      
       {isLoadingUser ? (
         <div className="max-w-md">
           <Skeleton height={20} width={200} className="mb-2" />

@@ -1,46 +1,60 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { MenuButton } from "./MenuButton";
+import { TitleContext } from "./TitleContext";
 
 export const LayoutAppBar = ({ dropdownOptions }) => {
-  return (
-    <div className="">
-      <div className="container flex items-center justify-between bg-black p-2 mx-auto">
-        <LogoLink />
+  const { breadcrumbs } = useContext(TitleContext);
 
+  // Remove HOFB if it appears as the first breadcrumb
+  let filteredCrumbs = breadcrumbs;
+  if (breadcrumbs.length && breadcrumbs[0][0] === "HOFB") {
+    filteredCrumbs = breadcrumbs.slice(1);
+  }
+
+  // Apply truncation logic
+  let displayCrumbs = filteredCrumbs;
+  if (filteredCrumbs.length > 3) {
+    displayCrumbs = [
+      filteredCrumbs[0],
+      ["...", "#"],
+      filteredCrumbs[filteredCrumbs.length - 1],
+    ];
+  }
+
+  return (
+    <div className="text-white">
+      <div className="container flex items-center  bg-black p-2 mx-auto">
+        <div className="flex-grow">
+
+        <LogoLink />
+        {displayCrumbs.map((crumb, index) => (
+          <React.Fragment key={index}>
+            <span className="pr-2 opacity-25">/</span>
+            {crumb[1] !== "#" ? (
+              <Link className="hover:text-blue-100 transition-all hover:underline" to={crumb[1]}>{crumb[0]}</Link>
+            ) : (
+              <span>{crumb[0]}</span>
+            )}
+            {index < displayCrumbs.length - 1 && <span> / </span>}
+          </React.Fragment>
+        ))}
+        </div>
         <MenuButton />
       </div>
     </div>
   );
 };
 
-
 const LogoLink = () => {
-    return (
-      <>
-        <style>{`
-          .logo-shine {
-            display: inline-block;
-            font-size: 1rem;
-            font-weight: bold;
-            background: linear-gradient(90deg, #007bff, #ffffff, #007bff);
-            background-size: 200% auto;
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-          }
-          .logo-shine:hover {
-            animation: shineText 5s linear infinite;
-          }
-          @keyframes shineText {
-            0% { background-position: 200% center; }
-            100% { background-position: -200% center; }
-          }
-        `}</style>
-        <Link to="/" className="logo-shine flex-grow px-2">
-          HOFB
-        </Link>
-      </>
-    );
-  };
-
+  return (
+    <>
+      <Link
+        to="/"
+        className="text-blue-500 hover:text-blue-300 hover:underline transition-all font-bold  px-2"
+      >
+        HOFB
+      </Link>
+    </>
+  );
+};
