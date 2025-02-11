@@ -2,7 +2,12 @@ import React from "react";
 import { FaImage, FaUpload, FaCamera } from "react-icons/fa";
 import { MdContentPaste } from "react-icons/md";
 
-const ImageUpload = ({ setImages, dropActive, setDropActive, handlePasteImage }) => {
+const ImageUpload = ({
+  setImages,
+  dropActive,
+  setDropActive,
+  handlePasteImage,
+}) => {
   const handleFiles = (files) => {
     const fileArray = Array.from(files).filter((file) =>
       file.type.startsWith("image/")
@@ -48,36 +53,38 @@ const ImageUpload = ({ setImages, dropActive, setDropActive, handlePasteImage })
       onPaste={handlePasteImage}
     >
       <div className="flex items-center space-x-2">
-        <FaImage className="text-xl text-white" />
-        <span className="text-white">Drag & drop or click to paste an image</span>
+        <FaImage className="text-xl text-white hidden xs:block" />
+        <span className="text-white hidden sm:block">
+          Drag & drop or click to paste an image
+        </span>
       </div>
-      <p className="mt-2 text-sm text-gray-300">
+      <p className="mt-2 text-sm text-gray-300 hidden sm:block">
         (Tip: Use Windows+Shift+S to capture a snippet, then click to paste.)
       </p>
       <div className="flex mt-4 space-x-4">
         <button
           type="button"
-          className="flex items-center bg-blue-800 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded"
+          className="flex flex-col md:flex-row justify-center items-center bg-blue-800 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded"
           onClick={() => document.getElementById("fileInput").click()}
         >
-          <FaUpload className="mr-2" />
-          Upload Images
+          <FaUpload className="text-xl mb-2" />
+          <span className="text-xs whitespace-nowrap"> Upload Images</span>
         </button>
         <button
           type="button"
-          className="flex items-center bg-purple-800 hover:bg-purple-600 transition-all text-white px-4 py-2 rounded"
+          className=" flex-col md:flex-row justify-center items-center bg-purple-800 hover:bg-purple-600 transition-all text-white px-4 py-2 rounded hidden sm:flex"
           onClick={handlePasteImage}
         >
-          <MdContentPaste className="mr-2" />
-          Paste Image
+          <MdContentPaste className="text-xl mb-2" />
+          <span className="text-xs whitespace-nowrap"> Paste Image</span>
         </button>
         <button
           type="button"
-          className="flex items-center bg-green-800 hover:bg-green-600 transition-all text-white px-4 py-2 rounded md:hidden"
+          className="flex flex-col md:flex-row justify-center items-center bg-green-800 hover:bg-green-600 transition-all text-white px-4 py-2 rounded md:hidden"
           onClick={() => document.getElementById("captureInput").click()}
         >
-          <FaCamera className="mr-2" />
-          Take Photo
+          <FaCamera className="text-xl mb-2" />
+          <span className="text-xs whitespace-nowrap"> Take Photo</span>
         </button>
       </div>
       <input

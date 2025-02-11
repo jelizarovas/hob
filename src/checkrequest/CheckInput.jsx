@@ -24,7 +24,8 @@ const CheckInput = ({
           value={value}
           placeholder={placeholder}
           onChange={onChange}
-          rows={3}
+          rows={2}
+          
         />
       ) : (
         <div className="border flex items-center border-gray-500 focus-within:border-indigo-500  rounded bg-white bg-opacity-5 hover:bg-opacity-15 focus-within:bg-opacity-15 p-2 w-full bg-transparent text-white focus-within:text-indigo-200">

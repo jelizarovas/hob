@@ -250,7 +250,7 @@ const CheckRequest = () => {
       onClick={(e) =>
         window.open("/pdf/CHECK REQUEST.pdf", "_blank", "noopener,noreferrer")
       }
-      className="flex items-center gap-2 text-xs hover:underline bg-white bg-opacity-0 hover:bg-opacity-15 transition-all p-2 px-4 rounded"
+      className="flex items-center gap-2 text-xs hover:underline bg-white bg-opacity-0 hover:bg-opacity-15 transition-all sm:p-2 sm:px-4 p-1 rounded"
     >
       <FaFilePdf /> <span>PDF</span>
     </button>
@@ -337,10 +337,12 @@ const CheckRequest = () => {
         </div>
       )}
       <div className="flex items-center  my-2">
+        <div className="flex  items-center">
+
         <button
           onClick={decrementCount}
           className="flex items-center justify-center w-6 h-6 rounded-full text-xl leading-none transition-all text-white hover:bg-opacity-30 bg-opacity-15 bg-white"
-        >
+          >
           -
         </button>
         <input
@@ -348,14 +350,15 @@ const CheckRequest = () => {
           value={spiffCount}
           onChange={handleCountChange}
           className="w-9  border border-gray-500 text-white rounded mx-1 px-2 text-right hover:bg-opacity-10 bg-opacity-5 bg-white"
-        />
+          />
         <button
           onClick={incrementCount}
           className="flex items-center justify-center w-6 h-6 rounded-full text-xl leading-none transition-all text-white hover:bg-opacity-30 bg-opacity-15 bg-white"
-        >
+          >
           +
         </button>
-        <span className="ml-2 lowercase text-white opacity-70  select-none">
+          </div>
+        <span className="ml-2 lowercase text-white opacity-70  select-none whitespace-nowrap">
           {spiffTemplates[selectedSpiffKey]?.short
             ? spiffCount > 1
               ? `${spiffTemplates[selectedSpiffKey].short}s`
@@ -365,7 +368,10 @@ const CheckRequest = () => {
             : "spiff"}
         </span>
 
-        <label className=" text-white opacity-70  select-none">
+        <label className=" text-white opacity-70  select-none md:hidden block mx-2">
+          at
+        </label>
+        <label className=" text-white opacity-70  select-none hidden md:block">
           , with a rate of $
         </label>
         <input
@@ -374,7 +380,8 @@ const CheckRequest = () => {
           onChange={handleRateChange}
           className="w-12  border border-gray-500 text-white rounded mx-1 px-2 text-right hover:bg-opacity-10 bg-opacity-5 bg-white"
         />
-        <label className=" text-white opacity-70  select-none">/per, is:</label>
+        <label className=" text-white opacity-70  select-none hidden md:block">/per, is:</label>
+        <label className=" text-white opacity-70  select-none md:hidden block">rate</label>
       </div>
       <CheckInput
         label="Amount, $"
@@ -528,7 +535,7 @@ const CheckRequest = () => {
 
             <button
               onClick={() => setSpiffSelection("Recent")}
-              className="px-3 py-2 text-sm flex items-center gap-1 rounded bg-white bg-opacity-0 hover:bg-opacity-10 transition-all text-white"
+              className="md:px-3 px-1 md:py-2 py-1 text-sm flex items-center gap-1 rounded bg-white bg-opacity-0 hover:bg-opacity-10 transition-all text-white"
             >
              <MdHistory /> <span> Recent</span>
             </button>
@@ -544,7 +551,7 @@ const CheckRequest = () => {
                   setImages([]); // This clears the uploaded images.
                 }
               }}
-              className="px-3 py-2 text-sm flex items-center gap-1 rounded bg-white bg-opacity-0 hover:bg-opacity-10 transition-all text-white"
+              className="md:px-3 px-1 md:py-2 py-1 text-sm flex items-center gap-1 rounded bg-white bg-opacity-0 hover:bg-opacity-10 transition-all text-white"
 
             >
                            <MdDeleteForever /> <span> Clear</span>

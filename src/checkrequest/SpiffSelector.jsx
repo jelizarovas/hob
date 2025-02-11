@@ -17,7 +17,7 @@ const SpiffSelector = ({ selectedSpiffKey, onSelectSpiff }) => {
     <>
       <div className="relative inline-block w-full">
         <select
-          className="block appearance-none w-full bg-white bg-opacity-5 rounded outline-none  border-gray-500 p-2 text-white focus:bg-opacity-10 hover:bg-opacity-15 transition-all cursor-pointer text-sm"
+          className="block appearance-none w-full bg-white bg-opacity-5 rounded outline-none min-w-36  border-gray-500 p-2 text-white focus:bg-opacity-10 hover:bg-opacity-15 transition-all cursor-pointer text-sm"
           value={selectedSpiffKey}
           onChange={handleChange}
         >
