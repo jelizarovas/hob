@@ -1,5 +1,4 @@
 import React from "react";
-import { FaEllipsisH } from "react-icons/fa";
 import { spiffTemplates } from "./spifftemplates";
 
 const SpiffSelector = ({ selectedSpiffKey, onSelectSpiff }) => {
@@ -40,11 +39,11 @@ const SpiffSelector = ({ selectedSpiffKey, onSelectSpiff }) => {
       </div>
       {showModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-gray-800 p-4 rounded w-80 z-50"
+            className="bg-gray-800 p-4 rounded w-96 z-[60]"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-white text-lg mb-4">Select a Spiff Template</h2>
@@ -55,13 +54,14 @@ const SpiffSelector = ({ selectedSpiffKey, onSelectSpiff }) => {
                   <button
                     key={key}
                     type="button"
-                    className="px-3 py-1 rounded bg-gray-700 text-white text-left"
+                    className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 transition-all text-white text-left flex flex-col"
                     onClick={() => {
                       onSelectSpiff(key);
                       setShowModal(false);
                     }}
                   >
-                    {template.name} – {template.description}
+                    <strong>{template.name}</strong>
+                    <span>{template.description}</span>
                   </button>
                 );
               })}

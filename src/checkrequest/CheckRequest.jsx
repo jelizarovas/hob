@@ -421,8 +421,8 @@ const CheckRequest = () => {
           />
           Split Check Request
           {selectedSpiffKey && !spiffTemplates[selectedSpiffKey].splitable && (
-            <span className="text-red-100 ml-2">
-              (Not allowed for this spiff)
+            <span className="text-red-100 ml-2" title="Not allowed for this spiff">
+              ⛔
             </span>
           )}
         </label>
