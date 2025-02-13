@@ -251,8 +251,15 @@ const Account = () => {
               originalValue={originalData.storeNumber}
               onChange={handleChange}
             />
+             <AccountInput
+              label="Position"
+              name="position"
+              value={userData.position}
+              originalValue={originalData.position}
+              onChange={handleChange}
+            />
             <AccountInput
-              label="Address"
+              label="Address (For Check Requests)"
               name="address"
               value={userData.address}
               originalValue={originalData.address}
@@ -287,7 +294,7 @@ const Account = () => {
               onChange={handleChange}
             />
             <AccountInput
-              label="Contact URL"
+              label="Contact Card URL"
               name="contactUrl"
               value={userData.contactUrl}
               originalValue={originalData.contactUrl}
