@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutAppBar } from "./LayoutAppbar";
+import { LayoutAppBar } from "./LayoutAppBar";
 import { TitleProvider } from "./TitleContext";
 
 const Layout = ({ children }) => {

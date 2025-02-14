@@ -21,7 +21,7 @@ export const MenuButton = () => {
   };
 
   const dd = {
-    popperPlacement: "bottom-end",
+    popperPlacement: "bottom-start",
     options: [
       {
         label: "Account",
@@ -29,7 +29,7 @@ export const MenuButton = () => {
         onClick: (e) => history.push("/account"),
         Component: (props) => (
           <div className="flex flex-col justify-center items-center bg-indigo-900 w-full text-white">
-            <span className="text-xs py-1">Hi, {currentUser?.email?.slice(0, 2).toUpperCase()}</span>
+            {/* <span className="text-xs py-1">Hi, {currentUser?.email?.slice(0, 2).toUpperCase()}</span> */}
             <Link
               to="/account"
               className="flex items-center w-full  gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded  p-2"
@@ -69,7 +69,7 @@ export const MenuButton = () => {
     ],
     renderItem: ({ label, Icon, ...props }) => (
       <div
-        className="min-w-32 w-full flex   items-center space-x-2 px-4 py-1 bg-black hover:bg-slate-900 text-white"
+        className="min-w-44 w-full flex   items-center space-x-2 px-4 py-2 bg-black hover:bg-slate-900 text-white"
         {...props}
       >
         {Icon && <Icon />} <span>{label}</span>
@@ -104,7 +104,7 @@ export const AppBarButton = ({ Icon, onClick = () => {}, isActive, label, ...pro
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col group relative rounded-lg p-1 mx-1 text-xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
+      className={`flex flex-col group relative rounded-lg p-2 mx-2 text-xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
         isActive ? "bg-opacity-80 text-black hover:text-white" : "bg-opacity-0 text-white"
       } `}
     >

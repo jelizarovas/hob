@@ -295,7 +295,7 @@ const ListContainer = ({
       )}
 
       <ul
-        className="flex w-full max-h-56 overflow-y-auto min-w-fit bg-transparent select-none "
+        className="flex w-full outline rounded overflow-y-auto min-w-fit bg-transparent select-none " //removed max-h-56
         style={{
           flexDirection: isContainerAbove ? "column-reverse" : "column",
         }}
