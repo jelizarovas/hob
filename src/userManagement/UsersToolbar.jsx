@@ -67,12 +67,12 @@ export function UsersToolbar({
             </button>
           </>
         )}
-        <button
+        {/* <button
           onClick={onExportExcel}
           className="flex items-center px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded text-white"
         >
           Export as Excel
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -192,6 +192,7 @@ export const createAuthAccount = onDocumentCreated(
         firstName,
         lastName,
         uid: uidToUse,
+        password: "Rairdon123!",
       };
       // Create the Auth account with the specified UID.
       const userRecord = await admin.auth().createUser(newUser);

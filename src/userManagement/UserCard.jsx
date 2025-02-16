@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MdBlock, MdDelete } from "react-icons/md";
+import { MdBlock, MdDelete, MdLock, MdLockOpen } from "react-icons/md";
 
 export function UserCard({
   user,
@@ -67,22 +67,23 @@ export function UserCard({
         {authInfo && (
           <>
           {/* {JSON.stringify(authInfo, null, 2)} */}
-            <button
-              onClick={() => {
-                if (
-                  window.confirm(
-                    `Are you sure you want to ${
-                      authInfo.disabled ? "enable" : "disable"
-                    } this account?`
-                  )
-                ) {
-                  onToggleDisable(user.id, authInfo.disabled);
-                }
-              }}
-              className="p-2 bg-yellow-600 rounded hover:bg-yellow-700"
-            >
-              <MdBlock size={20} />
-            </button>
+
+<button
+  onClick={() => {
+    if (
+      window.confirm(
+        `Are you sure you want to ${authInfo.disabled ? "unlock" : "lock"} this account?`
+      )
+    ) {
+      onToggleDisable(user.id, authInfo.disabled);
+    }
+  }}
+  className="p-2 bg-yellow-600 rounded hover:bg-yellow-700"
+  title={authInfo.disabled ? "Unlock Account" : "Lock Account"}
+>
+  {authInfo.disabled ? <MdLockOpen size={20} /> : <MdLock size={20} />}
+</button>
+
             <button
               onClick={() => {
                 if (

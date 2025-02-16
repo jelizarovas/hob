@@ -3,17 +3,27 @@ import React, { useState } from "react";
 export function AddUser({ onClose, onAddUser }) {
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState("not set");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAddUser({ email, displayName });
+    onAddUser({ email, displayName, role });
+    // Reset form fields and close modal
     setEmail("");
     setDisplayName("");
+    setRole("not set");
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-gray-900 text-white p-6 rounded shadow-lg max-w-md w-full">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={onClose} // Clicking outside closes the modal
+    >
+      <div
+        className="bg-gray-900 text-white p-6 rounded shadow-lg max-w-md w-full"
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside the modal from closing it
+      >
         <h2 className="text-xl mb-4">Add New User</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -43,6 +53,22 @@ export function AddUser({ onClose, onAddUser }) {
               className="w-full p-2 rounded bg-gray-700"
               required
             />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="role" className="block mb-1">
+              Role
+            </label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 rounded bg-gray-700"
+            >
+              <option value="not set">Not Set</option>
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
+              <option value="user">User</option>
+            </select>
           </div>
           <div className="flex justify-end space-x-2">
             <button
