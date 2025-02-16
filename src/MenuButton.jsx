@@ -4,7 +4,7 @@ import { Link, useHistory } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
-import { MdLogout, MdMenu, MdPerson } from "react-icons/md";
+import { MdLogout, MdMenu, MdPerson, MdQrCode } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
 
 export const MenuButton = () => {
@@ -28,13 +28,19 @@ export const MenuButton = () => {
         Icon: MdPerson,
         onClick: (e) => history.push("/account"),
         Component: (props) => (
-          <div className="flex flex-col justify-center items-center bg-indigo-900 w-full text-white">
+          <div className="flex flex-row justify-center items-center bg-indigo-900 w-full text-white">
             {/* <span className="text-xs py-1">Hi, {currentUser?.email?.slice(0, 2).toUpperCase()}</span> */}
             <Link
               to="/account"
               className="flex items-center w-full  gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded  p-2"
             >
               <MdPerson className="mx-1" /> <span>Account</span>
+            </Link>
+            <Link
+              to={`/user/me/share`}
+              className="mx-2 p-2 text-xl rounded bg-white bg-opacity-0 hover:bg-opacity-15 transition-all"
+            >
+              <MdQrCode />
             </Link>
             {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
           </div>
@@ -99,17 +105,27 @@ export const MenuButton = () => {
   );
 };
 
-export const AppBarButton = ({ Icon, onClick = () => {}, isActive, label, ...props }) => {
+export const AppBarButton = ({
+  Icon,
+  onClick = () => {},
+  isActive,
+  label,
+  ...props
+}) => {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`flex flex-col group relative rounded-lg p-2 mx-2 text-xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
-        isActive ? "bg-opacity-80 text-black hover:text-white" : "bg-opacity-0 text-white"
+        isActive
+          ? "bg-opacity-80 text-black hover:text-white"
+          : "bg-opacity-0 text-white"
       } `}
     >
       {isActive ? <Icon /> : <Icon />}
-      {label && <span className="text-[8px] leading-none uppercase">{label}</span>}
+      {label && (
+        <span className="text-[8px] leading-none uppercase">{label}</span>
+      )}
     </button>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { MdKeyboardArrowLeft } from "react-icons/md";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import {
   updateProfile,

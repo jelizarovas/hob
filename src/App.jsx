@@ -21,6 +21,7 @@ import { BusinessCardGenerator } from "./BusinessCardGenerator";
 import { Users } from "./Users";
 import Layout from "./Layout";
 import TakeIn from "./Take-In";
+import { ShareQRContact } from "./ShareQRContact";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,17 @@ function App() {
                       title={[
                         ["HOFB", "/"],
                         ["USERS", "/users"],
+                      ]}
+                    />
+                    <ProtectedRoute
+                      exact
+                      path="/user/me/share"
+                      component={ShareQRContact}
+                      title={[
+                        ["HOFB", "/"],
+                        ["USER", "/users"],
+                        ["ME", "/account"],
+                        ["SHARE", "/user/me/share"],
                       ]}
                     />
                     <ProtectedRoute
