@@ -28,13 +28,30 @@ import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { listAuthUsers } from "./src/listAuthUsers.js";
-import { makeMeAdmin } from "./src/makeMeAdmin.js";
-export { makeMeAdmin };
 
-export { listAuthUsers };
+import {
+  listAccounts,
+  disableAccount,
+  enableAccount,
+  deleteAccount,
+  createAuthAccount,
+  makeMeAdmin,
+  updateUserRole,
+} from "./src/auth.js";
 
 admin.initializeApp();
 const db = getFirestore();
+
+export { listAuthUsers };
+export {
+  listAccounts,
+  disableAccount,
+  enableAccount,
+  deleteAccount,
+  createAuthAccount,
+  makeMeAdmin,
+  updateUserRole,
+};
 
 export const logUserCreated = onDocumentCreated(
   "users/{userId}",

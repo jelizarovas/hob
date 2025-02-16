@@ -18,7 +18,7 @@ import Login from "./auth/Login";
 import Account from "./Account";
 // import Layout from "./drivecentric/Layout";
 import { BusinessCardGenerator } from "./BusinessCardGenerator";
-import { Users } from "./Users";
+import { Users } from "./userManagement/Users";
 import Layout from "./Layout";
 import TakeIn from "./Take-In";
 import { ShareQRContact } from "./ShareQRContact";
