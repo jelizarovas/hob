@@ -37,6 +37,7 @@ import {
   createAuthAccount,
   makeMeAdmin,
   updateUserRole,
+  updateUserPhoto,
 } from "./src/auth.js";
 
 admin.initializeApp();
@@ -51,6 +52,7 @@ export {
   createAuthAccount,
   makeMeAdmin,
   updateUserRole,
+  updateUserPhoto,
 };
 
 export const logUserCreated = onDocumentCreated(

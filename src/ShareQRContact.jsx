@@ -14,7 +14,7 @@ export const ShareQRContact = () => {
           {profile?.firstName} {profile?.lastName}
         </span>
       </h1>
-      <div className="flex gap-2 items-center">
+      <div className="flex flex-col gap-2 ">
         {profile?.email && (
           <div className="text-xl flex items-center gap-2 p-2 px-4">
             <MdEmail /> <span>{profile?.email}</span>

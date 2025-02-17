@@ -11,14 +11,34 @@ import { db, auth } from "./firebase";
 import { useAuth } from "./auth/AuthProvider";
 import ProfilePhotoUpload from "./ProfilePhotoUpload";
 import { MyQRCode } from "./MyQRCode";
+import { getAuth } from "firebase/auth";
 
 // 1) Import Skeleton
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
+const updateUserPhotoURL =
+  "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
+
 const Account = () => {
   const { currentUser } = useAuth();
   const { uid } = useParams();
+
+  const [isPrivileged, setIsPrivileged] = useState(false);
+
+  const checkPrivilegeStatus = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      const idTokenResult = await user.getIdTokenResult();
+      const role = idTokenResult?.claims?.role || "not set";
+      setIsPrivileged(role === "admin" || role === "manager");
+    }
+  };
+
+  useEffect(() => {
+    checkPrivilegeStatus();
+  }, []);
 
   // Keep two copies: one for the original from DB, one for current user edits.
   const [originalData, setOriginalData] = useState({});
@@ -38,6 +58,19 @@ const Account = () => {
   // Loading state for user doc fetch
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
+  const fetchWithAuth = async (url, options = {}) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      };
+    }
+    return fetch(url, options);
+  };
+
   // For photo upload
   const handlePhotoUploadComplete = async ({ mainURL, thumbURL }) => {
     try {
@@ -52,7 +85,15 @@ const Account = () => {
         profilePhotoThumbURL: thumbURL,
       }));
       if (isViewingOwnProfile()) {
+        // Update the Auth profile for self.
         await updateProfile(auth.currentUser, { photoURL: mainURL });
+      } else if (!isViewingOwnProfile() && isPrivileged) {
+        // If editing someone else's profile and you have privileges, update Auth via Cloud Function.
+        await fetchWithAuth(updateUserPhotoURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: targetUid(), photoURL: mainURL }),
+        });
       }
       alert("Photo updated!");
     } catch (err) {

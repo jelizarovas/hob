@@ -206,7 +206,6 @@ export function Users() {
 
   return (
     <div className="min-h-screen bg-white bg-opacity-5 text-white p-1">
-      <h1 className="text-2xl font-bold text-center mb-4">User Management</h1>
 
       <UsersToolbar
         filterValue={filterValue}
