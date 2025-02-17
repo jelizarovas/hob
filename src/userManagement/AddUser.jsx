@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export function AddUser({ onClose, onAddUser }) {
+export function AddUser({ onClose, onAddUser, currentUserRole }) {
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [role, setRole] = useState("not set");
@@ -8,7 +8,6 @@ export function AddUser({ onClose, onAddUser }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onAddUser({ email, displayName, role });
-    // Reset form fields and close modal
     setEmail("");
     setDisplayName("");
     setRole("not set");
@@ -65,7 +64,9 @@ export function AddUser({ onClose, onAddUser }) {
               className="w-full p-2 rounded bg-gray-700"
             >
               <option value="not set">Not Set</option>
-              <option value="admin">Admin</option>
+              {currentUserRole === "admin" && (
+                <option value="admin">Admin</option>
+              )}
               <option value="manager">Manager</option>
               <option value="user">User</option>
             </select>

@@ -12,7 +12,9 @@ export function Users() {
   const [loadingFS, setLoadingFS] = useState(true);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [error, setError] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  // Instead of isAdmin, we now track if the user is privileged (admin or manager)
+  const [isPrivileged, setIsPrivileged] = useState(false);
+  const [viewerRole, setViewerRole] = useState("not set");
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [filterValue, setFilterValue] = useState("enabled");
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -52,7 +54,7 @@ export function Users() {
     return () => unsubscribe();
   }, []);
 
-  // Helper: fetch with current admin token
+  // Helper: fetch with current auth token
   const fetchWithAuth = async (url, options = {}) => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -66,22 +68,22 @@ export function Users() {
     return fetch(url, options);
   };
 
-  // Check if current user is admin
-  const checkAdminStatus = async () => {
+  // Check if current user is privileged (admin or manager)
+  const checkPrivilegeStatus = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
     if (user) {
       const idTokenResult = await user.getIdTokenResult();
-      setIsAdmin(
-        !!idTokenResult?.claims?.role && idTokenResult.claims.role === "admin"
-      );
+      const role = idTokenResult?.claims?.role || "not set";
+      setViewerRole(role);
+      setIsPrivileged(role === "admin" || role === "manager");
     }
   };
   useEffect(() => {
-    checkAdminStatus();
+    checkPrivilegeStatus();
   }, []);
 
-  // Fetch Auth users (if admin)
+  // Fetch Auth users only if privileged; regular users will not see actions.
   const fetchAuthUsers = async () => {
     setLoadingAuth(true);
     try {
@@ -91,14 +93,15 @@ export function Users() {
       setAuthUsers(data.users || []);
     } catch (err) {
       console.error("Error fetching auth accounts:", err);
-      setAuthUsers([]);
+      setAuthUsers([]); // Fallback: empty auth data so Firestore users still show
     } finally {
       setLoadingAuth(false);
     }
   };
+
   useEffect(() => {
-    if (isAdmin) fetchAuthUsers();
-  }, [isAdmin]);
+    if (isPrivileged) fetchAuthUsers();
+  }, [isPrivileged]);
 
   // Build an auth data map keyed by UID.
   const authDataMap = useMemo(() => {
@@ -109,8 +112,9 @@ export function Users() {
     return map;
   }, [authUsers]);
 
-  // Bulk actions
+  // Bulk actions (only enabled for privileged users)
   const toggleDisableAccount = async (uid, currentlyDisabled) => {
+    if (!isPrivileged) return;
     const endpoint = currentlyDisabled ? enableAccountURL : disableAccountURL;
     try {
       const res = await fetchWithAuth(endpoint, {
@@ -126,6 +130,7 @@ export function Users() {
   };
 
   const deleteAccount = async (uid) => {
+    if (!isPrivileged) return;
     try {
       const res = await fetchWithAuth(deleteAccountURL, {
         method: "POST",
@@ -146,6 +151,7 @@ export function Users() {
   };
 
   const handleBulkDelete = async () => {
+    if (!isPrivileged) return;
     if (window.confirm("Are you sure you want to delete selected accounts?")) {
       for (const uid of selectedUserIds) {
         await deleteAccount(uid);
@@ -155,6 +161,7 @@ export function Users() {
   };
 
   const handleBulkDisable = async () => {
+    if (!isPrivileged) return;
     if (
       window.confirm(
         "Are you sure you want to toggle disable for selected accounts?"
@@ -177,10 +184,29 @@ export function Users() {
     setFilterValue(value);
   };
 
-  // Callback from AddUser modal
-  const handleAddUser = async ({ email, displayName }) => {
+  const handleMakeMeAdmin = async () => {
+    // For self-promotion, if needed.
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) return;
     try {
-      await addDoc(collection(db, "users"), { email, displayName });
+      const res = await fetchWithAuth(makeMeAdminURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: user.uid, secret: "devsecret" }),
+      });
+      if (!res.ok) throw new Error("Failed to promote account");
+      await user.getIdToken(true);
+      checkPrivilegeStatus();
+    } catch (err) {
+      console.error("Error promoting account:", err);
+    }
+  };
+
+  // Callback from AddUser modal: add document with email, displayName, role.
+  const handleAddUser = async ({ email, displayName, role }) => {
+    try {
+      await addDoc(collection(db, "users"), { email, displayName, role });
       setShowAddUserModal(false);
     } catch (err) {
       console.error("Error adding account to Firestore:", err);
@@ -202,7 +228,22 @@ export function Users() {
   });
 
   return (
-    <div className="min-h-screen bg-white bg-opacity-5 text-white ">
+    <div className="min-h-screen bg-white bg-opacity-5 text-white p-4">
+      <h1 className="text-2xl font-bold text-center mb-4">User Management</h1>
+
+      {/* Show Make Me Admin button if not privileged */}
+      {!isPrivileged && (
+        <div className="mb-4 text-center">
+          <p className="mb-2">You are not a manager or admin.</p>
+          <button
+            onClick={handleMakeMeAdmin}
+            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+          >
+            Make Me Admin
+          </button>
+        </div>
+      )}
+
       <UsersToolbar
         filterValue={filterValue}
         onFilterChange={handleToggleFilter}
@@ -225,37 +266,43 @@ export function Users() {
             {filteredFirestoreUsers.map((user) => {
               const uid = user.uid || user.id;
               const authInfo = authDataMap[uid];
-              // If authInfo.role is not set, default to "not set"
-              const role = authInfo?.role ? authInfo.role : "not set";
-              if (authInfo) authInfo.role = role;
+              // If no role is set, default to "not set"
+              if (authInfo && !authInfo.role) authInfo.role = "not set";
               return (
                 <UserCard
                   key={uid}
                   user={user}
-                  authInfo={authInfo}
+                  authInfo={isPrivileged ? authInfo : null} // Only show actions if privileged
                   selected={selectedUserIds.includes(uid)}
-                  onSelect={handleSelectUser}
-                  onToggleDisable={toggleDisableAccount}
-                  onDelete={deleteAccount}
-                  onRoleChange={(uid, newRole) => {
-                    fetchWithAuth(updateUserRoleURL, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ uid, newRole }),
-                    })
-                      .then((res) => {
-                        if (!res.ok) throw new Error("Failed to update role");
-                        return res.json();
-                      })
-                      .then((data) => {
-                        console.log(data.message);
-                        // Optionally refresh auth data after role change.
-                        fetchAuthUsers();
-                      })
-                      .catch((err) =>
-                        console.error("Error updating role:", err)
-                      );
-                  }}
+                  onSelect={isPrivileged ? handleSelectUser : () => {}}
+                  onToggleDisable={
+                    isPrivileged ? toggleDisableAccount : () => {}
+                  }
+                  onDelete={isPrivileged ? deleteAccount : () => {}}
+                  onRoleChange={
+                    isPrivileged
+                      ? (uid, newRole) => {
+                          fetchWithAuth(updateUserRoleURL, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ uid, newRole }),
+                          })
+                            .then((res) => {
+                              if (!res.ok)
+                                throw new Error("Failed to update role");
+                              return res.json();
+                            })
+                            .then((data) => {
+                              console.log(data.message);
+                              fetchAuthUsers();
+                            })
+                            .catch((err) =>
+                              console.error("Error updating role:", err)
+                            );
+                        }
+                      : () => {}
+                  }
+                  viewerRole={viewerRole}
                 />
               );
             })}
@@ -264,6 +311,7 @@ export function Users() {
             <AddUser
               onClose={() => setShowAddUserModal(false)}
               onAddUser={handleAddUser}
+              currentUserRole={isPrivileged ? "admin" : "manager"}
             />
           )}
         </>

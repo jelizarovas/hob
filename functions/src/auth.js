@@ -10,6 +10,7 @@ import cors from "cors";
 const corsHandler = cors({ origin: true });
 
 // Helper: Verify the Authorization header for an admin token.
+// Only admin may call
 async function verifyAdmin(req, res) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -20,10 +21,44 @@ async function verifyAdmin(req, res) {
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     if (decodedToken.role !== "admin") {
-      res.status(403).json({ error: "Forbidden: Insufficient privileges" });
+      res.status(403).json({ error: "Forbidden: Only admins allowed" });
       return false;
     }
     return true;
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    res.status(403).json({ error: "Forbidden: Invalid token" });
+    return false;
+  }
+}
+
+// Allow admin or manager, but with an optional targetRole check:
+// If the targetRole is "admin", then a manager is not allowed.
+async function verifyAdminOrManager(req, res, targetRole = null) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.status(401).json({ error: "Unauthorized: No token provided" });
+    return false;
+  }
+  const token = authHeader.split("Bearer ")[1];
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    if (decodedToken.role === "admin") {
+      // Admin can do anything.
+      return true;
+    }
+    if (decodedToken.role === "manager") {
+      // Managers cannot, for example, disable an admin or set admin role.
+      if (targetRole && targetRole === "admin") {
+        res.status(403).json({
+          error: "Forbidden: Managers cannot modify admin users",
+        });
+        return false;
+      }
+      return true;
+    }
+    res.status(403).json({ error: "Forbidden: Insufficient privileges" });
+    return false;
   } catch (error) {
     console.error("Error verifying token:", error);
     res.status(403).json({ error: "Forbidden: Invalid token" });
@@ -35,7 +70,7 @@ async function verifyAdmin(req, res) {
 // firebase deploy --only functions:listAccounts
 export const listAccounts = onRequest((req, res) => {
   corsHandler(req, res, async () => {
-    if (!(await verifyAdmin(req, res))) return;
+    if (!(await verifyAdminOrManager(req, res))) return;
     try {
       if (req.method !== "GET") {
         res.status(405).json({ error: "Method Not Allowed" });
@@ -47,12 +82,9 @@ export const listAccounts = onRequest((req, res) => {
         email: userRecord.email,
         displayName: userRecord.displayName,
         disabled: userRecord.disabled,
-        role:
-          (userRecord.customClaims && userRecord.customClaims.role) ||
-          "not set",
+        role: (userRecord.customClaims && userRecord.customClaims.role) || "not set",
         photoURL: userRecord.photoURL || null,
       }));
-
       res.status(200).json({ users });
     } catch (error) {
       console.error("Error listing accounts:", error);
@@ -61,22 +93,39 @@ export const listAccounts = onRequest((req, res) => {
   });
 });
 
-// Disable Account (HTTP endpoint)
+
+// ----------------------------------------------------------------
+// DISABLE ACCOUNT
+// ----------------------------------------------------------------
+// firebase deploy --only functions:disableAccount
 export const disableAccount = onRequest((req, res) => {
   corsHandler(req, res, async () => {
-    if (!(await verifyAdmin(req, res))) return;
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method Not Allowed" });
+      return;
+    }
+    let body = req.body;
+    if (typeof body === "string") body = JSON.parse(body);
+    const { uid } = body;
+    if (!uid) {
+      res.status(400).json({ error: "UID is required" });
+      return;
+    }
+    // Fetch the target user's record so we can check its role.
+    let targetUser;
     try {
-      if (req.method !== "POST") {
-        res.status(405).json({ error: "Method Not Allowed" });
-        return;
-      }
-      let body = req.body;
-      if (typeof body === "string") body = JSON.parse(body);
-      const { uid } = body;
-      if (!uid) {
-        res.status(400).json({ error: "UID is required" });
-        return;
-      }
+      targetUser = await admin.auth().getUser(uid);
+    } catch (error) {
+      console.error("Error fetching target user:", error);
+      res.status(500).json({ error: "Could not fetch target user" });
+      return;
+    }
+    // Extract target user's role from custom claims (or default to "not set")
+    const targetRole =
+      (targetUser.customClaims && targetUser.customClaims.role) || "not set";
+    // Verify that the caller is an admin or manager (managers cannot disable admin users).
+    if (!(await verifyAdminOrManager(req, res, targetRole))) return;
+    try {
       await admin.auth().updateUser(uid, { disabled: true });
       res.status(200).json({ message: "Account disabled" });
     } catch (error) {
@@ -215,6 +264,9 @@ export const createAuthAccount = onDocumentCreated(
   }
 );
 
+// ----------------------------------------------------------------
+// UPDATE USER ROLE
+// ----------------------------------------------------------------
 // firebase deploy --only functions:updateUserRole
 export const updateUserRole = onRequest((req, res) => {
   corsHandler(req, res, async () => {
@@ -222,25 +274,6 @@ export const updateUserRole = onRequest((req, res) => {
       res.status(405).json({ error: "Method Not Allowed" });
       return;
     }
-    // Verify admin token
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      res.status(401).json({ error: "Unauthorized: No token provided" });
-      return;
-    }
-    const token = authHeader.split("Bearer ")[1];
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      if (decodedToken.role !== "admin") {
-        res.status(403).json({ error: "Forbidden: Insufficient privileges" });
-        return;
-      }
-    } catch (error) {
-      console.error("Token verification error:", error);
-      res.status(403).json({ error: "Forbidden: Invalid token" });
-      return;
-    }
-    // Parse request body
     let body = req.body;
     if (typeof body === "string") {
       try {
@@ -255,6 +288,8 @@ export const updateUserRole = onRequest((req, res) => {
       res.status(400).json({ error: "Missing uid or newRole" });
       return;
     }
+    // For role updates, if newRole is "admin", a manager is not allowed.
+    if (!(await verifyAdminOrManager(req, res, newRole))) return;
     try {
       await admin.auth().setCustomUserClaims(uid, { role: newRole });
       res
