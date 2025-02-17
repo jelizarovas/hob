@@ -25,12 +25,12 @@ export function UserCard({
 
   return (
     <div className="flex items-center p-1 bg-white bg-opacity-5 hover:bg-opacity-10  rounded-lg shadow">
-      <div className="w-12 h-12 relative   flex items-center justify-center mr-4 overflow-hidden">
+      <div className="w-12 h-12 relative mx-1  flex items-center justify-center mr-4 overflow-hidden">
         <input
           type="checkbox"
           checked={selected}
           onChange={() => onSelect(user.id)}
-          className=" absolute top-0 left-0 z-10"
+          className=" absolute -top-0 -left-0 z-10 opacity-50 hover:opacity-100 cursor-pointer" 
         />
         {authInfo?.photoURL ? (
           <img
@@ -94,8 +94,8 @@ export function UserCard({
                   onToggleDisable(user.id, authInfo.disabled);
                 }
               }}
-              className="p-1 bg-yellow-600 rounded hover:bg-yellow-700"
-              title={authInfo.disabled ? "Unlock Account" : "Lock Account"}
+              className={`p-1 rounded ${authInfo.disabled ? "bg-yellow-600  hover:bg-yellow-700 " : "bg-gray-600  hover:bg-yellow-900"}`}
+              title={authInfo.disabled ? "Unlock Account " : "Lock Account"}
             >
               {authInfo.disabled ? (
                 <MdLockOpen size={20} />

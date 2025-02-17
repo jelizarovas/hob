@@ -221,7 +221,7 @@ export function Users() {
         <p className="text-center text-gray-400">Loading Firestore users...</p>
       ) : (
         <>
-          <div className="space-y-0">
+          <div className="space-y-2 px-2">
             {filteredFirestoreUsers.map((user) => {
               const uid = user.uid || user.id;
               const authInfo = authDataMap[uid];

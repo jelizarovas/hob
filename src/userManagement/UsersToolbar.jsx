@@ -59,8 +59,8 @@ export function UsersToolbar({
           <MdAdd className="mr-1" /> <span> Add User</span>
         </button>
       </div>
+      <div className="flex items-center justify-center w-full h-8 space-x-4 pt-4 pb-2 transition-all">
       {selectedCount > 0 && (
-        <div className="flex items-center justify-center w-full space-x-4 pt-4 pb-2 transition-all">
           <>
             <button
               onClick={onBulkEnable}
@@ -80,15 +80,15 @@ export function UsersToolbar({
             >
               <MdDelete className="mr-1" /> Delete ({selectedCount})
             </button>
-          </>
           {/* <button
           onClick={onExportExcel}
           className="flex items-center px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded text-white"
           >
           Export as Excel
           </button> */}
+          </>
+        )}
         </div>
-      )}
     </div>
   );
 }

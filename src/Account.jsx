@@ -185,7 +185,6 @@ const Account = () => {
 
   return (
     <div className="container mx-auto p-8">
-      
       {isLoadingUser ? (
         <div className="max-w-md">
           <Skeleton height={20} width={200} className="mb-2" />
@@ -223,6 +222,13 @@ const Account = () => {
             className="flex flex-col space-y-4 max-w-md"
           >
             <AccountInput
+              label="Email"
+              name="email"
+              value={userData.email}
+              originalValue={originalData.email}
+              onChange={handleChange}
+            />
+            <AccountInput
               label="First Name"
               name="firstName"
               value={userData.firstName}
@@ -250,7 +256,7 @@ const Account = () => {
               originalValue={originalData.storeNumber}
               onChange={handleChange}
             />
-             <AccountInput
+            <AccountInput
               label="Position"
               name="position"
               value={userData.position}
@@ -269,6 +275,13 @@ const Account = () => {
               name="extension"
               value={userData.extension}
               originalValue={originalData.extension}
+              onChange={handleChange}
+            />
+            <AccountInput
+              label="DPTS"
+              name="dpts"
+              value={userData.dpts}
+              originalValue={originalData.dpts}
               onChange={handleChange}
             />
             <AccountInput
