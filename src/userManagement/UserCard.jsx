@@ -24,65 +24,85 @@ export function UserCard({
   const currentRole = authInfo?.role || "not set";
 
   return (
-    <div className="flex items-center p-4 bg-gray-800 rounded-lg shadow">
-      <input
-        type="checkbox"
-        checked={selected}
-        onChange={() => onSelect(user.id)}
-        className="mr-2"
-      />
-      <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center mr-4 overflow-hidden">
+    <div className="flex items-center p-1 bg-white bg-opacity-5 hover:bg-opacity-10  rounded-lg shadow">
+      <div className="w-12 h-12 relative   flex items-center justify-center mr-4 overflow-hidden">
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={() => onSelect(user.id)}
+          className=" absolute top-0 left-0 z-10"
+        />
         {authInfo?.photoURL ? (
           <img
             src={authInfo.photoURL}
             alt="avatar"
-            className="w-full h-full object-cover"
+            onClick={() => onSelect(user.id)}
+            className="w-12 h-12 object-cover rounded-full cursor-pointer"
           />
         ) : (
-          <span className="text-white font-bold">{initials}</span>
+          <span
+            onClick={() => onSelect(user.id)}
+            className="text-white text-xl p-2 cursor-pointer  w-12 h-12 font-bold rounded-full bg-gray-600"
+          >
+            {initials}
+          </span>
         )}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 text-sm">
         <Link
-          to={`/users/${user.id}`}
-          className="text-lg font-semibold hover:underline"
+          to={`/user/${user.id}`}
+          className="text-sm font-semibold hover:underline"
         >
           {fullName}
         </Link>
-        <p className="text-sm text-gray-400">{user.email}</p>
+        <p className="text-xs text-gray-400">{user.email}</p>
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center text-xs space-x-2">
         <select
           value={authInfo?.role || "not set"}
           onChange={(e) =>
             onRoleChange && onRoleChange(user.id, e.target.value)
           }
-          className="p-2 bg-gray-700 text-white rounded"
+          className="p-0.5 py-1 bg-white bg-opacity-5 text-white rounded"
         >
-          <option value="admin">Admin</option>
-          <option value="manager">Manager</option>
-          <option value="user">User</option>
-          <option value="not set">Not Set</option>
+          <option className="bg-gray-900" value="admin">
+            Admin
+          </option>
+          <option className="bg-gray-900" value="manager">
+            Manager
+          </option>
+          <option className="bg-gray-900" value="user">
+            User
+          </option>
+          <option className="bg-gray-900" value="not set">
+            Not Set
+          </option>
         </select>
         {authInfo && (
           <>
-          {/* {JSON.stringify(authInfo, null, 2)} */}
+            {/* {JSON.stringify(authInfo, null, 2)} */}
 
-<button
-  onClick={() => {
-    if (
-      window.confirm(
-        `Are you sure you want to ${authInfo.disabled ? "unlock" : "lock"} this account?`
-      )
-    ) {
-      onToggleDisable(user.id, authInfo.disabled);
-    }
-  }}
-  className="p-2 bg-yellow-600 rounded hover:bg-yellow-700"
-  title={authInfo.disabled ? "Unlock Account" : "Lock Account"}
->
-  {authInfo.disabled ? <MdLockOpen size={20} /> : <MdLock size={20} />}
-</button>
+            <button
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Are you sure you want to ${
+                      authInfo.disabled ? "unlock" : "lock"
+                    } this account?`
+                  )
+                ) {
+                  onToggleDisable(user.id, authInfo.disabled);
+                }
+              }}
+              className="p-1 bg-yellow-600 rounded hover:bg-yellow-700"
+              title={authInfo.disabled ? "Unlock Account" : "Lock Account"}
+            >
+              {authInfo.disabled ? (
+                <MdLockOpen size={20} />
+              ) : (
+                <MdLock size={20} />
+              )}
+            </button>
 
             <button
               onClick={() => {
@@ -94,7 +114,7 @@ export function UserCard({
                   onDelete(user.id);
                 }
               }}
-              className="p-2 bg-red-600 rounded hover:bg-red-700"
+              className="p-1 bg-red-600 rounded hover:bg-red-700"
             >
               <MdDelete size={20} />
             </button>

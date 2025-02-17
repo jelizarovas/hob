@@ -84,6 +84,16 @@ function App() {
                     />
                     <ProtectedRoute
                       exact
+                      path="/user/:uid"
+                      component={Account}
+                      title={(params) => [
+                        ["HOFB", "/"],
+                        ["USER", "/users"],
+                        [params.uid, `/account/${params.uid}`],
+                      ]}
+                    />
+                    <ProtectedRoute
+                      exact
                       path="/account/:uid"
                       component={Account}
                       title={(params) => [

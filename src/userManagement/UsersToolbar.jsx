@@ -1,5 +1,12 @@
 import React from "react";
-import { MdAdd, MdCheck, MdBlock, MdDelete, MdSelectAll, MdClear } from "react-icons/md";
+import {
+  MdAdd,
+  MdCheck,
+  MdBlock,
+  MdDelete,
+  MdSelectAll,
+  MdClear,
+} from "react-icons/md";
 
 export function UsersToolbar({
   filterValue,
@@ -11,69 +18,77 @@ export function UsersToolbar({
   onBulkDelete,
   onExportExcel,
   selectedCount,
-  onOpenAddUser
+  onOpenAddUser,
 }) {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4 p-2 bg-gray-800 rounded">
-      <div className="flex items-center space-x-2">
+    <div className="flex flex-row flex-wrap md:flex-row items-center justify-between space-y-0 md:space-y-0 md:space-x-0 p-1  transition-all  rounded">
+      <div className="flex items-center space-x-1 w-full">
         <select
           value={filterValue}
           onChange={(e) => onFilterChange(e.target.value)}
-          className="p-2 bg-gray-700 text-white rounded"
+          className="p-0.5 w-16 bg-white bg-opacity-5 text-xs text-white rounded"
         >
-          <option value="all">Show All</option>
-          <option value="enabled">Show Only Enabled</option>
-          <option value="disabled">Show Only Disabled</option>
+          <option className="bg-gray-900" value="all">
+            All
+          </option>
+          <option className="bg-gray-900" value="enabled">
+            Active
+          </option>
+          <option className="bg-gray-900" value="disabled">
+            Disabled
+          </option>
         </select>
+        <span className="flex-grow"></span>
         <button
           onClick={onSelectAll}
-          className="flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
+          className="flex items-center px-1 py-0.5 text-xs  rounded text-white"
         >
-          <MdSelectAll className="mr-1" /> Select All
+          <MdSelectAll className="mr-1" /> <span> Select All</span>
         </button>
         <button
           onClick={onSelectNone}
-          className="flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
+          className="flex items-center px-1 py-0.5 text-xs  rounded text-white"
         >
-          <MdClear className="mr-1" /> Select None
+          <MdClear className="mr-1" /> <span> Select None</span>
         </button>
-      </div>
-      <div className="flex items-center space-x-2">
+        <span className="flex-grow"></span>
         <button
           onClick={onOpenAddUser}
-          className="flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
+          className="flex items-center px-1 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded text-white"
         >
-          <MdAdd className="mr-1" /> Add User
+          <MdAdd className="mr-1" /> <span> Add User</span>
         </button>
-        {selectedCount > 0 && (
+      </div>
+      {selectedCount > 0 && (
+        <div className="flex items-center justify-center w-full space-x-4 pt-4 pb-2 transition-all">
           <>
             <button
               onClick={onBulkEnable}
-              className="flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
+              className="flex items-center px-1 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded text-white"
             >
-              <MdCheck className="mr-1" /> Enable Selected
+              <MdCheck className="mr-1" /> Enable ({selectedCount})
             </button>
             <button
               onClick={onBulkDisable}
-              className="flex items-center px-3 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-white"
+              className="flex items-center px-1 py-0.5 text-xs bg-yellow-600 hover:bg-yellow-700 rounded text-white"
             >
-              <MdBlock className="mr-1" /> Disable Selected
+              <MdBlock className="mr-1" /> Disable ({selectedCount})
             </button>
             <button
               onClick={onBulkDelete}
-              className="flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-white"
+              className="flex items-center px-1 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded text-white"
             >
-              <MdDelete className="mr-1" /> Delete Selected
+              <MdDelete className="mr-1" /> Delete ({selectedCount})
             </button>
           </>
-        )}
-        {/* <button
+          {/* <button
           onClick={onExportExcel}
           className="flex items-center px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded text-white"
-        >
+          >
           Export as Excel
-        </button> */}
-      </div>
+          </button> */}
+        </div>
+      )}
     </div>
   );
 }

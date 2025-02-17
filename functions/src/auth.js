@@ -173,7 +173,7 @@ export const createAuthAccount = onDocumentCreated(
     const docId = event.params.newUserId;
     const snapshot = event.data;
     const userData = snapshot.data();
-    const { email, displayName } = userData;
+    const { email, displayName, role } = userData;
     if (!email || !displayName) {
       console.error("Missing email or displayName in Firestore document.");
       return;
@@ -198,10 +198,16 @@ export const createAuthAccount = onDocumentCreated(
       const userRecord = await admin.auth().createUser(newUser);
       console.log(`Auth account created for doc ${docId}: ${userRecord.uid}`);
       // Update the Firestore document with the auth UID and name parts.
+
+      if (role) {
+        await admin.auth().setCustomUserClaims(userRecord.uid, { role });
+      }
+
       await snapshot.ref.update({
         uid: userRecord.uid,
         firstName,
         lastName,
+        role: role || "not set",
       });
     } catch (error) {
       console.error("Error creating auth account:", error);

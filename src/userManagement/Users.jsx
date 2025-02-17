@@ -14,7 +14,7 @@ export function Users() {
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
-  const [filterValue, setFilterValue] = useState("all");
+  const [filterValue, setFilterValue] = useState("enabled");
   const [showAddUserModal, setShowAddUserModal] = useState(false);
 
   // Cloud Function URLs (for auth actions)
@@ -177,24 +177,6 @@ export function Users() {
     setFilterValue(value);
   };
 
-  const handleMakeMeAdmin = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
-    try {
-      const res = await fetchWithAuth(makeMeAdminURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid: user.uid, secret: "devsecret" }),
-      });
-      if (!res.ok) throw new Error("Failed to promote account");
-      await user.getIdToken(true);
-      checkAdminStatus();
-    } catch (err) {
-      console.error("Error promoting account:", err);
-    }
-  };
-
   // Callback from AddUser modal
   const handleAddUser = async ({ email, displayName }) => {
     try {
@@ -220,21 +202,7 @@ export function Users() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-2xl font-bold text-center mb-4">User Management</h1>
-
-      {!isAdmin && (
-        <div className="mb-4 text-center">
-          <p className="mb-2">You are not an admin.</p>
-          <button
-            onClick={handleMakeMeAdmin}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
-          >
-            Make Me Admin
-          </button>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-white bg-opacity-5 text-white ">
       <UsersToolbar
         filterValue={filterValue}
         onFilterChange={handleToggleFilter}
@@ -253,7 +221,7 @@ export function Users() {
         <p className="text-center text-gray-400">Loading Firestore users...</p>
       ) : (
         <>
-          <div className="space-y-4">
+          <div className="space-y-0">
             {filteredFirestoreUsers.map((user) => {
               const uid = user.uid || user.id;
               const authInfo = authDataMap[uid];
