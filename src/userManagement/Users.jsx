@@ -12,14 +12,14 @@ export function Users() {
   const [loadingFS, setLoadingFS] = useState(true);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [error, setError] = useState(null);
-  // Instead of isAdmin, we now track if the user is privileged (admin or manager)
+  // isPrivileged is true if viewer's role is "admin" or "manager"
   const [isPrivileged, setIsPrivileged] = useState(false);
   const [viewerRole, setViewerRole] = useState("not set");
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [filterValue, setFilterValue] = useState("enabled");
   const [showAddUserModal, setShowAddUserModal] = useState(false);
 
-  // Cloud Function URLs (for auth actions)
+  // Cloud Function URLs for Auth actions
   const listAccountsURL =
     "https://us-central1-honda-burien.cloudfunctions.net/listAccounts";
   const disableAccountURL =
@@ -28,8 +28,6 @@ export function Users() {
     "https://us-central1-honda-burien.cloudfunctions.net/enableAccount";
   const deleteAccountURL =
     "https://us-central1-honda-burien.cloudfunctions.net/deleteAccount";
-  const makeMeAdminURL =
-    "https://us-central1-honda-burien.cloudfunctions.net/makeMeAdmin";
   const updateUserRoleURL =
     "https://us-central1-honda-burien.cloudfunctions.net/updateUserRole";
 
@@ -60,15 +58,12 @@ export function Users() {
     const user = auth.currentUser;
     if (user) {
       const token = await user.getIdToken();
-      options.headers = {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-      };
+      options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
     }
     return fetch(url, options);
   };
 
-  // Check if current user is privileged (admin or manager)
+  // Check viewer's role (admin/manager or not)
   const checkPrivilegeStatus = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -83,7 +78,7 @@ export function Users() {
     checkPrivilegeStatus();
   }, []);
 
-  // Fetch Auth users only if privileged; regular users will not see actions.
+  // Fetch Auth users only if viewer is privileged
   const fetchAuthUsers = async () => {
     setLoadingAuth(true);
     try {
@@ -93,14 +88,15 @@ export function Users() {
       setAuthUsers(data.users || []);
     } catch (err) {
       console.error("Error fetching auth accounts:", err);
-      setAuthUsers([]); // Fallback: empty auth data so Firestore users still show
+      setAuthUsers([]);
     } finally {
       setLoadingAuth(false);
     }
   };
-
   useEffect(() => {
-    if (isPrivileged) fetchAuthUsers();
+    if (isPrivileged) {
+      fetchAuthUsers();
+    }
   }, [isPrivileged]);
 
   // Build an auth data map keyed by UID.
@@ -112,7 +108,7 @@ export function Users() {
     return map;
   }, [authUsers]);
 
-  // Bulk actions (only enabled for privileged users)
+  // Bulk actions (only available for privileged users)
   const toggleDisableAccount = async (uid, currentlyDisabled) => {
     if (!isPrivileged) return;
     const endpoint = currentlyDisabled ? enableAccountURL : disableAccountURL;
@@ -176,7 +172,7 @@ export function Users() {
   };
 
   const handleExportExcel = () => {
-    // Implement Excel export logic (e.g., with the xlsx library)
+    // Implement Excel export logic (e.g., using xlsx)
     console.log("Export as Excel");
   };
 
@@ -184,26 +180,7 @@ export function Users() {
     setFilterValue(value);
   };
 
-  const handleMakeMeAdmin = async () => {
-    // For self-promotion, if needed.
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
-    try {
-      const res = await fetchWithAuth(makeMeAdminURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid: user.uid, secret: "devsecret" }),
-      });
-      if (!res.ok) throw new Error("Failed to promote account");
-      await user.getIdToken(true);
-      checkPrivilegeStatus();
-    } catch (err) {
-      console.error("Error promoting account:", err);
-    }
-  };
-
-  // Callback from AddUser modal: add document with email, displayName, role.
+  // Callback from AddUser modal to create a new user document with role.
   const handleAddUser = async ({ email, displayName, role }) => {
     try {
       await addDoc(collection(db, "users"), { email, displayName, role });
@@ -230,19 +207,6 @@ export function Users() {
   return (
     <div className="min-h-screen bg-white bg-opacity-5 text-white p-4">
       <h1 className="text-2xl font-bold text-center mb-4">User Management</h1>
-
-      {/* Show Make Me Admin button if not privileged */}
-      {!isPrivileged && (
-        <div className="mb-4 text-center">
-          <p className="mb-2">You are not a manager or admin.</p>
-          <button
-            onClick={handleMakeMeAdmin}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
-          >
-            Make Me Admin
-          </button>
-        </div>
-      )}
 
       <UsersToolbar
         filterValue={filterValue}
@@ -272,12 +236,11 @@ export function Users() {
                 <UserCard
                   key={uid}
                   user={user}
-                  authInfo={isPrivileged ? authInfo : null} // Only show actions if privileged
+                  // Only pass authInfo if viewer is privileged; regular users see just basic info.
+                  authInfo={isPrivileged ? authInfo : null}
                   selected={selectedUserIds.includes(uid)}
                   onSelect={isPrivileged ? handleSelectUser : () => {}}
-                  onToggleDisable={
-                    isPrivileged ? toggleDisableAccount : () => {}
-                  }
+                  onToggleDisable={isPrivileged ? toggleDisableAccount : () => {}}
                   onDelete={isPrivileged ? deleteAccount : () => {}}
                   onRoleChange={
                     isPrivileged
@@ -311,7 +274,7 @@ export function Users() {
             <AddUser
               onClose={() => setShowAddUserModal(false)}
               onAddUser={handleAddUser}
-              currentUserRole={isPrivileged ? "admin" : "manager"}
+              currentUserRole={viewerRole}
             />
           )}
         </>
