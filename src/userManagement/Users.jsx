@@ -205,7 +205,7 @@ export function Users() {
   });
 
   return (
-    <div className="min-h-screen bg-white bg-opacity-5 text-white p-4">
+    <div className="min-h-screen bg-white bg-opacity-5 text-white p-1">
       <h1 className="text-2xl font-bold text-center mb-4">User Management</h1>
 
       <UsersToolbar
@@ -226,7 +226,7 @@ export function Users() {
         <p className="text-center text-gray-400">Loading Firestore users...</p>
       ) : (
         <>
-          <div className="space-y-2 px-2">
+          <div className="space-y-2 px-0">
             {filteredFirestoreUsers.map((user) => {
               const uid = user.uid || user.id;
               const authInfo = authDataMap[uid];

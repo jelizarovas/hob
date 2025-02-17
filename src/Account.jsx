@@ -18,7 +18,6 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 const Account = () => {
   const { currentUser } = useAuth();
-  // Get :uid from the URL (if present)
   const { uid } = useParams();
 
   // Keep two copies: one for the original from DB, one for current user edits.
@@ -26,17 +25,17 @@ const Account = () => {
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
+    email: "",
     cell: "",
     storeNumber: "",
     address: "",
     website: "",
     apptScheduleUrl: "",
     contactUrl: "",
-    profilePhoto: "",
-    role: "", // e.g., "admin", "sales", etc.
+    profilePhotoURL: "",
   });
 
-  // 2) Loading state for user doc fetch
+  // Loading state for user doc fetch
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   // For photo upload
@@ -82,7 +81,7 @@ const Account = () => {
     return currentUser && currentUser.uid === targetUid();
   };
 
-  // 3) Fetch user doc on mount or when uid/currentUser changes
+  // Fetch user doc on mount or when uid/currentUser changes
   useEffect(() => {
     const fetchData = async () => {
       if (!targetUid()) return;
@@ -94,7 +93,7 @@ const Account = () => {
           setUserData(snapshot.data());
           setOriginalData(snapshot.data());
         } else {
-          const defaults = { firstName: "", lastName: "", role: "" };
+          const defaults = { firstName: "", lastName: "", email: "" };
           await setDoc(docRef, defaults);
           setUserData(defaults);
           setOriginalData(defaults);
@@ -172,7 +171,7 @@ const Account = () => {
     } catch (error) {
       console.error("Error updating password:", error);
       alert(
-        "Could not update password. Please make sure your current password is correct."
+        "Could not update password. Please ensure your current password is correct."
       );
     } finally {
       setIsUpdatingPassword(false);
@@ -201,19 +200,13 @@ const Account = () => {
       ) : (
         <>
           <p className="text-lg mb-2">Email: {currentUser.email}</p>
-          {/* Display role if available */}
-          {userData.role && (
-            <p className="text-sm text-gray-400 mb-2">
-              Role: <span className="font-semibold">{userData.role}</span>
-            </p>
-          )}
           <p className="text-lg mb-2">
             Viewing profile for UID: <strong>{targetUid()}</strong>
           </p>
           {!isViewingOwnProfile() && (
             <p className="text-sm text-gray-500 mb-4">
               You are viewing someone else’s profile. Some actions may be
-              disabled unless you’re an admin.
+              disabled.
             </p>
           )}
 
@@ -257,38 +250,10 @@ const Account = () => {
               onChange={handleChange}
             />
             <AccountInput
-              label="Position"
-              name="position"
-              value={userData.position}
-              originalValue={originalData.position}
-              onChange={handleChange}
-            />
-            <AccountInput
-              label="Address (For Check Requests)"
+              label="Address"
               name="address"
               value={userData.address}
               originalValue={originalData.address}
-              onChange={handleChange}
-            />
-            <AccountInput
-              label="Extension"
-              name="extension"
-              value={userData.extension}
-              originalValue={originalData.extension}
-              onChange={handleChange}
-            />
-            <AccountInput
-              label="DPTS"
-              name="dpts"
-              value={userData.dpts}
-              originalValue={originalData.dpts}
-              onChange={handleChange}
-            />
-            <AccountInput
-              label="DriveCentric Email"
-              name="driveCentricEmail"
-              value={userData.driveCentricEmail}
-              originalValue={originalData.driveCentricEmail}
               onChange={handleChange}
             />
             <AccountInput
@@ -312,11 +277,9 @@ const Account = () => {
               originalValue={originalData.contactUrl}
               onChange={handleChange}
             />
-
             {userData?.contactUrl?.length > 0 && (
               <MyQRCode value={userData?.contactUrl} />
             )}
-
             <button
               type="submit"
               disabled={!isModified || isSaving}
@@ -328,7 +291,7 @@ const Account = () => {
 
           {isViewingOwnProfile() && (
             <Link
-              to={`/account/${uid || currentUser?.uid}/vCard`}
+              to={`/account/${targetUid()}/vCard`}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 inline-block"
             >
               Generate Business Card

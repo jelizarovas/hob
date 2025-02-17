@@ -23,22 +23,26 @@ export const LayoutAppBar = ({ dropdownOptions }) => {
   }
 
   return (
-    <div className="text-white">
-      <div className="container flex items-center  bg-black p-2 mx-auto">
+    <div className="text-white w-screen">
+      <div className="container flex items-center  bg-black p-2 mx-auto max-w-full">
         <div className="flex-grow">
-
-        <LogoLink />
-        {displayCrumbs.map((crumb, index) => (
-          <React.Fragment key={index}>
-            <span className="px-2 opacity-25">/</span>
-            {crumb[1] !== "#" ? (
-              <Link className="hover:text-blue-100 transition-all hover:underline" to={crumb[1]}>{crumb[0]}</Link>
-            ) : (
-              <span>{crumb[0]}</span>
-            )}
-            {/* {index < displayCrumbs.length - 1 && <span> / </span>} */}
-          </React.Fragment>
-        ))}
+          <LogoLink />
+          {displayCrumbs.map((crumb, index) => (
+            <React.Fragment key={index}>
+              <span className="px-2 opacity-25">/</span>
+              {crumb[1] !== "#" ? (
+                <Link
+                  className="hover:text-blue-100 transition-all hover:underline"
+                  to={crumb[1]}
+                >
+                  {crumb[0]}
+                </Link>
+              ) : (
+                <span>{crumb[0]}</span>
+              )}
+              {/* {index < displayCrumbs.length - 1 && <span> / </span>} */}
+            </React.Fragment>
+          ))}
         </div>
         <MenuButton />
       </div>
