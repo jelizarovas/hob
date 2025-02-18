@@ -4,12 +4,38 @@ import { Link, useHistory } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
-import { MdLogout, MdMenu, MdPerson, MdQrCode } from "react-icons/md";
+import { getAuth } from "firebase/auth";
+import {
+  MdLogout,
+  MdMenu,
+  MdAdminPanelSettings,
+  MdPerson,
+  MdQrCode,
+} from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
 
 export const MenuButton = () => {
   const { currentUser } = useAuth();
   const history = useHistory();
+
+  const [viewerRole, setViewerRole] = React.useState("not set");
+
+  React.useEffect(() => {
+    const checkPrivilegeStatus = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const idTokenResult = await user.getIdTokenResult();
+        const role = idTokenResult?.claims?.role || "not set";
+        setViewerRole(role);
+      }
+    };
+    checkPrivilegeStatus();
+  }, [currentUser]);
+
+  const isAdmin = (viewerRole) => viewerRole === "admin";
+  const isPrivileged = (viewerRole) =>
+    viewerRole === "admin" || viewerRole === "manager";
 
   const handleLogout = async () => {
     try {
@@ -20,78 +46,104 @@ export const MenuButton = () => {
     }
   };
 
+  // Pull the first word from displayName if it exists, else fallback to "Account"
+  const firstName = currentUser?.displayName?.split(" ")[0] || "Account";
+
+  // Build dropdown config
   const dd = {
-    popperPlacement: "bottom-start",
-    options: [
-      {
-        label: "Account",
-        Icon: MdPerson,
-        onClick: (e) => history.push("/account"),
-        Component: (props) => (
-          <div className="flex flex-row justify-center items-center bg-indigo-900 w-full text-white">
-            {/* <span className="text-xs py-1">Hi, {currentUser?.email?.slice(0, 2).toUpperCase()}</span> */}
-            <Link
-              to="/account"
-              className="flex items-center w-full  gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded  p-2"
-            >
-              <MdPerson className="mx-1" /> <span>Account</span>
-            </Link>
-            <Link
-              to={`/user/me/share`}
-              className="mx-2 p-2 text-xl rounded bg-white bg-opacity-0 hover:bg-opacity-15 transition-all"
-            >
-              <MdQrCode />
-            </Link>
-            {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
-          </div>
-        ),
-      },
-      {
-        label: "Take-In Sheet",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/take-in/"),
-        // onClick: (e) => window.open("pdf/Take-in Sheet Form.pdf", "_blank", "noopener,noreferrer"),
-      },
-      {
-        label: "Check Request",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/check"),
-      },
-      {
-        label: "Buyers Guide",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/buyers/guide/"),
-      },
-      {
-        label: "Barcode",
-        Icon: FaFilePdf,
-        onClick: (e) => history.push("/bar/code/"),
-      },
-      {
-        label: "Log Out",
-        Icon: MdLogout,
-        onClick: handleLogout,
-      },
-    ],
-    renderItem: ({ label, Icon, ...props }) => (
-      <div
-        className="min-w-44 w-full flex   items-center space-x-2 px-4 py-2 bg-black hover:bg-slate-900 text-white"
-        {...props}
-      >
-        {Icon && <Icon />} <span>{label}</span>
-      </div>
-    ),
+    popperPlacement: "bottom-end",
+    // We remove any "onSelect" so it won't try to mark items as selected with a checkmark
+    // onSelect: () => {}, // If you leave this in, the library might show a checkmark
+    disableSearch: true,
     renderButton: ({ isOpen, open, close, props }) => (
       <AppBarButton
         {...props}
         Icon={MdMenu}
         onClick={isOpen ? close : open}
         isActive={isOpen}
-        // label="menu"
       />
     ),
-    onSelect: console.log,
-    disableSearch: true,
+    renderItem: ({ label, Icon, ...props }) => (
+      <div
+        className="min-w-44 w-full flex items-center space-x-2 px-4 py-2 bg-black hover:bg-slate-900 text-white"
+        {...props}
+      >
+        {Icon && <Icon />}
+        <span>{label}</span>
+      </div>
+    ),
+    options: [
+      // First item: custom component for the user's profile
+      {
+        label: firstName,
+        Component: () => (
+          <div className="flex flex-row items-center bg-indigo-900 w-full text-white">
+            {currentUser?.photoURL ? (
+              <img
+                src={currentUser.photoURL}
+                alt="Profile"
+                className="w-8 h-8 rounded-full mx-2"
+              />
+            ) : (
+              <MdPerson className="w-8 h-8 mr-2" />
+            )}
+            <Link
+              to="/account"
+              className="flex items-center gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded p-2 flex-1"
+            >
+              <span>{firstName}</span>
+            </Link>
+            <Link
+              to="/user/me/share"
+              className="mx-2 p-2 text-xl rounded bg-white bg-opacity-0 hover:bg-opacity-15 transition-all"
+            >
+              <MdQrCode />
+            </Link>
+          </div>
+        ),
+      },
+      // Show "Users" link if privileged
+      isPrivileged
+        ? {
+            label: "Users",
+            Icon: FaFilePdf,
+            onClick: () => history.push("/users"),
+          }
+        : null,
+      // Show "Admin Panel" link if admin
+      isAdmin
+        ? {
+            label: "Admin Panel",
+            Icon: MdAdminPanelSettings,
+            onClick: () => history.push("/dev/test"),
+          }
+        : null,
+      {
+        label: "Take-In Sheet",
+        Icon: FaFilePdf,
+        onClick: () => history.push("/take-in/"),
+      },
+      {
+        label: "Check Request",
+        Icon: FaFilePdf,
+        onClick: () => history.push("/check"),
+      },
+      {
+        label: "Buyers Guide",
+        Icon: FaFilePdf,
+        onClick: () => history.push("/buyers/guide/"),
+      },
+      {
+        label: "Barcode",
+        Icon: FaFilePdf,
+        onClick: () => history.push("/bar/code/"),
+      },
+      {
+        label: "Log Out",
+        Icon: MdLogout,
+        onClick: handleLogout,
+      },
+    ].filter(Boolean),
   };
 
   return (
@@ -116,13 +168,14 @@ export const AppBarButton = ({
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col group relative rounded-lg p-2 mx-2 text-xl  bg-white border-opacity-20  border-white  hover:bg-opacity-20 transition-all ${
+      className={`flex flex-col group relative rounded-lg p-2 mx-2 text-xl bg-white border-opacity-20 border-white hover:bg-opacity-20 transition-all ${
         isActive
           ? "bg-opacity-80 text-black hover:text-white"
           : "bg-opacity-0 text-white"
-      } `}
+      }`}
+      {...props}
     >
-      {isActive ? <Icon /> : <Icon />}
+      <Icon />
       {label && (
         <span className="text-[8px] leading-none uppercase">{label}</span>
       )}
