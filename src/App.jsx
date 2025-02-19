@@ -46,11 +46,7 @@ function App() {
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
-                  <ProtectedRoute
-                    exact
-                    path="/#:stock"
-                    component={VehiclePage}
-                  />
+                  <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
 
                   <Layout>
                     <ProtectedRoute
@@ -181,7 +177,7 @@ function App() {
                     <ProtectedRoute
                       exact
                       path="/dev/test"
-                      component={DevPanel}
+                      component={() => <></>}
                       title={[
                         ["HOFB", "/"],
                         ["DEV TEST", "/dev/test"],

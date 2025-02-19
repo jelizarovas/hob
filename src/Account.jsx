@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import {
-  updateProfile,
-  reauthenticateWithCredential,
-  updatePassword,
-  EmailAuthProvider,
-} from "firebase/auth";
+import { updateProfile, reauthenticateWithCredential, updatePassword, EmailAuthProvider } from "firebase/auth";
 import { db, auth } from "./firebase";
 import { useAuth } from "./auth/AuthProvider";
 import ProfilePhotoUpload from "./ProfilePhotoUpload";
@@ -17,28 +12,11 @@ import { getAuth } from "firebase/auth";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const updateUserPhotoURL =
-  "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
+const updateUserPhotoURL = "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
 
 const Account = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isPrivileged } = useAuth();
   const { uid } = useParams();
-
-  const [isPrivileged, setIsPrivileged] = useState(false);
-
-  const checkPrivilegeStatus = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      const idTokenResult = await user.getIdTokenResult();
-      const role = idTokenResult?.claims?.role || "not set";
-      setIsPrivileged(role === "admin" || role === "manager");
-    }
-  };
-
-  useEffect(() => {
-    checkPrivilegeStatus();
-  }, []);
 
   // Keep two copies: one for the original from DB, one for current user edits.
   const [originalData, setOriginalData] = useState({});
@@ -155,9 +133,7 @@ const Account = () => {
   };
 
   // Check if any field is modified
-  const isModified = Object.keys(userData).some(
-    (key) => userData[key] !== originalData[key]
-  );
+  const isModified = Object.keys(userData).some((key) => userData[key] !== originalData[key]);
 
   // Save form to Firestore
   const handleSave = async (e) => {
@@ -169,9 +145,7 @@ const Account = () => {
         ...userData,
         lastUpdatedBy: {
           userId: currentUser.uid,
-          displayName:
-            currentUser.displayName ||
-            `${userData.firstName} ${userData.lastName}`,
+          displayName: currentUser.displayName || `${userData.firstName} ${userData.lastName}`,
         },
       };
       await updateDoc(docRef, updatedData);
@@ -211,9 +185,7 @@ const Account = () => {
       setConfirmPassword("");
     } catch (error) {
       console.error("Error updating password:", error);
-      alert(
-        "Could not update password. Please ensure your current password is correct."
-      );
+      alert("Could not update password. Please ensure your current password is correct.");
     } finally {
       setIsUpdatingPassword(false);
     }
@@ -224,7 +196,7 @@ const Account = () => {
   }
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto p-2">
       {isLoadingUser ? (
         <div className="max-w-md">
           <Skeleton height={20} width={200} className="mb-2" />
@@ -240,27 +212,14 @@ const Account = () => {
         </div>
       ) : (
         <>
-          <p className="text-lg mb-2">Email: {currentUser.email}</p>
-          <p className="text-lg mb-2">
-            Viewing profile for UID: <strong>{targetUid()}</strong>
-          </p>
-          {!isViewingOwnProfile() && (
-            <p className="text-sm text-gray-500 mb-4">
-              You are viewing someone else’s profile. Some actions may be
-              disabled.
-            </p>
-          )}
-
-          <form
-            onSubmit={handleSave}
-            className="flex flex-col space-y-4 max-w-md"
-          >
+          <form onSubmit={handleSave} className="flex flex-col space-y-4 max-w-md">
             <AccountInput
               label="Email"
               name="email"
               value={userData.email}
               originalValue={originalData.email}
               onChange={handleChange}
+              disabled
             />
             <AccountInput
               label="First Name"
@@ -318,9 +277,7 @@ const Account = () => {
               originalValue={originalData.contactUrl}
               onChange={handleChange}
             />
-            {userData?.contactUrl?.length > 0 && (
-              <MyQRCode value={userData?.contactUrl} />
-            )}
+            {userData?.contactUrl?.length > 0 && <MyQRCode value={userData?.contactUrl} />}
             <button
               type="submit"
               disabled={!isModified || isSaving}
@@ -330,7 +287,7 @@ const Account = () => {
             </button>
           </form>
 
-          {isViewingOwnProfile() && (
+          {isPrivileged && (
             <Link
               to={`/account/${targetUid()}/vCard`}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-3 inline-block"
@@ -341,10 +298,7 @@ const Account = () => {
 
           <div className="p-4">
             <div className="mt-6">
-              <ProfilePhotoUpload
-                userId={targetUid()}
-                onUploadComplete={handlePhotoUploadComplete}
-              />
+              <ProfilePhotoUpload userId={targetUid()} onUploadComplete={handlePhotoUploadComplete} />
             </div>
             {userData.profilePhotoThumbURL && (
               <img
@@ -398,32 +352,24 @@ const Account = () => {
   );
 };
 
-const AccountInput = ({
-  label,
-  name,
-  value,
-  originalValue,
-  onChange,
-  type = "text",
-}) => {
+const AccountInput = ({ label, name, value, originalValue, onChange, type = "text", disabled, ...props }) => {
   const hasChanged = value !== originalValue;
-  const highlightClass = hasChanged
-    ? "border-green-400"
-    : "border-white border-opacity-10";
-  const labelClass = hasChanged
-    ? "text-green-400 text-xs uppercase mb-1"
-    : "text-xs uppercase opacity-50 mb-1";
+  const highlightClass = hasChanged ? "border-green-400" : "border-white border-opacity-10";
+  const labelClass = hasChanged ? "text-green-400 text-xs uppercase mb-1" : "text-xs uppercase opacity-50 mb-1";
+  const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
 
   return (
     <label className="flex flex-col">
       <span className={labelClass}>{label}</span>
       <input
-        className={`bg-transparent px-2 py-1 border rounded ${highlightClass}`}
+        className={`bg-transparent px-2 py-1 border rounded ${highlightClass} ${disabledClass}`}
         type={type}
         name={name}
         value={value || ""}
         onChange={onChange}
         autoComplete="off"
+        disabled={disabled}
+        {...props}
       />
     </label>
   );
