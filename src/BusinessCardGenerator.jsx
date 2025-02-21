@@ -113,12 +113,16 @@ export function BusinessCardGenerator() {
       const fileRef = ref(storage, `vcards/${fileName}`);
       const blob = new Blob([vcardContent], { type: "text/vcard" });
       await uploadBytes(fileRef, blob);
+
+      const forwardedUrl = `https://hofb.app/contact/${fileName}`;
+
       const url = await getDownloadURL(fileRef);
-      const userDocRef = doc(db, "users", uid || currentUser.uid);
-      await updateDoc(userDocRef, { contactUrl: url });
-      setUploadUrl(url);
+      const userDocRef = doc(db, "users", targetUserId);
+      await updateDoc(userDocRef, { contactUrl: forwardedUrl });
+      setUploadUrl(forwardedUrl);
       alert("vCard uploaded successfully!");
     } catch (error) {
+      url;
       console.error("Error uploading vCard:", error);
       alert("Failed to upload vCard.");
     } finally {
