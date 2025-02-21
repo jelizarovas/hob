@@ -250,10 +250,31 @@ const Account = () => {
               onChange={handleChange}
             />
             <AccountInput
-              label="Address"
+              label="Address (For Check Requests)"
               name="address"
               value={userData.address}
               originalValue={originalData.address}
+              onChange={handleChange}
+            />
+            <AccountInput
+              label="DriveCentric Email"
+              name="driveCentricEmail"
+              value={userData.driveCentricEmail}
+              originalValue={originalData.driveCentricEmail}
+              onChange={handleChange}
+            />
+            <AccountInput
+              label="extenstion"
+              name="extenstion"
+              value={userData.extenstion}
+              originalValue={originalData.extenstion}
+              onChange={handleChange}
+            />
+            <AccountInput
+              label="dptsid"
+              name="dptsid"
+              value={userData.dptsid}
+              originalValue={originalData.dptsid}
               onChange={handleChange}
             />
             <AccountInput

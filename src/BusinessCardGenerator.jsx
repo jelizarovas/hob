@@ -114,7 +114,7 @@ export function BusinessCardGenerator() {
       const blob = new Blob([vcardContent], { type: "text/vcard" });
       await uploadBytes(fileRef, blob);
       const url = await getDownloadURL(fileRef);
-      const userDocRef = doc(db, "users", currentUser.uid);
+      const userDocRef = doc(db, "users", uid || currentUser.uid);
       await updateDoc(userDocRef, { contactUrl: url });
       setUploadUrl(url);
       alert("vCard uploaded successfully!");
