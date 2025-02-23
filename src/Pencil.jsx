@@ -1,16 +1,12 @@
 import React from "react";
 import { MdCall } from "react-icons/md";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "./auth/AuthProvider";
 
 const dealershipData = {
   legalName: "HOFB Inc. dba Honda of Burien",
   addressLine1: "15206 1st Ave S.",
   addressLine2: "Burien, King, WA 98148",
-};
-
-const managerData = {
-  fullName: "Arnas Jelizarovas",
-  cell: "206-591-9143",
 };
 
 const defaultdealData = {
@@ -42,6 +38,13 @@ const defaultdealData = {
 
 export const Pencil = ({ customer }) => {
   const location = useLocation();
+  const { currentUser, profile, role, isAdmin, isPrivileged, isUser } = useAuth();
+
+  const managerData = {
+    fullName: currentUser?.displayName || "Arnas Jelizarovas",
+    cell: profile?.cell || "206-591-9143",
+  };
+
   const dealership = dealershipData;
   const manager = managerData;
   const dealData = location.state?.dealData || defaultdealData; // Prioritize location.state

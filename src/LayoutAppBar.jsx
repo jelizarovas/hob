@@ -34,10 +34,10 @@ export const LayoutAppBar = () => {
   }
 
   return (
-    <div className="text-white w-screen">
-      <div className="container flex flex-wrap items-center bg-black p-2 mx-auto max-w-full">
+    <div className="text-white w-full">
+      <div className="container flex  items-center bg-black p-2 mx-auto w-full">
         {/* Left side: Logo + Breadcrumbs */}
-        <div className="flex flex-wrap items-center flex-grow">
+        <div className="flex flex-wrap items-center flex-grow w-full">
           <LogoLink />
           {displayCrumbs.map((crumb, index) => (
             <React.Fragment key={index}>

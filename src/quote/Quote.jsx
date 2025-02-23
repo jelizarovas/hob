@@ -12,7 +12,8 @@ import { VehiclePriceCard } from "./VehiclePriceCard";
 import { QuoteInput } from "./QuoteInput";
 import { QuoteGroup } from "./QuoteGroup";
 import { quoteReducer } from "./reducer";
-import { useQuoteCalculations } from "./useQuoteCalculations";
+import { firstPaymentDate, useQuoteCalculations } from "./useQuoteCalculations";
+import PaymentDelayModal from "./PaymentDelayModal";
 
 export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +28,20 @@ export const Quote = () => {
   const queryParams = new URLSearchParams(search);
   const listPrice = parsePrice(queryParams.get("listPrice"));
   const sellingPrice = parsePrice(queryParams.get("sellingPrice"));
+
+  const [showDelayModal, setShowDelayModal] = useState(false);
+
+  const openDelayModal = () => setShowDelayModal(true);
+  const closeDelayModal = () => setShowDelayModal(false);
+
+  const handleDelayConfirm = (newDelay) => {
+    dispatch({
+      type: "SET_FIELD",
+      field: "daysToFirstPayment",
+      value: newDelay.toString(),
+    });
+    closeDelayModal();
+  };
 
   React.useEffect(() => {
     if (listPrice !== null && sellingPrice !== null) {
@@ -248,6 +263,20 @@ export const Quote = () => {
           </div>
 
           <PaymentMatrix paymentMatrix={paymentMatrix} dispatch={dispatch} />
+          <div className="text-xs py-2 opacity-60 text-center leading-none">
+            Payments are based on {state.daysToFirstPayment} day start date (
+            {firstPaymentDate(state.daysToFirstPayment).toLocaleDateString()}).
+            <button type="button" className="hover:underline px-2" onClick={openDelayModal}>
+              Edit
+            </button>
+          </div>
+          {showDelayModal && (
+            <PaymentDelayModal
+              initialDelay={state.daysToFirstPayment}
+              onConfirm={handleDelayConfirm}
+              onCancel={closeDelayModal}
+            />
+          )}
         </div>
       </div>
     </>

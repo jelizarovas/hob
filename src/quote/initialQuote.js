@@ -68,5 +68,6 @@ export const initialQuote = {
       { id: 2, amount: 2000, selected: true },
       { id: 3, amount: 4000, selected: true },
     ],
-  }
+  },
+  daysToFirstPayment: 45,
 };

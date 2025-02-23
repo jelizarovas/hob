@@ -15,7 +15,7 @@ export const useQuoteCalculations = (state) => {
       sumFees,
     });
     // 2) Calculate payment matrix from “total”:
-    const paymentMatrix = recalcPayments(state.paymentMatrix, total);
+    const paymentMatrix = recalcPayments(state.paymentMatrix, total, state.daysToFirstPayment);
     return {
       total,
       salesTax,
@@ -85,7 +85,7 @@ const calculateTotal = (state) => {
   }
 };
 
-function recalcPayments(paymentMatrix, totalOTD) {
+function recalcPayments(paymentMatrix, totalOTD, daysToFirstPayment) {
   const numericTotal = parseFloat(totalOTD) || 0;
   const { terms, downPayments } = paymentMatrix;
 
@@ -99,7 +99,7 @@ function recalcPayments(paymentMatrix, totalOTD) {
       const apr = Number(term.apr) || 0;
 
       try {
-        return calculateMonthlyPayment(principal, durationMonths, apr);
+        return calculateMonthlyPayment(principal, durationMonths, apr, daysToFirstPayment);
       } catch (error) {
         return error.message;
       }
@@ -113,12 +113,12 @@ function recalcPayments(paymentMatrix, totalOTD) {
 
 Decimal.set({ precision: 50, rounding: Decimal.ROUND_HALF_UP });
 
-export function calculateMonthlyPayment(principal, durationMonths, apr, daysUntilFirstPayment = 45) {
+export function calculateMonthlyPayment(principal, durationMonths, apr, daysToFirstPayment = 45) {
   // Convert inputs to Decimal instances.
   const principalDec = new Decimal(principal);
   const durationDec = new Decimal(durationMonths);
   const aprDec = new Decimal(apr);
-  const daysUntilFirstPaymentDec = new Decimal(daysUntilFirstPayment);
+  const daysToFirstPaymentDec = new Decimal(daysToFirstPayment);
 
   if (durationDec.lte(0)) {
     throw new Error("Invalid duration");
@@ -130,8 +130,8 @@ export function calculateMonthlyPayment(principal, durationMonths, apr, daysUnti
 
   // If the first payment is more than 30 days away, accrue extra interest for the extra days.
   let effectivePrincipal = principalDec;
-  if (daysUntilFirstPaymentDec.gt(30)) {
-    const extraDays = daysUntilFirstPaymentDec.minus(30);
+  if (daysToFirstPaymentDec.gt(30)) {
+    const extraDays = daysToFirstPaymentDec.minus(30);
     effectivePrincipal = principalDec.plus(principalDec.times(dailyRate).times(extraDays));
   }
 
@@ -150,3 +150,11 @@ export function calculateMonthlyPayment(principal, durationMonths, apr, daysUnti
 }
 
 calculateMonthlyPayment.version = "1.0.14";
+
+export function firstPaymentDate(daysUntilPayment = 45, startDate = new Date()) {
+  const newDate = new Date(startDate); // clone the date
+  const delay = Number(daysUntilPayment); // ensure it's a number
+  newDate.setDate(newDate.getDate() + delay);
+  return newDate;
+}
+
