@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import Decimal from "decimal.js";
 
 export const useQuoteCalculations = (state) => {
   return useMemo(() => {
@@ -92,30 +93,16 @@ function recalcPayments(paymentMatrix, totalOTD) {
     const payments = terms.map((term) => {
       if (!term.selected) return null;
 
-      // Principal = Total OTD - Down Payment
+      // Calculate principal as Total OTD minus the down payment.
       const principal = numericTotal - dp.amount;
-
-      // Loan duration and APR
       const durationMonths = Number(term.duration) || 0;
       const apr = Number(term.apr) || 0;
 
-      if (durationMonths <= 0) return "Invalid Duration";
-
-      // Step 1: Calculate daily interest rate
-      const dailyRate = apr / (100 * 365);
-
-      // Step 2: Convert daily rate to effective monthly rate
-      const effectiveMonthlyRate = Math.pow(1 + dailyRate, 30.44) - 1;
-
-      // Step 3: Amortized payment formula
-      const numerator = principal * effectiveMonthlyRate;
-      const denominator =
-        1 - Math.pow(1 + effectiveMonthlyRate, -durationMonths);
-
-      const monthlyPayment = numerator / denominator;
-
-      // Round to 2 decimals
-      return parseFloat(monthlyPayment.toFixed(2));
+      try {
+        return calculateMonthlyPayment(principal, durationMonths, apr);
+      } catch (error) {
+        return error.message;
+      }
     });
 
     return { ...dp, payments };
@@ -123,3 +110,43 @@ function recalcPayments(paymentMatrix, totalOTD) {
 
   return { terms, downPayments: updatedDP };
 }
+
+Decimal.set({ precision: 50, rounding: Decimal.ROUND_HALF_UP });
+
+export function calculateMonthlyPayment(principal, durationMonths, apr, daysUntilFirstPayment = 45) {
+  // Convert inputs to Decimal instances.
+  const principalDec = new Decimal(principal);
+  const durationDec = new Decimal(durationMonths);
+  const aprDec = new Decimal(apr);
+  const daysUntilFirstPaymentDec = new Decimal(daysUntilFirstPayment);
+
+  if (durationDec.lte(0)) {
+    throw new Error("Invalid duration");
+  }
+
+  // Use a fixed day count basis of 360 days.
+  const dayCountBasis = new Decimal(360);
+  const dailyRate = aprDec.dividedBy(100).dividedBy(dayCountBasis);
+
+  // If the first payment is more than 30 days away, accrue extra interest for the extra days.
+  let effectivePrincipal = principalDec;
+  if (daysUntilFirstPaymentDec.gt(30)) {
+    const extraDays = daysUntilFirstPaymentDec.minus(30);
+    effectivePrincipal = principalDec.plus(principalDec.times(dailyRate).times(extraDays));
+  }
+
+  let monthlyPayment;
+  if (aprDec.equals(0)) {
+    monthlyPayment = effectivePrincipal.dividedBy(durationDec);
+  } else {
+    // Nominal monthly rate calculation.
+    const monthlyRate = aprDec.dividedBy(100).dividedBy(12);
+    const factor = Decimal.pow(new Decimal(1).plus(monthlyRate), durationDec);
+    monthlyPayment = effectivePrincipal.times(monthlyRate).times(factor).dividedBy(factor.minus(1));
+  }
+
+  // Return the result rounded to two decimals using standard half‑up rounding.
+  return Number(monthlyPayment.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString());
+}
+
+calculateMonthlyPayment.version = "1.0.14";
