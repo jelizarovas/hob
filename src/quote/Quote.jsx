@@ -23,11 +23,31 @@ export const Quote = () => {
     search,
     state: { vehicle },
   } = useLocation();
-  const [state, dispatch] = useLocalStorage(quoteReducer, initialQuote, vehicle);
 
-  const queryParams = new URLSearchParams(search);
-  const listPrice = parsePrice(queryParams.get("listPrice"));
-  const sellingPrice = parsePrice(queryParams.get("sellingPrice"));
+  const computedInitialQuote = vehicle
+    ? {
+        ...initialQuote,
+        listedPrice: vehicle?.msrp
+          ? parsePrice(vehicle.msrp)
+          : parsePrice(vehicle.our_price),
+        sellingPrice: vehicle?.msrp
+          ? parsePrice(vehicle.our_price)
+          : parsePrice(vehicle.our_price),
+        discount: vehicle?.msrp
+          ? parsePrice(vehicle.msrp) - parsePrice(vehicle.our_price)
+          : 0,
+      }
+    : initialQuote;
+
+  const [state, dispatch] = useLocalStorage(
+    quoteReducer,
+    computedInitialQuote,
+    vehicle
+  );
+  // console.log({ vehicle });
+  // const queryParams = new URLSearchParams(search);
+  // const listPrice = parsePrice(queryParams.get("listPrice"));
+  // const sellingPrice = parsePrice(queryParams.get("sellingPrice"));
 
   const [showDelayModal, setShowDelayModal] = useState(false);
 
@@ -43,29 +63,20 @@ export const Quote = () => {
     closeDelayModal();
   };
 
-  React.useEffect(() => {
-    if (listPrice !== null && sellingPrice !== null) {
-      dispatch({
-        type: "UPDATE_PRICES",
-        payload: { listPrice, sellingPrice },
-      });
-    }
-  }, [listPrice, sellingPrice]);
-
-  React.useEffect(() => {
-    const listedPrice = parseFloat(state.listedPrice) || 0;
-    const discount = parseFloat(state.discount) || 0;
-
-    const newSellingPrice = listedPrice - discount;
-
-    if (state.sellingPrice !== newSellingPrice) {
-      dispatch({
-        type: "SET_FIELD",
-        field: "sellingPrice",
-        value: newSellingPrice.toString(),
-      });
-    }
-  }, [state.listedPrice, state.discount]);
+  // Effect 2: Recalculate sellingPrice when discount changes
+  // React.useEffect(() => {
+  //   const listedPrice = parseFloat(state.listedPrice) || 0;
+  //   const discount = parseFloat(state.discount) || 0;
+  //   const newSellingPrice = listedPrice - discount;
+  //   // Only update if the computed selling price is different from the current one.
+  //   if (state.sellingPrice !== newSellingPrice) {
+  //     dispatch({
+  //       type: "SET_FIELD",
+  //       field: "sellingPrice",
+  //       value: newSellingPrice.toString(),
+  //     });
+  //   }
+  // }, [state.listedPrice, state.discount]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,15 +107,23 @@ export const Quote = () => {
     });
   };
 
-  const resetQuote = () => dispatch({ type: "RESET_STATE", payload: initialQuote });
+  const resetQuote = () =>
+    dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
 
   const toggleTradeIn = () => setShowTradeIn((v) => !v);
 
   // const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] =
   //   calculateTotal(state);
 
-  const { total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees, paymentMatrix } =
-    useQuoteCalculations(state);
+  const {
+    total,
+    salesTax,
+    sumPackages,
+    sumAccessories,
+    sumTradeIns,
+    sumFees,
+    paymentMatrix,
+  } = useQuoteCalculations(state);
 
   const handleNavigation = async () => {
     setIsLoading(true);
@@ -170,7 +189,12 @@ export const Quote = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[8px] leading-none"> Tax credit:</span>
-                  <span> {(Number(state.tradeInAllowance || 0) * Number(state.salesTaxRate || 0)) / 100}</span>
+                  <span>
+                    {" "}
+                    {(Number(state.tradeInAllowance || 0) *
+                      Number(state.salesTaxRate || 0)) /
+                      100}
+                  </span>
                 </div>
               </div>
             </div>
@@ -266,7 +290,11 @@ export const Quote = () => {
           <div className="text-xs py-2 opacity-60 text-center leading-none">
             Payments are based on {state.daysToFirstPayment} day start date (
             {firstPaymentDate(state.daysToFirstPayment).toLocaleDateString()}).
-            <button type="button" className="hover:underline px-2" onClick={openDelayModal}>
+            <button
+              type="button"
+              className="hover:underline px-2"
+              onClick={openDelayModal}
+            >
               Edit
             </button>
           </div>
@@ -312,7 +340,9 @@ function processQuote(quote) {
   // Construct the final dealData object
   const dealItems = [
     { label: "Retail Price", amount: `${listedPrice.toFixed(2)}` },
-    ...(discount > 0 ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }] : []),
+    ...(discount > 0
+      ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }]
+      : []),
     { label: "Your Price", amount: `${sellingPrice.toFixed(2)}` },
     ...includedAccessories,
     ...includedPackages,

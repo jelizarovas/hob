@@ -69,16 +69,17 @@ const PaymentDelayModal = ({ initialDelay, onConfirm, onCancel }) => {
           Delaying your first payment accrues extra interest. Select a delay (in days) below. Longer delays will
           increase your monthly payment.
         </p>
-        <div className="flex space-x-2 mb-4">
+        <div className="text-xs opacity-50">Days</div>
+        <div className="flex space-x-4 mb-4">
           {presets.map((option) => (
             <button
               key={option}
               onClick={() => handlePresetClick(option)}
-              className={`px-4 py-2 rounded ${
+              className={`px-4 py-1 md:px-4 md:py-2 rounded ${
                 selectedPreset === String(option) ? "bg-blue-700 text-white" : "bg-white bg-opacity-5 text-white"
               }`}
             >
-              {option} days
+              {option} 
             </button>
           ))}
           <button
