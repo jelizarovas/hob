@@ -2,6 +2,8 @@ export function quoteReducer(state, action) {
   switch (action.type) {
     case "SET_FIELD":
       return { ...state, [action.field]: action.value };
+    case "SET_FIELDS":
+      return { ...state, ...action.payload };
     case "UPDATE_PARAM":
       return { ...state, [action.payload.key]: action.payload.value };
     case "SET_NESTED_FIELD":

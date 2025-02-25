@@ -2,7 +2,7 @@ import React, { useState, useReducer, useEffect } from "react";
 import cuid from "cuid";
 import { MdCheckBox, MdEdit } from "react-icons/md";
 import { determineCheckboxState, parsePrice } from "../utils";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import PaymentMatrix from "../PaymentMatrix ";
 import NumberFlow from "@number-flow/react";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -19,30 +19,27 @@ export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showTradeIn, setShowTradeIn] = useState(false);
   let history = useHistory();
-  const {
-    search,
-    state: { vehicle },
-  } = useLocation();
+  const { vin } = useParams();
+  const { state: locationState } = useLocation();
+  const vehicle = locationState?.vehicle;
+  console.log(vehicle);
+
+  const msrpValue = vehicle ? parsePrice(vehicle.msrp) : null;
+  const ourPriceValue = vehicle ? parsePrice(vehicle.our_price) : null;
 
   const computedInitialQuote = vehicle
     ? {
         ...initialQuote,
-        listedPrice: vehicle?.msrp
-          ? parsePrice(vehicle.msrp)
-          : parsePrice(vehicle.our_price),
-        sellingPrice: vehicle?.msrp
-          ? parsePrice(vehicle.our_price)
-          : parsePrice(vehicle.our_price),
-        discount: vehicle?.msrp
-          ? parsePrice(vehicle.msrp) - parsePrice(vehicle.our_price)
-          : 0,
+        listedPrice: msrpValue > 0 ? msrpValue : ourPriceValue,
+        sellingPrice: ourPriceValue, // always use our_price as sellingPrice if msrp is zero
+        discount: msrpValue > 0 ? msrpValue - ourPriceValue : 0,
       }
     : initialQuote;
 
   const [state, dispatch] = useLocalStorage(
     quoteReducer,
     computedInitialQuote,
-    vehicle
+    vin
   );
   // console.log({ vehicle });
   // const queryParams = new URLSearchParams(search);
@@ -63,21 +60,6 @@ export const Quote = () => {
     closeDelayModal();
   };
 
-  // Effect 2: Recalculate sellingPrice when discount changes
-  // React.useEffect(() => {
-  //   const listedPrice = parseFloat(state.listedPrice) || 0;
-  //   const discount = parseFloat(state.discount) || 0;
-  //   const newSellingPrice = listedPrice - discount;
-  //   // Only update if the computed selling price is different from the current one.
-  //   if (state.sellingPrice !== newSellingPrice) {
-  //     dispatch({
-  //       type: "SET_FIELD",
-  //       field: "sellingPrice",
-  //       value: newSellingPrice.toString(),
-  //     });
-  //   }
-  // }, [state.listedPrice, state.discount]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     const [field, key, subfield] = name.split(".");
@@ -87,6 +69,35 @@ export const Quote = () => {
     } else {
       dispatch({ type: "SET_FIELD", field: name, value });
     }
+  };
+
+  const handlePriceChange = (e) => {
+    const { name, value } = e.target;
+    const newValue = parseFloat(value) || 0;
+
+    // Get the current state values
+    let listPrice = parseFloat(state.listedPrice) || 0;
+    let sellingPrice = parseFloat(state.sellingPrice) || 0;
+
+    if (name === "listedPrice") {
+      // When listPrice changes, keep discount unchanged.
+      // Update sellingPrice = new listPrice - current discount.
+      listPrice = newValue;
+      const currentDiscount = parseFloat(state.discount) || 0;
+      sellingPrice = newValue - currentDiscount;
+    } else if (name === "sellingPrice") {
+      // When sellingPrice changes, listPrice remains unchanged.
+      sellingPrice = newValue;
+    } else if (name === "discount") {
+      // When discount changes, update sellingPrice so that:
+      // discount = listPrice - sellingPrice => sellingPrice = listPrice - discount.
+      sellingPrice = listPrice - newValue;
+    }
+
+    dispatch({
+      type: "UPDATE_PRICES",
+      payload: { listPrice, sellingPrice },
+    });
   };
 
   const handleAddField = (field) => (e) => {
@@ -161,7 +172,7 @@ export const Quote = () => {
         <div className=" w-96 mx-auto">
           <VehiclePriceCard
             vehicle={vehicle}
-            handleChange={handleChange}
+            handleChange={handlePriceChange}
             sellingPrice={state.sellingPrice}
             discount={state.discount}
             listedPrice={state.listedPrice}

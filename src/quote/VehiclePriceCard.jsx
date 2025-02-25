@@ -12,7 +12,7 @@ export const VehiclePriceCard = ({
     <div className="bg-white bg-opacity-20 rounded-lg flex flex-col print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
       <div className="flex">
         <div className="mr-2">
-          <img src={vehicle.thumbnail} className="w-16 h-10 rounded" />
+          <img src={vehicle?.thumbnail} className="w-16 h-10 rounded" />
         </div>
         <div className="flex flex-col  w-full px-1">
           <div className="flex justify-between items-center w-full">
@@ -25,8 +25,12 @@ export const VehiclePriceCard = ({
           </div>
           <div className="flex justify-between">
             <span className="text-xs opacity-50 px-2">{vehicle?.vin}</span>
-            <span className="text-xs opacity-50 px-2">{vehicle?.miles} miles</span>
-            <span className="text-xs opacity-50 px-2">{vehicle?.ext_color}</span>
+            <span className="text-xs opacity-50 px-2">
+              {vehicle?.miles} miles
+            </span>
+            <span className="text-xs opacity-50 px-2">
+              {vehicle?.ext_color}
+            </span>
           </div>
         </div>
       </div>

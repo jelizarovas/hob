@@ -1,9 +1,9 @@
 import cuid from "cuid";
 
 export const initialQuote = {
-  listedPrice: 32040,
-  discount: 500,
-  sellingPrice: 31540,
+  listedPrice: 0,
+  discount: 0,
+  sellingPrice: 0,
   packages: {
     [cuid.slug()]: {
       label: "Vehicle Service Contract",
