@@ -14,6 +14,7 @@ import { QuoteGroup } from "./QuoteGroup";
 import { quoteReducer } from "./reducer";
 import { firstPaymentDate, useQuoteCalculations } from "./useQuoteCalculations";
 import PaymentDelayModal from "./PaymentDelayModal";
+import TradeInList from "./TradedInList";
 
 export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,6 @@ export const Quote = () => {
   const { vin } = useParams();
   const { state: locationState } = useLocation();
   const vehicle = locationState?.vehicle;
-  console.log(vehicle);
 
   const msrpValue = vehicle ? parsePrice(vehicle.msrp) : null;
   const ourPriceValue = vehicle ? parsePrice(vehicle.our_price) : null;
@@ -41,10 +41,8 @@ export const Quote = () => {
     computedInitialQuote,
     vin
   );
-  // console.log({ vehicle });
-  // const queryParams = new URLSearchParams(search);
-  // const listPrice = parsePrice(queryParams.get("listPrice"));
-  // const sellingPrice = parsePrice(queryParams.get("sellingPrice"));
+
+  console.log({ state });
 
   const [showDelayModal, setShowDelayModal] = useState(false);
 
@@ -123,9 +121,6 @@ export const Quote = () => {
 
   const toggleTradeIn = () => setShowTradeIn((v) => !v);
 
-  // const [total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees] =
-  //   calculateTotal(state);
-
   const {
     total,
     salesTax,
@@ -157,6 +152,25 @@ export const Quote = () => {
       setIsLoading(false);
     }
   };
+  const addTradeIn = () => {
+    const newTradeIn = {
+      id: cuid.slug(),
+      vin: "",
+      miles: "",
+      year: "",
+      make: "",
+      model: "",
+      trim: "",
+      color: "",
+      financed: false,
+      lienholder: "",
+      payoffAmount: "",
+      payoffGoodThrough: "",
+      include: true,
+      createdAt: Date.now(),
+    };
+    dispatch({ type: "ADD_TRADEIN", payload: newTradeIn });
+  };
 
   // Use the state as needed
   return (
@@ -164,8 +178,7 @@ export const Quote = () => {
       <div className="container mx-auto py-2 flex space-y-2 flex-col  print:text-black">
         <QuoteToolbar
           resetQuote={resetQuote}
-          toggleTradeIn={toggleTradeIn}
-          showTradeIn={showTradeIn}
+          addTradeIn={addTradeIn}
           isLoading={isLoading}
           handleNavigation={handleNavigation}
         />
@@ -177,6 +190,7 @@ export const Quote = () => {
             discount={state.discount}
             listedPrice={state.listedPrice}
           />
+          <TradeInList tradeIns={state.tradeIns} dispatch={dispatch} />
           {showTradeIn && (
             <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
               <QuoteInput

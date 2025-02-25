@@ -8,6 +8,7 @@ export const QuoteInput = ({
   onChange,
   type = "number",
   className = "",
+  onBlur,
   ...props
 }) => {
   return (
@@ -21,6 +22,7 @@ export const QuoteInput = ({
           type={type}
           onChange={onChange}
           value={value || ""}
+          onBlur={onBlur}
         />
       </div>
     </label>

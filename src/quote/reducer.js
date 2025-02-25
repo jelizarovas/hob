@@ -177,6 +177,35 @@ export function quoteReducer(state, action) {
 
     case "RESET_STATE":
       return action.payload; // Replace with the new state
+
+    case "ADD_TRADEIN":
+      return {
+        ...state,
+        tradeIns: {
+          ...state.tradeIns,
+          [action.payload.id]: action.payload,
+        },
+      };
+
+    case "DELETE_TRADEIN":
+      const { [action.payload]: removed, ...rest } = state.tradeIns;
+      return {
+        ...state,
+        tradeIns: rest,
+      };
+
+    case "UPDATE_TRADEIN_FIELD":
+      return {
+        ...state,
+        tradeIns: {
+          ...state.tradeIns,
+          [action.payload.id]: {
+            ...state.tradeIns[action.payload.id],
+            [action.payload.field]: action.payload.value,
+          },
+        },
+      };
+
     default:
       return state;
   }

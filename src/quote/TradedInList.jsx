@@ -1,0 +1,254 @@
+import React, { useState } from "react";
+import cuid from "cuid";
+import { QuoteInput } from "./QuoteInput";
+import { MdDelete } from "react-icons/md";
+
+const TradeInCard = ({ tradeIn, onChange, onDelete, dispatch, arrayIndex }) => {
+  const [expanded, setExpanded] = useState(true);
+
+  // Inside TradeInCard.jsx (within the TradeInCard component):
+  const handleVinBlur = (e) => {
+    const vinValue = e.target.value.trim();
+    // Only trigger lookup if VIN has exactly 17 characters
+    if (vinValue.length === 17) {
+      // For example, call your API to fetch vehicle info by VIN:
+      fetchTradeInfoByVin(vinValue).then((tradeData) => {
+        // Dispatch updates for fields such as year, make, model, trim, color, etc.
+        // This assumes your reducer handles UPDATE_TRADEIN_FIELD for each field.
+        Object.keys(tradeData).forEach((field) => {
+          dispatch({
+            type: "UPDATE_TRADEIN_FIELD",
+            payload: { id: tradeIn.id, field, value: tradeData[field] },
+          });
+        });
+      });
+    }
+  };
+
+  const handleInputChange = (e) => {
+    onChange(tradeIn.id, e);
+  };
+
+  return (
+    <div className=" bg-white bg-opacity-5 rounded mb-2 ">
+      <div className="bg-white rounded bg-opacity-5 hover:bg-opacity-10 cursor-pointer flex p-2 gap-2 text-xs justify-between items-center">
+      <input
+            type="checkbox"
+            name="include"
+            checked={tradeIn.include}
+            onChange={handleInputChange}
+          />
+        <div
+          className="cursor-pointer font-bold select-none flex-grow items-center "
+          onClick={() => setExpanded(!expanded)}
+        >
+        
+          {tradeIn.year &&
+          tradeIn.make &&
+          tradeIn.model &&
+          tradeIn.vin &&
+          tradeIn.vin.length === 17
+            ? `Trade #${arrayIndex + 1}: ${tradeIn.year} ${tradeIn.make} ${
+                tradeIn.model
+              } #${tradeIn.vin.slice(-8)}`
+            : "New Trade-In"}
+        </div>
+        <button
+          onClick={() => onDelete(tradeIn.id)}
+          className="text-red-600 text-sm"
+        >
+          <MdDelete />
+        </button>
+      </div>
+      {expanded && (
+        <div className="mt-2 space-y-2 p-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+            <QuoteInput
+              name="vin"
+              type="text"
+              label="VIN"
+              value={tradeIn.vin}
+              onChange={handleInputChange}
+              onBlur={handleVinBlur}
+              className="w-full md:col-span-2 flex-grow"
+            />
+            <QuoteInput
+              name="miles"
+              type="text"
+              label="Mileage"
+              value={tradeIn.miles}
+              onChange={handleInputChange}
+              className="w-full md:col-span-1"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-1">
+            <QuoteInput
+              name="year"
+              type="text"
+              label="Year"
+              value={tradeIn.year}
+              onChange={handleInputChange}
+            />
+            <QuoteInput
+              name="make"
+              type="text"
+              label="Make"
+              value={tradeIn.make}
+              onChange={handleInputChange}
+            />
+            <QuoteInput
+              name="model"
+              type="text"
+              label="Model"
+              value={tradeIn.model}
+              onChange={handleInputChange}
+            />
+            <QuoteInput
+              name="trim"
+              type="text"
+              label="Trim"
+              value={tradeIn.trim}
+              onChange={handleInputChange}
+            />
+          </div>
+          <QuoteInput
+            name="color"
+            type="text"
+            label="Color"
+            value={tradeIn.color}
+            onChange={handleInputChange}
+            className="w-full"
+          />
+          <div className="flex items-center">
+            <label className="text-sm text-white">
+              <input
+                type="checkbox"
+                name="financed"
+                checked={tradeIn.financed}
+                onChange={handleInputChange}
+              />{" "}
+              Financed
+            </label>
+          </div>
+          {tradeIn.financed && (
+            <div className="space-y-2">
+              <QuoteInput
+                name="lienholder"
+                type="text"
+                label="Lienholder"
+                value={tradeIn.lienholder}
+                onChange={handleInputChange}
+              />
+              <QuoteInput
+                name="payoffAmount"
+                type="text"
+                label="Payoff Amount"
+                value={tradeIn.payoffAmount}
+                onChange={handleInputChange}
+              />
+              <QuoteInput
+                name="payoffGoodThrough"
+                type="date"
+                label="Payoff Good Through"
+                value={tradeIn.payoffGoodThrough}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const TradeInList = ({ tradeIns, dispatch }) => {
+  // Convert the tradeIns object to an array sorted by createdAt
+  const tradeInsArray = Object.values(tradeIns || {}).sort(
+    (a, b) => a.createdAt - b.createdAt
+  );
+
+  const handleTradeInChange = (id, e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+    dispatch({
+      type: "UPDATE_TRADEIN_FIELD",
+      payload: { id, field: name, value: newValue },
+    });
+  };
+
+  const handleAddTradeIn = () => {
+    const newTradeIn = {
+      id: cuid.slug(),
+      vin: "",
+      miles: "",
+      year: "",
+      make: "",
+      model: "",
+      trim: "",
+      color: "",
+      financed: false,
+      lienholder: "",
+      payoffAmount: "",
+      payoffGoodThrough: "",
+      include: true,
+      createdAt: Date.now(),
+    };
+    dispatch({ type: "ADD_TRADEIN", payload: newTradeIn });
+  };
+
+  const handleDeleteTradeIn = (id) => {
+    dispatch({ type: "DELETE_TRADEIN", payload: id });
+  };
+
+  return (
+    <div className="mt-4">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-lg font-bold">Trade-Ins</h3>
+        <button
+          onClick={handleAddTradeIn}
+          className="px-3 py-1 bg-blue-600 text-white rounded"
+        >
+          Add Trade-In
+        </button>
+      </div>
+      <div>
+        {tradeInsArray.map((tradeIn, index) => (
+          <TradeInCard
+            arrayIndex={index}
+            key={tradeIn.id}
+            tradeIn={tradeIn}
+            onChange={handleTradeInChange}
+            onDelete={handleDeleteTradeIn}
+            dispatch={dispatch}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default TradeInList;
+
+// A helper function to fetch vehicle details by VIN using the NHTSA API
+const fetchTradeInfoByVin = async (vin) => {
+  const url = `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${vin}?format=json`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data && data.Results && data.Results.length > 0) {
+      const result = data.Results[0];
+      console.log({ result });
+      return {
+        year: result.ModelYear || "",
+        make: result.Make || "",
+        model: result.Model || "",
+        trim: result.Trim || "",
+        // Note: Color is not provided by the NHTSA API, so you may need to allow manual input.
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching VIN data:", error);
+  }
+  return {};
+};

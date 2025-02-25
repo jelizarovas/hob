@@ -3,8 +3,7 @@ import { MdEdit, MdPrint, MdRestore, MdTraffic } from "react-icons/md";
 
 export const QuoteToolbar = ({
   resetQuote,
-  toggleTradeIn,
-  showTradeIn,
+  addTradeIn,
   handleNavigation,
   isLoading,
 }) => {
@@ -12,9 +11,9 @@ export const QuoteToolbar = ({
     <div className="flex w-96 justify-center  mx-auto space-x-2 print:hidden  rounded">
       <ToolBarButton label="Reset" Icon={MdRestore} onClick={resetQuote} />
       <ToolBarButton
-        label={showTradeIn ? "Hide Trade" : "Trade in"}
+        label="Add Trade-In"
         Icon={MdTraffic}
-        onClick={toggleTradeIn}
+        onClick={addTradeIn}
       />
       <ToolBarButton
         label={isLoading ? "Processing..." : "Pencil"}
