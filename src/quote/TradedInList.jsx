@@ -1,10 +1,28 @@
 import React, { useState } from "react";
 import cuid from "cuid";
 import { QuoteInput } from "./QuoteInput";
-import { MdDelete } from "react-icons/md";
+import {
+  MdAddCircleOutline,
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdDelete,
+  MdIndeterminateCheckBox,
+  MdKeyboardArrowRight,
+} from "react-icons/md";
+import NumberFlow from "@number-flow/react";
 
-const TradeInCard = ({ tradeIn, onChange, onDelete, dispatch, arrayIndex }) => {
-  const [expanded, setExpanded] = useState(true);
+const TradeInCard = ({
+  tradeIn,
+  onChange,
+  onDelete,
+  dispatch,
+  arrayIndex,
+  isChecked = true,
+  groupLabel = "tradein",
+  groupName = "tradein",
+  groupSum = "999",
+}) => {
+  const [isOpen, setOpen] = useState(true);
 
   // Inside TradeInCard.jsx (within the TradeInCard component):
   const handleVinBlur = (e) => {
@@ -30,39 +48,77 @@ const TradeInCard = ({ tradeIn, onChange, onDelete, dispatch, arrayIndex }) => {
   };
 
   return (
-    <div className=" bg-white bg-opacity-5 rounded mb-2 ">
-      <div className="bg-white rounded bg-opacity-5 hover:bg-opacity-10 cursor-pointer flex p-2 gap-2 text-xs justify-between items-center">
-      <input
-            type="checkbox"
-            name="include"
-            checked={tradeIn.include}
-            onChange={handleInputChange}
-          />
-        <div
-          className="cursor-pointer font-bold select-none flex-grow items-center "
-          onClick={() => setExpanded(!expanded)}
-        >
-        
-          {tradeIn.year &&
-          tradeIn.make &&
-          tradeIn.model &&
-          tradeIn.vin &&
-          tradeIn.vin.length === 17
-            ? `Trade #${arrayIndex + 1}: ${tradeIn.year} ${tradeIn.make} ${
-                tradeIn.model
-              } #${tradeIn.vin.slice(-8)}`
-            : "New Trade-In"}
-        </div>
+    <div className="  rounded mt-2 ">
+      <div className="flex items-center space-x-2 mt-2  bg-white bg-opacity-20 rounded-lg">
         <button
-          onClick={() => onDelete(tradeIn.id)}
-          className="text-red-600 text-sm"
+          name="include"
+          checked={tradeIn.include}
+          onChange={handleInputChange}
+          onClick={() => {
+            dispatch({
+              type: "TOGGLE_ALL_INCLUDES",
+              field: groupName,
+              state: isChecked,
+            });
+          }}
+          className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg print:hidden"
         >
-          <MdDelete />
+          {isChecked === "check" ? (
+            <MdCheckBoxOutlineBlank />
+          ) : isChecked === "intermediate" ? (
+            <MdIndeterminateCheckBox />
+          ) : (
+            <MdCheckBox />
+          )}
         </button>
+        <div
+          onClick={() => setOpen((v) => !v)}
+          title="can't see everything?"
+          className="flex-grow flex truncate items-center  bg-white bg-opacity-0 hover:bg-opacity-20 transition-all rounded py-1 px-2 cursor-pointer select-none"
+        >
+          <MdKeyboardArrowRight
+            className={`mx-1 text-xl ${
+              isOpen ? "rotate-90" : ""
+            } transition-all`}
+          />
+          <span className=" flex-grow truncate">
+            {tradeIn.year &&
+            tradeIn.make &&
+            tradeIn.model &&
+            tradeIn.vin &&
+            tradeIn.vin.length === 17
+              ? `Trade #${arrayIndex + 1}: ${tradeIn.year} ${tradeIn.make} ${
+                  tradeIn.model
+                } #${tradeIn.vin.slice(-8)}`
+              : "New Trade-In"}
+          </span>
+          <span className="">
+            <NumberFlow
+              format={{
+                style: "currency",
+                currency: "USD",
+                trailingZeroDisplay: "stripIfInteger",
+              }}
+              value={groupSum}
+            />
+          </span>
+        </div>
+        <div>
+          <button
+            onClick={() => onDelete(tradeIn.id)}
+            // onClick={handleAddField(groupName)}
+            className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg print:hidden"
+          >
+            <MdDelete />
+          </button>
+        </div>
       </div>
-      {expanded && (
-        <div className="mt-2 space-y-2 p-2">
+
+      {isOpen && (
+        <div className="mx-1 space-y-2 p-2 bg-white bg-opacity-10 rounded-b">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+            {/* @TODO MAKE IT FLEX GROW VIN */}
+
             <QuoteInput
               name="vin"
               type="text"
@@ -121,6 +177,7 @@ const TradeInCard = ({ tradeIn, onChange, onDelete, dispatch, arrayIndex }) => {
             className="w-full"
           />
           <div className="flex items-center">
+            {/* CHIPS SELECTION PAID OFF, FINANCED, LEASED */}
             <label className="text-sm text-white">
               <input
                 type="checkbox"
@@ -202,8 +259,8 @@ export const TradeInList = ({ tradeIns, dispatch }) => {
   };
 
   return (
-    <div className="mt-4">
-      <div className="flex justify-between items-center mb-2">
+    <div className="mt-0">
+      {/* <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-bold">Trade-Ins</h3>
         <button
           onClick={handleAddTradeIn}
@@ -211,7 +268,7 @@ export const TradeInList = ({ tradeIns, dispatch }) => {
         >
           Add Trade-In
         </button>
-      </div>
+      </div> */}
       <div>
         {tradeInsArray.map((tradeIn, index) => (
           <TradeInCard
