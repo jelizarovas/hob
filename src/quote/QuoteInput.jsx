@@ -8,11 +8,14 @@ export const QuoteInput = ({
   onChange,
   type = "number",
   className = "",
+  containerClassName = "",
   onBlur,
   ...props
 }) => {
   return (
-    <label className="flex flex-col text-left print:text-black print:flex-row">
+    <label
+      className={`flex flex-col text-left print:text-black print:flex-row ${containerClassName}`}
+    >
       <span className="text-[10px] print:text-sm">{label}</span>
       <div className="bg-white bg-opacity-5 hover:bg-opacity-50 transition-all rounded-md text-sm flex flex-row">
         {Icon && <span>{Icon}</span>}
@@ -23,6 +26,7 @@ export const QuoteInput = ({
           onChange={onChange}
           value={value || ""}
           onBlur={onBlur}
+          {...props}
         />
       </div>
     </label>

@@ -47,6 +47,19 @@ const TradeInCard = ({
     onChange(tradeIn.id, e);
   };
 
+  const updateTradeInStatus = (status) => {
+    dispatch({
+      type: "UPDATE_TRADEIN_FIELD",
+      payload: { id: tradeIn.id, field: "status", value: status },
+    });
+  };
+
+  const confirmAndDelete = () => {
+    if (window.confirm("Are you sure you want to delete this trade-in?")) {
+      onDelete(tradeIn.id);
+    }
+  };
+
   return (
     <div className="  rounded mt-2 ">
       <div className="flex items-center space-x-2 mt-2  bg-white bg-opacity-20 rounded-lg">
@@ -105,7 +118,7 @@ const TradeInCard = ({
         </div>
         <div>
           <button
-            onClick={() => onDelete(tradeIn.id)}
+            onClick={confirmAndDelete}
             // onClick={handleAddField(groupName)}
             className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg print:hidden"
           >
@@ -116,7 +129,7 @@ const TradeInCard = ({
 
       {isOpen && (
         <div className="mx-1 space-y-2 p-2 bg-white bg-opacity-10 rounded-b">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+          <div className="flex  md:flex-nowrap gap-1">
             {/* @TODO MAKE IT FLEX GROW VIN */}
 
             <QuoteInput
@@ -126,7 +139,7 @@ const TradeInCard = ({
               value={tradeIn.vin}
               onChange={handleInputChange}
               onBlur={handleVinBlur}
-              className="w-full md:col-span-2 flex-grow"
+              containerClassName="w-full  flex-grow"
             />
             <QuoteInput
               name="miles"
@@ -134,7 +147,7 @@ const TradeInCard = ({
               label="Mileage"
               value={tradeIn.miles}
               onChange={handleInputChange}
-              className="w-full md:col-span-1"
+              containerClassName="w-1/3 "
             />
           </div>
 
@@ -177,18 +190,20 @@ const TradeInCard = ({
             className="w-full"
           />
           <div className="flex items-center">
-            {/* CHIPS SELECTION PAID OFF, FINANCED, LEASED */}
-            <label className="text-sm text-white">
-              <input
-                type="checkbox"
-                name="financed"
-                checked={tradeIn.financed}
-                onChange={handleInputChange}
-              />{" "}
-              Financed
-            </label>
+            <div className="flex space-x-2">
+              {["Paid Off", "Financed", "Leased"].map((statusOption) => (
+                <TradeStatusChip
+                  key={statusOption}
+                  label={statusOption}
+                  selected={tradeIn.status === statusOption}
+                  onClick={() => updateTradeInStatus(statusOption)}
+                />
+              ))}
+            </div>
+
+         
           </div>
-          {tradeIn.financed && (
+          {(tradeIn.status === "Financed" || tradeIn.status === "Leased") && (
             <div className="space-y-2">
               <QuoteInput
                 name="lienholder"
@@ -309,3 +324,16 @@ const fetchTradeInfoByVin = async (vin) => {
   }
   return {};
 };
+
+const TradeStatusChip = ({ label, selected, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`px-2 py-1 rounded-full text-xs border transition-colors ${
+      selected
+        ? "bg-blue-700 text-white border-blue-700"
+        : "bg-white bg-opacity-10 text-white border-white"
+    }`}
+  >
+    {label}
+  </button>
+);
