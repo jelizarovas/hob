@@ -64,25 +64,15 @@ const TradeInCard = ({
     <div className="  rounded mt-2 ">
       <div className="flex items-center space-x-2 mt-2  bg-white bg-opacity-20 rounded-lg">
         <button
-          name="include"
-          checked={tradeIn.include}
-          onChange={handleInputChange}
-          onClick={() => {
+          onClick={() =>
             dispatch({
-              type: "TOGGLE_ALL_INCLUDES",
-              field: groupName,
-              state: isChecked,
-            });
-          }}
+              type: "TOGGLE_TRADEIN_INCLUDE",
+              payload: { id: tradeIn.id },
+            })
+          }
           className="text-lg px-2 py-2 hover:bg-opacity-40 bg-white bg-opacity-0 transition-all rounded-lg print:hidden"
         >
-          {isChecked === "check" ? (
-            <MdCheckBoxOutlineBlank />
-          ) : isChecked === "intermediate" ? (
-            <MdIndeterminateCheckBox />
-          ) : (
-            <MdCheckBox />
-          )}
+          {tradeIn.include ? <MdCheckBox /> : <MdCheckBoxOutlineBlank />}
         </button>
         <div
           onClick={() => setOpen((v) => !v)}
@@ -103,7 +93,7 @@ const TradeInCard = ({
               ? `Trade #${arrayIndex + 1}: ${tradeIn.year} ${tradeIn.make} ${
                   tradeIn.model
                 } #${tradeIn.vin.slice(-8)}`
-              : "New Trade-In"}
+              : `Trade-In #${arrayIndex + 1}`}
           </span>
           <span className="">
             <NumberFlow
@@ -112,7 +102,15 @@ const TradeInCard = ({
                 currency: "USD",
                 trailingZeroDisplay: "stripIfInteger",
               }}
-              value={groupSum}
+              value={
+                !tradeIn.include
+                  ? 0
+                  : (parseFloat(tradeIn.allowance) || 0) -
+                    (tradeIn.status === "Financed" ||
+                    tradeIn.status === "Leased"
+                      ? parseFloat(tradeIn.payoffAmount) || 0
+                      : 0)
+              }
             />
           </span>
         </div>
@@ -189,6 +187,14 @@ const TradeInCard = ({
             onChange={handleInputChange}
             className="w-full"
           />
+          <QuoteInput
+            name="allowance"
+            type="text"
+            label="Allowance"
+            value={tradeIn.allowance}
+            onChange={handleInputChange}
+            className="w-full"
+          />
           <div className="flex items-center">
             <div className="flex space-x-2">
               {["Paid Off", "Financed", "Leased"].map((statusOption) => (
@@ -200,8 +206,6 @@ const TradeInCard = ({
                 />
               ))}
             </div>
-
-         
           </div>
           {(tradeIn.status === "Financed" || tradeIn.status === "Leased") && (
             <div className="space-y-2">
@@ -260,10 +264,11 @@ export const TradeInList = ({ tradeIns, dispatch }) => {
       trim: "",
       color: "",
       financed: false,
-      lienholder: "",
-      payoffAmount: "",
+      allowance: "", // New field: the trade‑in allowance (value offered)
+      payoffAmount: "", // The payoff amount (to be subtracted)
       payoffGoodThrough: "",
       include: true,
+      status: "", // e.g., "Paid Off", "Financed", "Leased"
       createdAt: Date.now(),
     };
     dispatch({ type: "ADD_TRADEIN", payload: newTradeIn });

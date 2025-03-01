@@ -206,6 +206,18 @@ export function quoteReducer(state, action) {
         },
       };
 
+    case "TOGGLE_TRADEIN_INCLUDE":
+      return {
+        ...state,
+        tradeIns: {
+          ...state.tradeIns,
+          [action.payload.id]: {
+            ...state.tradeIns[action.payload.id],
+            include: !state.tradeIns[action.payload.id].include,
+          },
+        },
+      };
+
     default:
       return state;
   }
