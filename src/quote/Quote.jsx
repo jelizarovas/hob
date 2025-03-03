@@ -16,14 +16,21 @@ import { firstPaymentDate, useQuoteCalculations } from "./useQuoteCalculations";
 import PaymentDelayModal from "./PaymentDelayModal";
 import TradeInList from "./TradedInList";
 import DealDataModal from "./DealDataModal";
+import { useAuth } from "../auth/AuthProvider";
 
 export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showTradeIn, setShowTradeIn] = useState(false);
   let history = useHistory();
   const { vin } = useParams();
   const { state: locationState } = useLocation();
   const vehicle = locationState?.vehicle;
+
+  const { currentUser, profile } = useAuth();
+
+  const defaultUser = {
+    displayName: currentUser?.displayName || "Arnas Jelizarovas",
+    cell: profile?.cell || "206-591-9143",
+  };
 
   const msrpValue = vehicle ? parsePrice(vehicle.msrp) : null;
   const ourPriceValue = vehicle ? parsePrice(vehicle.our_price) : null;
@@ -39,11 +46,12 @@ export const Quote = () => {
 
   const [state, dispatch] = useLocalStorage(
     quoteReducer,
-    computedInitialQuote,
+    {
+      computedInitialQuote,
+      dealData: { ...computedInitialQuote.dealData, selectedUser: defaultUser },
+    },
     vin
   );
-
-  console.log({ state });
 
   const [showDelayModal, setShowDelayModal] = useState(false);
   const [showDealModal, setShowDealModal] = useState(false);
@@ -129,8 +137,6 @@ export const Quote = () => {
   const resetQuote = () =>
     dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
 
-  const toggleTradeIn = () => setShowTradeIn((v) => !v);
-
   const {
     total,
     salesTax,
@@ -202,39 +208,6 @@ export const Quote = () => {
             listedPrice={state.listedPrice}
           />
           <TradeInList tradeIns={state.tradeIns} dispatch={dispatch} />
-          {showTradeIn && (
-            <div className="bg-white items-center mt-2 bg-opacity-20 rounded-lg flex w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-              <QuoteInput
-                name="tradeInAllowance"
-                value={state.tradeInAllowance}
-                onChange={handleChange}
-                label="Trade Allowance"
-                className="w-28 text-right"
-              />
-              <QuoteInput
-                name="tradeInPayoff"
-                value={state.tradeInPayoff}
-                onChange={handleChange}
-                label="Payoff"
-                className="w-28 text-right"
-              />
-              <div className="text-sm flex flex-col w-28 text-right">
-                <div className="flex flex-col">
-                  <span className="text-[8px] leading-none">Total Trade</span>
-                  <span> {sumTradeIns}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[8px] leading-none"> Tax credit:</span>
-                  <span>
-                    {" "}
-                    {(Number(state.tradeInAllowance || 0) *
-                      Number(state.salesTaxRate || 0)) /
-                      100}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
 
           <QuoteGroup
             data={state.packages}
@@ -346,7 +319,7 @@ export const Quote = () => {
               initialDealData={state?.dealData}
               onConfirm={handleDealConfirm}
               onCancel={closeDealModal}
-              users={{}}
+              users={[defaultUser]}
             />
           )}
         </div>

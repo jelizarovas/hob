@@ -39,10 +39,17 @@ const DealDataModal = ({ initialDealData, onConfirm, onCancel, users }) => {
           onChange={handleChange}
           className="w-full border border-gray-600 p-2 rounded bg-white bg-opacity-5 text-white"
         >
-          <option value="HOFB Inc. dba Honda of Burien">
-            HOFB Inc. dba Honda of Burien - 15206 1st Ave S. Burien, King, WA
-            98148
-          </option>
+          {[
+            {
+              storeId: "123",
+              shortName: "HofB",
+              longName: "Honda Burien",
+              legalName: "HOFB Inc. dba Honda of Burien",
+              address: "15206 1st Ave S. Burien, King, WA 98148",
+            },
+          ].map((dealer) => (
+            <option value={dealer}>{dealer?.longName}</option>
+          ))}
         </select>
       </div>
       <div className="mb-2">
@@ -121,7 +128,7 @@ const DealDataModal = ({ initialDealData, onConfirm, onCancel, users }) => {
             users?.length > 0 &&
             users?.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.firstName} {user.lastName} ({user.cell})
+                {user.displayName}
               </option>
             ))}
         </select>

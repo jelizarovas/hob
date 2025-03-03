@@ -1,31 +1,30 @@
 import React from "react";
-import { MdDataArray, MdEdit, MdPrint, MdRestore, MdTraffic } from "react-icons/md";
+import {
+  MdAddCircle,
+  MdDataArray,
+  MdEdit,
+  MdPrint,
+  MdRestore,
+  MdTraffic,
+} from "react-icons/md";
 
 export const QuoteToolbar = ({
   resetQuote,
   addTradeIn,
   handleNavigation,
   isLoading,
-  openDealModal
+  openDealModal,
 }) => {
   return (
     <div className="flex w-96 justify-center  mx-auto space-x-2 print:hidden  rounded">
       <ToolBarButton label="Reset" Icon={MdRestore} onClick={resetQuote} />
-      <ToolBarButton
-        label="Add Trade-In"
-        Icon={MdTraffic}
-        onClick={addTradeIn}
-      />
+      <ToolBarButton label="Trade-In" Icon={MdAddCircle} onClick={addTradeIn} />
+      <ToolBarButton label="Deal" Icon={MdDataArray} onClick={openDealModal} />
       <ToolBarButton
         label={isLoading ? "Processing..." : "Pencil"}
         Icon={MdEdit}
         onClick={handleNavigation}
         disabled={isLoading}
-      />
-      <ToolBarButton
-        label="Deal Info"
-        Icon={MdDataArray}
-        onClick={openDealModal}
       />
     </div>
   );

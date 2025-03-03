@@ -25,10 +25,14 @@ export const VehiclePriceCard = ({
           </div>
           <div className="flex justify-between">
             <span className="text-xs opacity-50 px-2">{vehicle?.vin}</span>
-            <span className="text-xs opacity-50 px-2">
+            <span
+              className="text-xs opacity-50 px-2 truncate"
+              title={`${vehicle?.miles} miles`}
+            >
               {vehicle?.miles} miles
             </span>
-            <span className="text-xs opacity-50 px-2">
+            <span className="text-xs opacity-50 px-2 truncate max-w-24"
+            title={`${vehicle?.ext_color}`}>
               {vehicle?.ext_color}
             </span>
           </div>
