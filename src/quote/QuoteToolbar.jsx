@@ -1,11 +1,12 @@
 import React from "react";
-import { MdEdit, MdPrint, MdRestore, MdTraffic } from "react-icons/md";
+import { MdDataArray, MdEdit, MdPrint, MdRestore, MdTraffic } from "react-icons/md";
 
 export const QuoteToolbar = ({
   resetQuote,
   addTradeIn,
   handleNavigation,
   isLoading,
+  openDealModal
 }) => {
   return (
     <div className="flex w-96 justify-center  mx-auto space-x-2 print:hidden  rounded">
@@ -22,9 +23,9 @@ export const QuoteToolbar = ({
         disabled={isLoading}
       />
       <ToolBarButton
-        label="Print"
-        Icon={MdPrint}
-        onClick={() => window.print()}
+        label="Deal Info"
+        Icon={MdDataArray}
+        onClick={openDealModal}
       />
     </div>
   );

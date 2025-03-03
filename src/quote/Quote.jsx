@@ -15,6 +15,7 @@ import { quoteReducer } from "./reducer";
 import { firstPaymentDate, useQuoteCalculations } from "./useQuoteCalculations";
 import PaymentDelayModal from "./PaymentDelayModal";
 import TradeInList from "./TradedInList";
+import DealDataModal from "./DealDataModal";
 
 export const Quote = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,22 +37,35 @@ export const Quote = () => {
       }
     : initialQuote;
 
-  const [state, dispatch] = useLocalStorage(quoteReducer, computedInitialQuote, vin);
+  const [state, dispatch] = useLocalStorage(
+    quoteReducer,
+    computedInitialQuote,
+    vin
+  );
 
   console.log({ state });
 
   const [showDelayModal, setShowDelayModal] = useState(false);
+  const [showDealModal, setShowDealModal] = useState(false);
 
-  const openDelayModal = () => setShowDelayModal(true);
   const closeDelayModal = () => setShowDelayModal(false);
+  const openDelayModal = () => setShowDelayModal(true);
 
-  const handleDelayConfirm = (newDelay) => {
+  const closeDealModal = () => setShowDealModal(false);
+  const openDealModal = () => setShowDealModal(true);
+
+  const handleDelayConfirm = (newDelay, customDate) => {
     dispatch({
       type: "SET_FIELD",
       field: "daysToFirstPayment",
       value: newDelay.toString(),
     });
     closeDelayModal();
+  };
+
+  const handleDealConfirm = (newDealData) => {
+    dispatch({ type: "SET_FIELDS", payload: { dealData: newDealData } });
+    closeDealModal();
   };
 
   const handleChange = (e) => {
@@ -112,12 +126,20 @@ export const Quote = () => {
     });
   };
 
-  const resetQuote = () => dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
+  const resetQuote = () =>
+    dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
 
   const toggleTradeIn = () => setShowTradeIn((v) => !v);
 
-  const { total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees, paymentMatrix } =
-    useQuoteCalculations(state);
+  const {
+    total,
+    salesTax,
+    sumPackages,
+    sumAccessories,
+    sumTradeIns,
+    sumFees,
+    paymentMatrix,
+  } = useQuoteCalculations(state);
 
   const handleNavigation = async () => {
     setIsLoading(true);
@@ -169,6 +191,7 @@ export const Quote = () => {
           addTradeIn={addTradeIn}
           isLoading={isLoading}
           handleNavigation={handleNavigation}
+          openDealModal={openDealModal}
         />
         <div className=" w-96 mx-auto">
           <VehiclePriceCard
@@ -202,7 +225,12 @@ export const Quote = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[8px] leading-none"> Tax credit:</span>
-                  <span> {(Number(state.tradeInAllowance || 0) * Number(state.salesTaxRate || 0)) / 100}</span>
+                  <span>
+                    {" "}
+                    {(Number(state.tradeInAllowance || 0) *
+                      Number(state.salesTaxRate || 0)) /
+                      100}
+                  </span>
                 </div>
               </div>
             </div>
@@ -298,7 +326,11 @@ export const Quote = () => {
           <div className="text-xs py-2 opacity-60 text-center leading-none">
             Payments are based on {state.daysToFirstPayment} day start date (
             {firstPaymentDate(state.daysToFirstPayment).toLocaleDateString()}).
-            <button type="button" className="hover:underline px-2" onClick={openDelayModal}>
+            <button
+              type="button"
+              className="hover:underline px-2"
+              onClick={openDelayModal}
+            >
               Edit
             </button>
           </div>
@@ -307,6 +339,14 @@ export const Quote = () => {
               initialDelay={state.daysToFirstPayment}
               onConfirm={handleDelayConfirm}
               onCancel={closeDelayModal}
+            />
+          )}
+          {showDealModal && (
+            <DealDataModal
+              initialDealData={state?.dealData}
+              onConfirm={handleDealConfirm}
+              onCancel={closeDealModal}
+              users={{}}
             />
           )}
         </div>
@@ -343,7 +383,9 @@ function processQuote(quote) {
 
   // Process trade-ins from state.tradeIns
   // Process trade-ins from state.tradeIns
-  const tradeInsArray = Object.values(quote.tradeIns || {}).sort((a, b) => a.createdAt - b.createdAt);
+  const tradeInsArray = Object.values(quote.tradeIns || {}).sort(
+    (a, b) => a.createdAt - b.createdAt
+  );
   const includedTradeIns = tradeInsArray.filter((trade) => trade.include);
 
   // Determine if we need to append a plus sign to the labels.
@@ -353,7 +395,10 @@ function processQuote(quote) {
     .map((trade, index) => {
       const allowance = parseFloat(trade.allowance) || 0;
       // Subtract payoff only if status is "Financed" or "Leased"
-      const payoff = trade.status === "Financed" || trade.status === "Leased" ? parseFloat(trade.payoffAmount) || 0 : 0;
+      const payoff =
+        trade.status === "Financed" || trade.status === "Leased"
+          ? parseFloat(trade.payoffAmount) || 0
+          : 0;
       const plusSuffix = appendPlus ? " +" : "";
       return [
         {
@@ -375,7 +420,9 @@ function processQuote(quote) {
   // Construct the final dealData object
   const dealItems = [
     { label: "Retail Price", amount: `${listedPrice.toFixed(2)}` },
-    ...(discount > 0 ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }] : []),
+    ...(discount > 0
+      ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }]
+      : []),
     { label: "Your Price", amount: `${sellingPrice.toFixed(2)}` },
     ...includedAccessories,
     ...includedPackages,
@@ -392,7 +439,8 @@ function processQuote(quote) {
   ];
 
   return {
-    id: "N/A",
+    id: quote?.dealData?.dealNumber || "N/A",
+    dealData: quote?.dealData,
     items: dealItems,
     paymentOptions: quote.paymentMatrix,
     tradeIns,
