@@ -39,17 +39,26 @@ export const Quote = () => {
     ? {
         ...initialQuote,
         listedPrice: msrpValue > 0 ? msrpValue : ourPriceValue,
-        sellingPrice: ourPriceValue, // always use our_price as sellingPrice if msrp is zero
+        sellingPrice: ourPriceValue,
         discount: msrpValue > 0 ? msrpValue - ourPriceValue : 0,
+        dealData: {
+          ...initialQuote.dealData, // ensure initialQuote.dealData exists or default to {}
+          selectedUser: defaultUser,
+        },
       }
-    : initialQuote;
+    : {
+        ...initialQuote,
+        dealData: {
+          ...initialQuote.dealData,
+          selectedUser: defaultUser,
+        },
+      };
 
   const [state, dispatch] = useLocalStorage(
     quoteReducer,
     {
       paymentMatrix: { terms: [], downPayments: [] },
-      computedInitialQuote,
-      dealData: { ...computedInitialQuote.dealData, selectedUser: defaultUser },
+      ...computedInitialQuote,
     },
     vin
   );
@@ -135,10 +144,18 @@ export const Quote = () => {
     });
   };
 
-  const resetQuote = () => dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
+  const resetQuote = () =>
+    dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
 
-  const { total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees, paymentMatrix } =
-    useQuoteCalculations(state);
+  const {
+    total,
+    salesTax,
+    sumPackages,
+    sumAccessories,
+    sumTradeIns,
+    sumFees,
+    paymentMatrix,
+  } = useQuoteCalculations(state);
 
   const handleNavigation = async () => {
     setIsLoading(true);
@@ -292,7 +309,11 @@ export const Quote = () => {
           <div className="text-xs py-2 opacity-60 text-center leading-none">
             Payments are based on {state.daysToFirstPayment} day start date (
             {firstPaymentDate(state.daysToFirstPayment).toLocaleDateString()}).
-            <button type="button" className="hover:underline px-2" onClick={openDelayModal}>
+            <button
+              type="button"
+              className="hover:underline px-2"
+              onClick={openDelayModal}
+            >
               Edit
             </button>
           </div>
@@ -345,7 +366,9 @@ function processQuote(quote) {
 
   // Process trade-ins from state.tradeIns
   // Process trade-ins from state.tradeIns
-  const tradeInsArray = Object.values(quote.tradeIns || {}).sort((a, b) => a.createdAt - b.createdAt);
+  const tradeInsArray = Object.values(quote.tradeIns || {}).sort(
+    (a, b) => a.createdAt - b.createdAt
+  );
   const includedTradeIns = tradeInsArray.filter((trade) => trade.include);
 
   // Determine if we need to append a plus sign to the labels.
@@ -355,7 +378,10 @@ function processQuote(quote) {
     .map((trade, index) => {
       const allowance = parseFloat(trade.allowance) || 0;
       // Subtract payoff only if status is "Financed" or "Leased"
-      const payoff = trade.status === "Financed" || trade.status === "Leased" ? parseFloat(trade.payoffAmount) || 0 : 0;
+      const payoff =
+        trade.status === "Financed" || trade.status === "Leased"
+          ? parseFloat(trade.payoffAmount) || 0
+          : 0;
       const plusSuffix = appendPlus ? " +" : "";
       return [
         {
@@ -377,7 +403,9 @@ function processQuote(quote) {
   // Construct the final dealData object
   const dealItems = [
     { label: "Retail Price", amount: `${listedPrice.toFixed(2)}` },
-    ...(discount > 0 ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }] : []),
+    ...(discount > 0
+      ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }]
+      : []),
     { label: "Your Price", amount: `${sellingPrice.toFixed(2)}` },
     ...includedAccessories,
     ...includedPackages,

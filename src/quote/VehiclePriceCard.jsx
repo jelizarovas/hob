@@ -10,9 +10,9 @@ export const VehiclePriceCard = ({
 }) => {
   return (
     <div className="bg-white bg-opacity-20 rounded-lg flex flex-col print:flex-col w-full justify-between px-2 pt-1 pb-3 space-x-2 ">
-      <div className="flex">
-        <div className="mr-2">
-          <img src={vehicle?.thumbnail} className="w-16 h-10 rounded" />
+      <div className="flex px-2">
+        <div className="min-w-10 min-h-10">
+          <img src={vehicle?.thumbnail} className="w-10 h-10 rounded" />
         </div>
         <div className="flex flex-col  w-full px-1">
           <div className="flex justify-between items-center w-full">
