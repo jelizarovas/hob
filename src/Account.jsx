@@ -11,6 +11,7 @@ import { getAuth } from "firebase/auth";
 // 1) Import Skeleton
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import SignatureEPad from "./SignatureEPad";
 
 const updateUserPhotoURL = "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
 
@@ -298,6 +299,7 @@ const Account = () => {
               originalValue={originalData.contactUrl}
               onChange={handleChange}
             />
+            <SignatureEPad signature={userData.signature} handleChange={handleChange} />
             {userData?.contactUrl?.length > 0 && <MyQRCode value={userData?.contactUrl} />}
             <button
               type="submit"
