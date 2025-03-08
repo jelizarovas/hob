@@ -22,6 +22,7 @@ import { Users } from "./userManagement/Users";
 import Layout from "./Layout";
 import TakeIn from "./Take-In";
 import { ShareQRContact } from "./ShareQRContact";
+import ManageRates from "./rates/ManageRates";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -46,7 +47,11 @@ function App() {
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
-                  <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
+                  <ProtectedRoute
+                    exact
+                    path="/#:stock"
+                    component={VehiclePage}
+                  />
 
                   <Layout>
                     <ProtectedRoute
@@ -172,6 +177,15 @@ function App() {
                       title={(params) => [
                         ["QUOTE", "/quote"],
                         [params.vin, `/quote/${params.vin}`],
+                      ]}
+                    />
+                    <ProtectedRoute
+                      exact
+                      path="/manage/rates"
+                      component={ManageRates}
+                      title={(params) => [
+                        ["MANAGE", "/manage"],
+                        ["RATES", `/manage/rates`],
                       ]}
                     />
                     <ProtectedRoute
