@@ -4,7 +4,9 @@ const SignatureEPad = ({ signature = {}, handleChange }) => {
   const [isSigCaptureEnabled, setIsSigCaptureEnabled] = useState(false);
 
   useEffect(() => {
-    const isInstalled = document.documentElement.getAttribute("sigcapturewebextension-installed");
+    const isInstalled = document.documentElement.getAttribute(
+      "sigcapturewebextension-installed"
+    );
     setIsSigCaptureEnabled(isInstalled === "true");
     if (!signature?.imageData) clearFormData(); // Clear only if no existing signature
   }, []);
@@ -31,7 +33,11 @@ const SignatureEPad = ({ signature = {}, handleChange }) => {
       minSigPoints: 25,
     };
 
-    document.addEventListener("SigCaptureWeb_SignResponse", signResponse, false);
+    document.addEventListener(
+      "SigCaptureWeb_SignResponse",
+      signResponse,
+      false
+    );
 
     const messageData = JSON.stringify(message);
     const element = document.createElement("SigCaptureWeb_ExtnDataElem");
@@ -52,7 +58,9 @@ const SignatureEPad = ({ signature = {}, handleChange }) => {
       setValues(obj);
     } catch (error) {
       console.error("Error parsing signature data:", error);
-      alert("An error occurred while capturing the signature. Please try again.");
+      alert(
+        "An error occurred while capturing the signature. Please try again."
+      );
     }
   };
 
@@ -64,11 +72,16 @@ const SignatureEPad = ({ signature = {}, handleChange }) => {
       alert(objResponse.errorMsg);
     } else if (objResponse.isSigned) {
       try {
-        handleChange({ target: { name: "signature.rawData", value: objResponse.rawData } });
-        handleChange({ target: { name: "signature.imageData", value: objResponse.imageData } });
+        handleChange({
+          target: { name: "signature.rawData", value: objResponse.rawData },
+        });
+        handleChange({
+          target: { name: "signature.imageData", value: objResponse.imageData },
+        });
 
         const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.onload = () =>
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         img.src = "data:image/png;base64," + objResponse.imageData;
       } catch (error) {
         console.error("Error setting signature data:", error);
@@ -84,7 +97,9 @@ const SignatureEPad = ({ signature = {}, handleChange }) => {
       handleChange({ target: { name: "signature.rawData", value: "" } });
       handleChange({ target: { name: "signature.imageData", value: "" } });
       const canvas = document.getElementById("cnv");
-      canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+      if (canvas && canvas.getContext) {
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+      }
     } catch (error) {
       console.error("Error clearing data:", error);
       alert("Failed to clear the signature data. Please try again.");
@@ -124,7 +139,8 @@ const SignatureEPad = ({ signature = {}, handleChange }) => {
         <div className="text-center p-4">
           <h2 className="text-xl mb-2">SigCaptureWeb SDK Not Enabled</h2>
           <p className="text-gray-400 mb-2">
-            It looks like the SigCaptureWeb extension is not enabled. Please ensure it's installed.
+            It looks like the SigCaptureWeb extension is not enabled. Please
+            ensure it's installed.
           </p>
           <a
             href="https://chromewebstore.google.com/detail/epadlink-sigcaptureweb-sd/idldbjenlmipmpigmfamdlfifkkeaplc?hl=en-US&pli=1"
@@ -173,13 +189,19 @@ const convertRawDataToSVG = (rawData) => {
   const scaleFactor = 0.1; // Adjust if needed
 
   for (let i = 0; i < binaryData.length; i += 8) {
-    const x = (binaryData.charCodeAt(i) | (binaryData.charCodeAt(i + 1) << 8)) * scaleFactor;
-    const y = (binaryData.charCodeAt(i + 2) | (binaryData.charCodeAt(i + 3) << 8)) * scaleFactor;
+    const x =
+      (binaryData.charCodeAt(i) | (binaryData.charCodeAt(i + 1) << 8)) *
+      scaleFactor;
+    const y =
+      (binaryData.charCodeAt(i + 2) | (binaryData.charCodeAt(i + 3) << 8)) *
+      scaleFactor;
     const penUp = binaryData.charCodeAt(i + 4) !== 0;
 
     if (penUp) {
       if (currentPath) {
-        pathData.push(`<path d="${currentPath}" stroke="white" fill="none" stroke-width="2"/>`);
+        pathData.push(
+          `<path d="${currentPath}" stroke="white" fill="none" stroke-width="2"/>`
+        );
       }
       currentPath = `M ${x},${y}`; // Move to new starting point
     } else {
@@ -191,7 +213,9 @@ const convertRawDataToSVG = (rawData) => {
   }
 
   if (currentPath) {
-    pathData.push(`<path d="${currentPath}" stroke="white" fill="none" stroke-width="2"/>`);
+    pathData.push(
+      `<path d="${currentPath}" stroke="white" fill="none" stroke-width="2"/>`
+    );
   }
 
   console.log("SVG Path Data:", pathData.join("")); // Debugging
