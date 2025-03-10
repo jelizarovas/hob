@@ -26,11 +26,15 @@ export const DropDown = ({
   const [selected, setSelected] = React.useState(defaultValue);
   const [error, setError] = React.useState(null);
   const [isLoading, setLoading] = React.useState(false);
+  let [arrowElement, setArrowElement] = React.useState(null);
 
   let [popperElement, setPopperElement] = React.useState();
   let [referenceElement, setReferenceElement] = React.useState();
   let { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: popperPlacement,
+    modifiers: [
+      { name: "arrow", options: { element: arrowElement, padding: 5 } },
+    ],
     // modifiers: [
     //   {
     //     name: "offset",
@@ -129,7 +133,7 @@ export const DropDown = ({
               ...styles.popper,
             }}
             {...attributes.popper}
-            className="flex border absolute left-0  w-full  bg-white shadow-lg rounded-sm z-50 min-w-fit max-w-full text-black"
+            className="flex absolute left-0  w-full  bg-black shadow-lg rounded z-50 min-w-fit max-w-full text-white"
           >
             <RenderListContainer
               {...{
@@ -146,6 +150,14 @@ export const DropDown = ({
                 searchKey,
                 value,
               }}
+            />
+            <div
+              ref={setArrowElement}
+              style={styles.arrow}
+              {...attributes.arrow}
+              className="absolute w-0 h-0 border-l-4 border-r-4 border-b-4 
+             border-l-transparent border-r-transparent border-b-zinc-800 shadow-inner 
+             -mt-1"
             />
           </div>
         )}
@@ -316,7 +328,7 @@ const ListContainer = ({
                 }}
                 className="cursor-pointer hover:bg-blue-100 hover:bg-opacity-50  flex items-center bg-transparent justify-between whitespace-nowrap "
               >
-                {item?.Component ?  <item.Component /> : renderItem(item)}
+                {item?.Component ? <item.Component /> : renderItem(item)}
                 {item === selected && <MdCheck className="mx-2" />}
               </li>
             );
