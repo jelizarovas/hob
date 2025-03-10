@@ -81,15 +81,32 @@ const ManageRates = ({ presetToEdit, onSave }) => {
 
         <div className="flex">
           <DropDown
-            options={["24", "36"]}
+            options={[
+              { label: "12 mos.", value: 12 },
+              { label: "24 mos.", value: 24 },
+              { label: "36 mos.", value: 36 },
+              { label: "48 mos.", value: 48 },
+              { label: "60 mos.", value: 60 },
+              { label: "72 mos.", value: 72 },
+              { label: "84 mos.", value: 84 },
+              { label: "96 mos.", value: 96 },
+            ]}
+            containerClassName="max-h-64  w-24"
             disableSearch={true}
             value={"24"}
             onSelect={(range) => setSelectedRange(range)}
+            renderItem={({ label, Icon, ...props }) => (
+              <div
+                {...props}
+                className={`min-w-24 w-full flex items-center space-x-2 px-2 py-1 bg-zinc-700 hover:bg-zinc-800 text-white ${props?.className}`}
+              >
+                {Icon && <Icon />}
+                <span>{label}</span>
+              </div>
+            )}
             renderButton={({ buttonRef, isOpen, open, close }) => (
-              <button
-                ref={buttonRef}
-                onClick={() => (isOpen ? close() : open())}
-                className={` px-2 flex  text-sm bg-white bg-opacity-5 rounded hover:bg-opacity-15 focus-within:bg-opacity-10 outline-none `}
+              <div
+                className={` px-2 flex items-center w-20  text-sm bg-white bg-opacity-5 rounded hover:bg-opacity-15 focus-within:bg-opacity-10 outline-none `}
               >
                 <input
                   onChange={() => {}}
@@ -98,10 +115,15 @@ const ManageRates = ({ presetToEdit, onSave }) => {
                   disabled={"false"}
                   type="text"
                   autoComplete="off"
-                  className={`px-0 py-1 flex-grow bg-transparent outline-none`}
+                  className={`px-0 py-1 w-12  bg-transparent outline-none`}
                 />
-                <MdExpandMore className="text-lg border-white border-opacity-35 opacity-55 mr-2" />
-              </button>
+                <button
+                  ref={buttonRef}
+                  onClick={() => (isOpen ? close() : open())}
+                >
+                  <MdExpandMore className="text-lg border-white border-opacity-35 opacity-55 mr-2" />
+                </button>
+              </div>
             )}
           />
         </div>

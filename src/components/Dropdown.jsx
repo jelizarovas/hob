@@ -11,6 +11,7 @@ export const DropDown = ({
   renderItem = () => {},
   renderButton = () => {},
   RenderListContainer = ListContainer,
+  containerClassName = "",
   defaultValue = null,
   value,
   onChange = () => {},
@@ -133,7 +134,7 @@ export const DropDown = ({
               ...styles.popper,
             }}
             {...attributes.popper}
-            className="flex absolute left-0  w-full  bg-black shadow-lg rounded z-50 min-w-fit max-w-full text-white"
+            className={`flex absolute left-0   bg-black shadow-lg rounded z-50 min-w-fit max-w-full text-white ${containerClassName}`}
           >
             <RenderListContainer
               {...{
@@ -307,7 +308,7 @@ const ListContainer = ({
       )}
 
       <ul
-        className="flex w-full outline rounded overflow-y-auto min-w-fit bg-transparent select-none " //removed max-h-56
+        className="flex flex-col w-full outline rounded overflow-y-auto min-w-fit bg-transparent select-none outline-none " //removed max-h-56
         style={{
           flexDirection: isContainerAbove ? "column-reverse" : "column",
         }}
@@ -326,7 +327,7 @@ const ListContainer = ({
                     index === focusedIndex ? "rgba(30,58,138,0.1)" : "",
                   fontWeight: item === selected ? "bold" : "",
                 }}
-                className="cursor-pointer hover:bg-blue-100 hover:bg-opacity-50  flex items-center bg-transparent justify-between whitespace-nowrap "
+                className="cursor-pointer  hover:bg-blue-100 hover:bg-opacity-50  flex items-center bg-transparent justify-between whitespace-nowrap "
               >
                 {item?.Component ? <item.Component /> : renderItem(item)}
                 {item === selected && <MdCheck className="mx-2" />}
