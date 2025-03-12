@@ -411,7 +411,7 @@ function processQuote(quote) {
     ...includedPackages,
     ...processedTradeIns, // include trade-in items here
     ...includedFees,
-    { label: `Taxes (${quote?.salesTaxRate})`, amount: `${quote.salesTax}` },
+    { label: `Taxes (${quote?.salesTaxRate}%)`, amount: `${quote.salesTax}` },
     { label: "Sales Subtotal", amount: `${quote.total}`, isBold: false },
     // { label: "Customer Cash", amount: `${quote.paymentMatrix}` },
     // {

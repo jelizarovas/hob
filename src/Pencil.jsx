@@ -38,7 +38,8 @@ const defaultdealData = {
 
 export const Pencil = ({ customer }) => {
   const location = useLocation();
-  const { currentUser, profile, role, isAdmin, isPrivileged, isUser } = useAuth();
+  const { currentUser, profile, role, isAdmin, isPrivileged, isUser } =
+    useAuth();
 
   const managerData = {
     fullName: currentUser?.displayName || "Arnas Jelizarovas",
@@ -55,20 +56,35 @@ export const Pencil = ({ customer }) => {
       {/* <pre className="text-xs">{JSON.stringify(dealData, null, 2)}</pre> */}
       <div className="flex  justify-evenly  py-2 w-full">
         <div className="flex flex-col w-full md:w-1/2  p-2 leading-none">
-          <strong className="text-sm leading-none">{dealership?.legalName}</strong>
-          <span className="text-xs leading-none">{dealership?.addressLine1}</span>
-          <span className="text-xs leading-none">{dealership?.addressLine2}</span>
+          <strong className="text-sm leading-none">
+            {dealership?.legalName}
+          </strong>
+          <span className="text-xs leading-none">
+            {dealership?.addressLine1}
+          </span>
+          <span className="text-xs leading-none">
+            {dealership?.addressLine2}
+          </span>
         </div>
         <div className="flex flex-wrap gap-2 justify-evenly  w-full md:gap-10  md:w-1/2 ">
           <div className="flex flex-col">
             <strong className="whitespace-nowrap leading-none">Deal #</strong>{" "}
-            <span className="leading-none">{dealData?.id}</span>
+            <span className="leading-none">
+              {dealData.dealData?.dealNumber}
+            </span>
           </div>
           <div className="flex flex-col md:flex-grow">
-            <strong className="whitespace-nowrap leading-none">Customer #</strong> <span></span>
+            <strong className="whitespace-nowrap leading-none">
+              Customer #
+            </strong>
+            <span className="leading-none">
+              {dealData.dealData?.customerNumber}
+            </span>
           </div>
           <div className="flex flex-col">
-            <strong className="leading-none">{manager?.fullName}</strong>
+            <strong className="leading-none">
+              {dealData.dealData.selectedUser?.displayName}
+            </strong>
             <span className="leading-none">Contact Sales:</span>
           </div>
           <div className="relative">
@@ -76,7 +92,9 @@ export const Pencil = ({ customer }) => {
               type="button"
               className="bg-slate-300 rounded-full p-1 md:p-2 relative text-xs md:text-base hover:bg-slate-400"
             >
-              {manager?.fullName.split(" ").map((word, index) => word[0])}
+              {dealData.dealData.selectedUser?.displayName
+                .split(" ")
+                .map((word, index) => word[0])}
               <span className="bg-yellow-500 absolute -left-2 -bottom-2 rounded-full p-1 border-white border text-[8px] md:text-xs">
                 <MdCall />
               </span>
@@ -85,23 +103,38 @@ export const Pencil = ({ customer }) => {
         </div>
       </div>
       <div className="bg-gray-200 p-4 flex flex-col md:flex-row print:flex-row">
-        <div className="md:w-1/2 print:w-3/5"></div>
+        <div className="md:w-1/2 print:w-3/5 px-2 flex flex-col justify-center ">
+          <span className="font-bold whitespace-nowrap">
+            {dealData?.dealData?.customerFullName}
+          </span>
+          <div className="flex flex-wrap">
+            <span>{dealData?.dealData?.customerPhone}</span>
+            <span>{dealData?.dealData?.customerEmail}</span>
+            <span>{dealData?.dealData?.customerAddress}</span>
+          </div>
+        </div>
         <div className="md:w-1/2 flex flex-col print:w-2/5 print:text-[10px] ">
           <strong className="leading-none md:leading-normal text-lg print:text-sm ">
-            {`${vehicle?.year || ""} ${vehicle?.make || ""} ${vehicle?.model || ""}`}
+            {`${vehicle?.year || ""} ${vehicle?.make || ""} ${
+              vehicle?.model || ""
+            }`}
           </strong>
-          <span className="text-xs md:text-sm leading-none md:leading-normal ">{vehicle?.trim}</span>
+          <span className="text-xs md:text-sm leading-none md:leading-normal ">
+            {vehicle?.trim}
+          </span>
           <span className="text-xs md:texr-base leading-none md:leading-normal">
             VIN : {vehicle?.vin} | Stock # : {vehicle?.stock}
           </span>
-          <span className="text-xs md:text-sm leading-none md:leading-normal">Mileage : {vehicle?.miles && " mi"}</span>
+          <span className="text-xs md:text-sm leading-none md:leading-normal">
+            Mileage : {vehicle?.miles && " mi"}
+          </span>
           <span className="text-xs md:text-sm leading-none md:leading-normal">
             Color : {vehicle?.ext_color?.toUpperCase()}
           </span>
           <span className="text-xs md:text-sm leading-none md:leading-normal">
             {vehicle?.make + " |"} {vehicle?.doors}
-            {vehicle?.trim + " |"} {vehicle?.drivetrain + " |"} {vehicle?.engine_description + " |"}{" "}
-            {vehicle?.cylinders + " |"}
+            {vehicle?.trim + " |"} {vehicle?.drivetrain + " |"}{" "}
+            {vehicle?.engine_description + " |"} {vehicle?.cylinders + " |"}
             {vehicle?.fueltype + " |"} {vehicle?.body + " |"} {vehicle?.doors}
           </span>
         </div>
@@ -113,7 +146,12 @@ export const Pencil = ({ customer }) => {
           <strong className="py-2">Payment Detail</strong>
           <ul className="text-sm">
             {dealData.items.map((item, i) => (
-              <PaymentDetailLine key={i} label={item?.label} amount={item?.amount} isBold={item?.isBold} />
+              <PaymentDetailLine
+                key={i}
+                label={item?.label}
+                amount={item?.amount}
+                isBold={item?.isBold}
+              />
             ))}
           </ul>
         </div>
@@ -121,23 +159,31 @@ export const Pencil = ({ customer }) => {
       <div className="w-full flex items-center justify-evenly px-2">
         <div className="flex flex-col w-full px-4">
           <span className="text-2xl pt-10">X</span>
-          <span className="text-xs border-t-2 p-1 whitespace-nowrap">Customer Signature & Date</span>
+          <span className="text-xs border-t-2 p-1 whitespace-nowrap">
+            Customer Signature & Date
+          </span>
         </div>
         <div className="flex flex-col w-full px-4">
           <span className="text-2xl pt-10">X</span>
-          <span className="text-xs border-t-2  p-1 whitespace-nowrap">Manager Signature & Date</span>
+          <span className="text-xs border-t-2  p-1 whitespace-nowrap">
+            Manager Signature & Date
+          </span>
         </div>
       </div>
       <div className="text-xs md:text-sm opacity-80 flex flex-col mt-2 px-1">
         <span className="md:leading-normal leading-none text-justify">
-          Understanding of NEGOTIATION: I agree to the above estimated terms and understand that all were and are
-          negotiable, including interest rate of which dealer may receive/retain a portion, price, down payment, trade
-          allowance, term, accessories, and value adds and that all are subject to execution of contract documents and
-          fi nancing approval. I understand actual credit terms may vary depending on my credit history and that I may
-          be able to obtain fi nancing on diff erent terms from others.
+          Understanding of NEGOTIATION: I agree to the above estimated terms and
+          understand that all were and are negotiable, including interest rate
+          of which dealer may receive/retain a portion, price, down payment,
+          trade allowance, term, accessories, and value adds and that all are
+          subject to execution of contract documents and fi nancing approval. I
+          understand actual credit terms may vary depending on my credit history
+          and that I may be able to obtain fi nancing on diff erent terms from
+          others.
         </span>
         <span className="md:leading-normal leading-none text-justify">
-          *A negotiable dealer documentary service fee of up to $200 may be added to the sale price or capitalized cost.
+          *A negotiable dealer documentary service fee of up to $200 may be
+          added to the sale price or capitalized cost.
         </span>
       </div>
       <DynamicDateTimeDiv />
@@ -192,7 +238,10 @@ function PaymentMatrix({ paymentOptions }) {
   // 4) Convert selectedDownPayments to display strings
   const downPaymentOptions = selectedDownPayments.map((dp) => {
     const numericAmount = parseFloat(dp.amount) || 0;
-    return `$${numericAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `$${numericAmount.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   });
 
   // 5) Build a 2D array of payments (skipping unselected terms)
@@ -203,7 +252,10 @@ function PaymentMatrix({ paymentOptions }) {
       .filter((_, index) => terms[index]?.selected)
       .map((val) =>
         val
-          ? `$${parseFloat(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          ? `$${parseFloat(val).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`
           : "N/A"
       );
   });
@@ -216,7 +268,11 @@ function PaymentMatrix({ paymentOptions }) {
           <tr>
             <th className="text-left">Finance</th>
             {termHeaders.map((header, index) => (
-              <PaymentMatrixHeader key={index} text={`${header.payments} mo`} subtext={`${header.apr}% APR`} />
+              <PaymentMatrixHeader
+                key={index}
+                text={`${header.payments} mo`}
+                subtext={`${header.apr}% APR`}
+              />
             ))}
           </tr>
         </thead>
@@ -224,8 +280,14 @@ function PaymentMatrix({ paymentOptions }) {
         {/* Table Body */}
         <tbody>
           {downPaymentOptions.map((downPayment, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-opacity-10 bg-black bg-opacity-0">
-              <PaymentMatrixDownpaymentOption text={downPayment} subtext="Customer Cash" />
+            <tr
+              key={rowIndex}
+              className="hover:bg-opacity-10 bg-black bg-opacity-0"
+            >
+              <PaymentMatrixDownpaymentOption
+                text={downPayment}
+                subtext="Customer Cash"
+              />
               {calculatedPayments[rowIndex].map((payment, colIndex) => (
                 <PaymentMatrixSelectOption key={colIndex} text={payment} />
               ))}
@@ -241,7 +303,10 @@ const PaymentDetailLine = ({ label, amount, isBold, ...props }) => {
   // Ensure amount is a properly formatted number with thousands separators
   const formattedAmount =
     amount && !isNaN(amount)
-      ? `$${parseFloat(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      ? `$${parseFloat(amount).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`
       : amount; // Keep "N/A" or other non-numeric values as is
 
   return (
@@ -261,7 +326,9 @@ const PaymentMatrixHeader = ({ text, subtext, ...props }) => {
     <td className="bg-gray-200 px-4 py-2 print:px-2 print:py-3 print:text-xs">
       <div className="flex flex-col items-center">
         <span className="font-bold">{text}</span>
-        <span className="text-xs print:text-[10px] leading-none">{subtext}</span>{" "}
+        <span className="text-xs print:text-[10px] leading-none">
+          {subtext}
+        </span>{" "}
       </div>
     </td>
   );
@@ -292,7 +359,8 @@ const vehicleData = {
   link: "https://www.burienhonda.com/inventory/new-2025-honda-pilot-elite-awd-cvt-sport-utility-5fnyg1h84sb069177/",
   thumbnail:
     "https://vehicle-images.dealerinspire.com/stock-images/thumbnails/large/chrome/31993aa2af9d4c6bb5705426472de737.png",
-  title_vrp: "Honda Pilot Elite 10-Speed Automatic w/OD Sport Utility AWD CVT Regular Unleaded V-6 3.5 L/212",
+  title_vrp:
+    "Honda Pilot Elite 10-Speed Automatic w/OD Sport Utility AWD CVT Regular Unleaded V-6 3.5 L/212",
   msrp: "55920",
   our_price: 55920,
   discounts: 0,
@@ -456,7 +524,8 @@ const vehicleData = {
       bottomTitle: "",
     },
     vrp_top_title: "New 2025",
-    vrp_bottom_title: "Honda Pilot Elite 10-Speed Automatic w/OD Sport Utility AWD CVT Regular Unleaded V-6 3.5 L/212",
+    vrp_bottom_title:
+      "Honda Pilot Elite 10-Speed Automatic w/OD Sport Utility AWD CVT Regular Unleaded V-6 3.5 L/212",
     vrp_image_alt: "2025 Honda Pilot Elite",
     advancedPricingStack:
       '<div class="advanced-pricing-stack new-no-discounts-edited-stack vertical-stack"><div class="price-block our-price real-price">\n\t<a href="https://www.burienhonda.com/inventory/new-2025-honda-pilot-elite-awd-cvt-sport-utility-5fnyg1h84sb069177/">\n\t  <span class="price-label">MSRP*</span>\n\t  <span class="price">$55,920</span>\n\t</a>\n</div><p class="sellingPrice" style="text-align:left; color:#ff7b00;">\n    Selling Price\n    <span style="float:right; color:#ff7b00; font-size:16px;">\n        Call For Price\n    </span></p><div class="incentives incentives-breakdown conditional-incentives-breakdown subtract">\n\t<div class="price-block">\n\t<a href="https://www.burienhonda.com/inventory/new-2025-honda-pilot-elite-awd-cvt-sport-utility-5fnyg1h84sb069177/">\n\t\t<span class="price-label">Honda Graduate Offer</span>\n\t\t<span class="price">$500</span>\n\t</a>\n</div><div class="price-block">\n\t<a href="https://www.burienhonda.com/inventory/new-2025-honda-pilot-elite-awd-cvt-sport-utility-5fnyg1h84sb069177/">\n\t\t<span class="price-label">Honda Military Appreciation Offer</span>\n\t\t<span class="price">$500</span>\n\t</a>\n</div>\n</div></div> <!-- END OF PriceStack: New - NO Discounts edited --><p><strong>Disclaimer:</strong></p>\n<p>* All vehicles are one of each and are subject to prior sale. All Pre-Owned or certified vehicles are used. A negotiable documentary service fee of up to $200 may be added to the sale price or capitalized cost. All financing is subject to credit approval. Prices exclude tax, title, and license. Please consider verifying any information in question with a dealership sales representative. *MSRP is not the advertised selling price of the vehicle. MSRP means &ldquo;Manufacturers Suggested Retail Price&rdquo; and is for informational purposes only. Contact dealer for the selling price. All offers and sales contingent on the vehicle being titled in Washington state. No sale is final or binding until buyer and dealer execute a written purchase agreement. Vehicle specifications, equipment, features, and options are for informational purposes only and may change or vary. Customer must verify actual vehicle specifications, equipment, features, and options prior to sale. Dealership imposes a 3% surcharge on all non-vehicle sales credit card transactions. We do not surcharge cash or debit card transactions. Dealership reserves the right to restrict or limit the use of credit cards in vehicle sales transactions. All sale prices expire at 11:59pm on 03/12/2024.</p>\n<p><em><strong>MPG Disclaimer:</strong> Based on EPA mileage ratings. Use for comparison purposes only. Your mileage will vary depending on driving conditions, how you drive and maintain your vehicle, battery-pack age/condition, and other factors.</em></p>\n\n\n',
@@ -677,7 +746,8 @@ const vehicleData = {
     },
     ext_options: [
       {
-        value: "Auto On/Off Projector Beam Led Low/High Beam Daytime Running Auto High-Beam Headlamps w/Delay-Off",
+        value:
+          "Auto On/Off Projector Beam Led Low/High Beam Daytime Running Auto High-Beam Headlamps w/Delay-Off",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -692,7 +762,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Body-Colored Front Bumper w/Black Rub Strip/Fascia Accent and Metal-Look Bumper Insert",
+        value:
+          "Body-Colored Front Bumper w/Black Rub Strip/Fascia Accent and Metal-Look Bumper Insert",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -703,7 +774,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Body-Colored Rear Bumper w/Black Rub Strip/Fascia Accent and Metal-Look Bumper Insert",
+        value:
+          "Body-Colored Rear Bumper w/Black Rub Strip/Fascia Accent and Metal-Look Bumper Insert",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -733,7 +805,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Express Open/Close Sliding And Tilting Glass 1st And 2nd Row Moonroof w/Power Sunshade",
+        value:
+          "Express Open/Close Sliding And Tilting Glass 1st And 2nd Row Moonroof w/Power Sunshade",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -788,7 +861,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Speed Sensitive Rain Detecting Variable Intermittent Wipers w/Heated Jets",
+        value:
+          "Speed Sensitive Rain Detecting Variable Intermittent Wipers w/Heated Jets",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1050,7 +1124,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "FOB Controls -inc: Cargo Access, Windows and Moonroof/Convertible Roof",
+        value:
+          "FOB Controls -inc: Cargo Access, Windows and Moonroof/Convertible Roof",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1065,7 +1140,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Full Carpet Floor Covering -inc: Carpet Front And Rear Floor Mats",
+        value:
+          "Full Carpet Floor Covering -inc: Carpet Front And Rear Floor Mats",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1081,7 +1157,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Gauges -inc: Speedometer, Odometer, Engine Coolant Temp, Tachometer, Trip Odometer and Trip Computer",
+        value:
+          "Gauges -inc: Speedometer, Odometer, Engine Coolant Temp, Tachometer, Trip Odometer and Trip Computer",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1119,7 +1196,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "HVAC -inc: Underseat Ducts, Headliner/Pillar Ducts and Console Ducts",
+        value:
+          "HVAC -inc: Underseat Ducts, Headliner/Pillar Ducts and Console Ducts",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1139,7 +1217,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Instrument Panel Bin, Interior Concealed Storage, Driver / Passenger And Rear Door Bins",
+        value:
+          "Instrument Panel Bin, Interior Concealed Storage, Driver / Passenger And Rear Door Bins",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1200,7 +1279,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Power Rear Windows, Fixed 3rd Row Windows and w/Manual 2nd Row Sun Blinds",
+        value:
+          "Power Rear Windows, Fixed 3rd Row Windows and w/Manual 2nd Row Sun Blinds",
         matchLevel: "none",
         matchedWords: [],
       },
@@ -1242,7 +1322,8 @@ const vehicleData = {
         matchedWords: [],
       },
       {
-        value: "Remote Releases -Inc: Proximity Cargo Access and Mechanical Fuel",
+        value:
+          "Remote Releases -Inc: Proximity Cargo Access and Mechanical Fuel",
         matchLevel: "none",
         matchedWords: [],
       },
