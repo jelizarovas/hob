@@ -104,17 +104,19 @@ export const Pencil = ({ customer }) => {
       </div>
       <div className="bg-gray-200 p-4 flex flex-col md:flex-row print:flex-row">
         <div className="md:w-1/2 print:w-3/5 px-2 flex flex-col justify-center ">
-          <span className="font-bold whitespace-nowrap">
+          <span className="font-arial font-bold whitespace-nowrap">
             {dealData?.dealData?.customerFullName}
           </span>
           <div className="flex flex-wrap">
-            <span>{dealData?.dealData?.customerPhone}</span>
+            <span>{dealData?.dealData?.customerPhone}  </span>
+            <span className="px-2">|</span>
             <span>{dealData?.dealData?.customerEmail}</span>
-            <span>{dealData?.dealData?.customerAddress}</span>
+            
+            <span className="">{dealData?.dealData?.customerAddress}</span>
           </div>
         </div>
         <div className="md:w-1/2 flex flex-col print:w-2/5 print:text-[10px] ">
-          <strong className="leading-none md:leading-normal text-lg print:text-sm ">
+          <strong className="font-arial leading-none md:leading-normal text-lg print:text-sm ">
             {`${vehicle?.year || ""} ${vehicle?.make || ""} ${
               vehicle?.model || ""
             }`}
