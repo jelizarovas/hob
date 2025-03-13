@@ -172,11 +172,20 @@ function App() {
                     />
                     <ProtectedRoute
                       exact
-                      path="/quote/:vin"
+                      path="/quotes/:vin"
                       component={Quote}
                       title={(params) => [
                         ["QUOTE", "/quote"],
                         [params.vin, `/quote/${params.vin}`],
+                      ]}
+                    />
+                    <ProtectedRoute
+                      exact
+                      path="/pencil/:quoteId"
+                      component={Pencil}
+                      title={(params) => [
+                        ["PENCIL", "/pencil"],
+                        [params.vin, `/pencil/${params.vin}`],
                       ]}
                     />
                     <ProtectedRoute

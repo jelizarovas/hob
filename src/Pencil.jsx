@@ -1,56 +1,74 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MdCall } from "react-icons/md";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
+import { useParams } from "react-router";
 
-const dealershipData = {
-  legalName: "HOFB Inc. dba Honda of Burien",
-  addressLine1: "15206 1st Ave S.",
-  addressLine2: "Burien, King, WA 98148",
-};
-
-const defaultdealData = {
-  id: "59122",
-  items: [
-    { label: "Retail Price", amount: "$51,500.00" },
-    { label: "Your Price", amount: "$51,500.00" },
-    { label: "All Weather Mats", amount: "$330.00" },
-    { label: "Estimated License Fees", amount: "$899.00" },
-    { label: "Documentary Service Fee*", amount: "$200.00" },
-
-    { label: "Sales Subtotal", amount: "$52,128.00" },
-    { label: "Amount Financed", amount: "$52,128.00", isBold: true },
-  ],
-  paymentOptions: {
-    downPaymentOptions: ["$0.00", "$500.00", "$1000.00"],
-    termHeaders: [
-      { payments: 48, type: "monthly", apr: 4.9 },
-      { payments: 60, type: "monthly", apr: 5.9 },
-      { payments: 72, type: "monthly", apr: 5.9 },
-    ],
-    calculatedPayments: [
-      ["$1,094.33", "$960.48", "$882.00"], // Payments for $0 down payment
-      ["$1,075.33", "$940.48", "$860.00"], // Payments for $500 down payment
-      ["$1,050.33", "$920.48", "$840.00"], // Payments for $1000 down payment
-    ],
-  },
-};
-
-export const Pencil = ({ customer }) => {
+export const Pencil = (props) => {
+  const { quoteId } = useParams(); // Get quoteId from URL (quotes/:quoteId)
   const location = useLocation();
-  const { currentUser, profile, role, isAdmin, isPrivileged, isUser } =
-    useAuth();
+  const { currentUser, profile } = useAuth();
 
+  // Local state for Firestore data
+  const [quoteData, setQuoteData] = useState(null);
+  const [loading, setLoading] = useState(!!quoteId); // Only load if quoteId exists
+
+  // Manager Data
   const managerData = {
     fullName: currentUser?.displayName || "Arnas Jelizarovas",
     cell: profile?.cell || "206-591-9143",
   };
 
-  const dealership = dealershipData;
-  const manager = managerData;
-  const dealData = location.state?.dealData || defaultdealData; // Prioritize location.state
-  const vehicle = location.state?.vehicle || vehicleData; // Prioritize location.state
+  // Fetch quote from Firestore if quoteId is present
+  useEffect(() => {
+    if (quoteId) {
+      const fetchQuote = async () => {
+        try {
+          const docRef = doc(db, "quotes", quoteId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setQuoteData(docSnap.data());
+          } else {
+            console.error("Quote not found in Firestore.");
+          }
+        } catch (error) {
+          console.error("Error fetching quote:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchQuote();
+    }
+  }, [quoteId]);
 
+  // Determine source of data
+  const dealData = quoteData || location.state?.dealData || props.dealData;
+  const vehicle =
+    quoteData?.vehicle || location.state?.vehicle || props.vehicle;
+
+  // If still loading from Firestore, show a loading indicator
+  if (loading) return <div>Loading quote data...</div>;
+
+  return (
+    <div className="bg-white text-black min-h-screen flex flex-col md:p-10 font-sans">
+      {/* Render AgreementSheet and pass the resolved props */}
+      <AgreementSheet
+        dealership={props.dealership || dealData?.dealership}
+        manager={managerData}
+        dealData={dealData}
+        vehicle={vehicle}
+      />
+    </div>
+  );
+};
+
+export const AgreementSheet = ({
+  dealership,
+  manager,
+  dealData,
+  vehicle,
+  ...props
+}) => {
   return (
     <div className="bg-white text-black min-h-screen  flex flex-col md:p-10 font-sans">
       {/* <pre className="text-xs">{JSON.stringify(dealData, null, 2)}</pre> */}
@@ -70,7 +88,7 @@ export const Pencil = ({ customer }) => {
           <div className="flex flex-col">
             <strong className="whitespace-nowrap leading-none">Deal #</strong>{" "}
             <span className="leading-none">
-              {dealData.dealData?.dealNumber}
+              {dealData?.dealData?.dealNumber}
             </span>
           </div>
           <div className="flex flex-col md:flex-grow">
@@ -78,12 +96,12 @@ export const Pencil = ({ customer }) => {
               Customer #
             </strong>
             <span className="leading-none">
-              {dealData.dealData?.customerNumber}
+              {dealData?.dealData?.customerNumber}
             </span>
           </div>
           <div className="flex flex-col">
             <strong className="leading-none">
-              {dealData.dealData.selectedUser?.displayName}
+              {dealData?.dealData?.selectedUser?.displayName}
             </strong>
             <span className="leading-none">Contact Sales:</span>
           </div>
@@ -92,7 +110,7 @@ export const Pencil = ({ customer }) => {
               type="button"
               className="bg-slate-300 rounded-full p-1 md:p-2 relative text-xs md:text-base hover:bg-slate-400"
             >
-              {dealData.dealData.selectedUser?.displayName
+              {dealData?.dealData?.selectedUser?.displayName
                 .split(" ")
                 .map((word, index) => word[0])}
               <span className="bg-yellow-500 absolute -left-2 -bottom-2 rounded-full p-1 border-white border text-[8px] md:text-xs">
@@ -108,10 +126,10 @@ export const Pencil = ({ customer }) => {
             {dealData?.dealData?.customerFullName}
           </span>
           <div className="flex flex-wrap">
-            <span>{dealData?.dealData?.customerPhone}  </span>
+            <span>{dealData?.dealData?.customerPhone} </span>
             <span className="px-2">|</span>
             <span>{dealData?.dealData?.customerEmail}</span>
-            
+
             <span className="">{dealData?.dealData?.customerAddress}</span>
           </div>
         </div>
@@ -143,18 +161,19 @@ export const Pencil = ({ customer }) => {
       </div>
 
       <div className="flex-grow flex flex-col-reverse gap-2 md:gap-1 md:flex-row items-start py-4 print:flex-row">
-        <PaymentMatrix paymentOptions={dealData.paymentOptions} />
+        <PaymentMatrix paymentOptions={dealData?.paymentOptions} />
         <div className=" w-full md:w-2/5 bg-gray-200 p-1 md:p-2 print:w-2/5">
           <strong className="py-2">Payment Detail</strong>
           <ul className="text-sm">
-            {dealData.items.map((item, i) => (
-              <PaymentDetailLine
-                key={i}
-                label={item?.label}
-                amount={item?.amount}
-                isBold={item?.isBold}
-              />
-            ))}
+            {dealData?.items &&
+              dealData?.items.map((item, i) => (
+                <PaymentDetailLine
+                  key={i}
+                  label={item?.label}
+                  amount={item?.amount}
+                  isBold={item?.isBold}
+                />
+              ))}
           </ul>
         </div>
       </div>
@@ -222,17 +241,21 @@ const DynamicDateTimeDiv = () => {
 
 export default DynamicDateTimeDiv;
 
-function PaymentMatrix({ paymentOptions }) {
+function PaymentMatrix({ paymentOptions = { terms: [], downPayments: [] } }) {
   const { terms = [], downPayments = [] } = paymentOptions;
 
   // 1) Filter only selected terms
-  const selectedTerms = terms.filter((term) => term.selected);
+  const selectedTerms =
+    terms.length > 0 ? terms.filter((term) => term.selected) : [];
 
   // 2) Build the table headers from selected terms
-  const termHeaders = selectedTerms.map((term) => ({
-    payments: term.duration,
-    apr: term.apr,
-  }));
+  const termHeaders =
+    selectedTerms.length > 0
+      ? selectedTerms.map((term) => ({
+          payments: term.duration,
+          apr: term.apr,
+        }))
+      : [];
 
   // 3) Filter only selected downPayments
   const selectedDownPayments = downPayments.filter((dp) => dp.selected);
@@ -355,6 +378,39 @@ const PaymentMatrixSelectOption = ({ text, subtext, ...props }) => {
       </strong>
     </td>
   );
+};
+
+const dealershipData = {
+  legalName: "HOFB Inc. dba Honda of Burien",
+  addressLine1: "15206 1st Ave S.",
+  addressLine2: "Burien, King, WA 98148",
+};
+
+const defaultdealData = {
+  id: "59122",
+  items: [
+    { label: "Retail Price", amount: "$51,500.00" },
+    { label: "Your Price", amount: "$51,500.00" },
+    { label: "All Weather Mats", amount: "$330.00" },
+    { label: "Estimated License Fees", amount: "$899.00" },
+    { label: "Documentary Service Fee*", amount: "$200.00" },
+
+    { label: "Sales Subtotal", amount: "$52,128.00" },
+    { label: "Amount Financed", amount: "$52,128.00", isBold: true },
+  ],
+  paymentOptions: {
+    downPaymentOptions: ["$0.00", "$500.00", "$1000.00"],
+    termHeaders: [
+      { payments: 48, type: "monthly", apr: 4.9 },
+      { payments: 60, type: "monthly", apr: 5.9 },
+      { payments: 72, type: "monthly", apr: 5.9 },
+    ],
+    calculatedPayments: [
+      ["$1,094.33", "$960.48", "$882.00"], // Payments for $0 down payment
+      ["$1,075.33", "$940.48", "$860.00"], // Payments for $500 down payment
+      ["$1,050.33", "$920.48", "$840.00"], // Payments for $1000 down payment
+    ],
+  },
 };
 
 const vehicleData = {
