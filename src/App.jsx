@@ -52,6 +52,15 @@ function App() {
                     path="/#:stock"
                     component={VehiclePage}
                   />
+                   <ProtectedRoute
+                      exact
+                      path="/pencil/:quoteId"
+                      component={Pencil}
+                      title={(params) => [
+                        ["PENCIL", "/pencil"],
+                        [params.vin, `/pencil/${params.vin}`],
+                      ]}
+                    />
 
                   <Layout>
                     <ProtectedRoute
@@ -172,22 +181,14 @@ function App() {
                     />
                     <ProtectedRoute
                       exact
-                      path="/quotes/:vin"
+                      path="/quote/:vin"
                       component={Quote}
                       title={(params) => [
                         ["QUOTE", "/quote"],
                         [params.vin, `/quote/${params.vin}`],
                       ]}
                     />
-                    <ProtectedRoute
-                      exact
-                      path="/pencil/:quoteId"
-                      component={Pencil}
-                      title={(params) => [
-                        ["PENCIL", "/pencil"],
-                        [params.vin, `/pencil/${params.vin}`],
-                      ]}
-                    />
+                   
                     <ProtectedRoute
                       exact
                       path="/manage/rates"

@@ -171,7 +171,10 @@ export const Quote = () => {
         paymentMatrix,
       };
       const processedDealData = processQuote(quoteData);
-      history.push("/dev/pencil", { dealData: processedDealData, vehicle });
+      history.push("/pencil/66452", {
+        dealData: processedDealData,
+        vehicle,
+      });
     } catch (error) {
       console.error("Error processing quote:", error);
     } finally {

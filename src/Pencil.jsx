@@ -50,7 +50,7 @@ export const Pencil = (props) => {
   if (loading) return <div>Loading quote data...</div>;
 
   return (
-    <div className="bg-white text-black min-h-screen flex flex-col md:p-10 font-sans">
+    <div className="bg-white text-black min-h-screen flex flex-col md:p-0 font-proxima">
       {/* Render AgreementSheet and pass the resolved props */}
       <AgreementSheet
         dealership={props.dealership || dealData?.dealership}
@@ -91,14 +91,16 @@ export const AgreementSheet = ({
               {dealData?.dealData?.dealNumber}
             </span>
           </div>
-          <div className="flex flex-col md:flex-grow">
-            <strong className="whitespace-nowrap leading-none">
-              Customer #
-            </strong>
-            <span className="leading-none">
-              {dealData?.dealData?.customerNumber}
-            </span>
-          </div>
+          {dealData?.dealData?.customerNumber && (
+            <div className="flex flex-col md:flex-grow">
+              <strong className="whitespace-nowrap leading-none">
+                Customer #
+              </strong>
+              <span className="leading-none">
+                {dealData?.dealData?.customerNumber}
+              </span>
+            </div>
+          )}
           <div className="flex flex-col">
             <strong className="leading-none">
               {dealData?.dealData?.selectedUser?.displayName}
@@ -108,11 +110,11 @@ export const AgreementSheet = ({
           <div className="relative">
             <button
               type="button"
-              className="bg-slate-300 rounded-full p-1 md:p-2 relative text-xs md:text-base hover:bg-slate-400"
+              className="bg-slate-300 rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-xs md:text-base hover:bg-slate-400"
             >
               {dealData?.dealData?.selectedUser?.displayName
-                .split(" ")
-                .map((word, index) => word[0])}
+                ?.split(" ")
+                .map((word) => word[0])}
               <span className="bg-yellow-500 absolute -left-2 -bottom-2 rounded-full p-1 border-white border text-[8px] md:text-xs">
                 <MdCall />
               </span>
@@ -127,10 +129,18 @@ export const AgreementSheet = ({
           </span>
           <div className="flex flex-wrap">
             <span>{dealData?.dealData?.customerPhone} </span>
-            <span className="px-2">|</span>
-            <span>{dealData?.dealData?.customerEmail}</span>
-
-            <span className="">{dealData?.dealData?.customerAddress}</span>
+            {dealData?.dealData?.customerEmail && (
+              <>
+                <span className="px-2">|</span>
+                <span>{dealData?.dealData?.customerEmail}</span>
+              </>
+            )}
+            {dealData?.dealData?.customerAddress && (
+              <>
+                <span className="px-2">|</span>
+                <span className="">{dealData?.dealData?.customerAddress}</span>
+              </>
+            )}
           </div>
         </div>
         <div className="md:w-1/2 flex flex-col print:w-2/5 print:text-[10px] ">
