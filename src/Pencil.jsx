@@ -19,6 +19,12 @@ export const Pencil = (props) => {
     cell: profile?.cell || "206-591-9143",
   };
 
+  const dealershipData = {
+    legalName: "HOFB Inc. dba Honda of Burien",
+    addressLine1: "15206 1st Ave S.",
+    addressLine2: "Burien, King, WA 98148",
+  };
+
   // Fetch quote from Firestore if quoteId is present
   useEffect(() => {
     if (quoteId) {
@@ -53,7 +59,7 @@ export const Pencil = (props) => {
     <div className="bg-white text-black min-h-screen flex flex-col md:p-0 font-proxima">
       {/* Render AgreementSheet and pass the resolved props */}
       <AgreementSheet
-        dealership={props.dealership || dealData?.dealership}
+        dealership={props.dealership || dealData?.dealership || dealershipData}
         manager={managerData}
         dealData={dealData}
         vehicle={vehicle}
