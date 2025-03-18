@@ -70,4 +70,15 @@ export const initialQuote = {
     ],
   },
   daysToFirstPayment: 45,
+  dealData: {
+    dealership: {
+      storeId: "123",
+      shortName: "HofB",
+      longName: "Honda Burien",
+      legalName: "HOFB Inc. dba Honda of Burien",
+      address: "15206 1st Ave S. Burien, King, WA 98148",
+      addressLine1: "15206 1st Ave S.",
+      addressLine2: "Burien, King, WA 98148",
+    },
+  },
 };

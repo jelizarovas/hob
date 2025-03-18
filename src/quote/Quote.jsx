@@ -144,18 +144,10 @@ export const Quote = () => {
     });
   };
 
-  const resetQuote = () =>
-    dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
+  const resetQuote = () => dispatch({ type: "RESET_STATE", payload: computedInitialQuote });
 
-  const {
-    total,
-    salesTax,
-    sumPackages,
-    sumAccessories,
-    sumTradeIns,
-    sumFees,
-    paymentMatrix,
-  } = useQuoteCalculations(state);
+  const { total, salesTax, sumPackages, sumAccessories, sumTradeIns, sumFees, paymentMatrix } =
+    useQuoteCalculations(state);
 
   const handleNavigation = async () => {
     setIsLoading(true);
@@ -312,11 +304,7 @@ export const Quote = () => {
           <div className="text-xs py-2 opacity-60 text-center leading-none">
             Payments are based on {state.daysToFirstPayment} day start date (
             {firstPaymentDate(state.daysToFirstPayment).toLocaleDateString()}).
-            <button
-              type="button"
-              className="hover:underline px-2"
-              onClick={openDelayModal}
-            >
+            <button type="button" className="hover:underline px-2" onClick={openDelayModal}>
               Edit
             </button>
           </div>
@@ -369,9 +357,7 @@ function processQuote(quote) {
 
   // Process trade-ins from state.tradeIns
   // Process trade-ins from state.tradeIns
-  const tradeInsArray = Object.values(quote.tradeIns || {}).sort(
-    (a, b) => a.createdAt - b.createdAt
-  );
+  const tradeInsArray = Object.values(quote.tradeIns || {}).sort((a, b) => a.createdAt - b.createdAt);
   const includedTradeIns = tradeInsArray.filter((trade) => trade.include);
 
   // Determine if we need to append a plus sign to the labels.
@@ -381,10 +367,7 @@ function processQuote(quote) {
     .map((trade, index) => {
       const allowance = parseFloat(trade.allowance) || 0;
       // Subtract payoff only if status is "Financed" or "Leased"
-      const payoff =
-        trade.status === "Financed" || trade.status === "Leased"
-          ? parseFloat(trade.payoffAmount) || 0
-          : 0;
+      const payoff = trade.status === "Financed" || trade.status === "Leased" ? parseFloat(trade.payoffAmount) || 0 : 0;
       const plusSuffix = appendPlus ? " +" : "";
       return [
         {
@@ -407,14 +390,16 @@ function processQuote(quote) {
   const dealItems = [
     { label: "Retail Price", amount: `${listedPrice.toFixed(2)}` },
     ...(discount > 0
-      ? [{ label: "Discount", amount: `${discount.toFixed(2)}` }]
+      ? [{ label: "Savings", amount: `${discount.toFixed(2)}` }]
+      : discount < 0
+      ? [{ label: "Market Adjustment", amount: `${Math.abs(discount).toFixed(2)}` }]
       : []),
     { label: "Your Price", amount: `${sellingPrice.toFixed(2)}` },
-    ...includedAccessories,
     ...includedPackages,
+    ...includedAccessories,
     ...processedTradeIns, // include trade-in items here
     ...includedFees,
-    { label: `Taxes (${quote?.salesTaxRate}%)`, amount: `${quote.salesTax}` },
+    ...(quote?.salesTaxRate > 0 ? [{ label: `Taxes (${quote.salesTaxRate}%)`, amount: `${quote.salesTax}` }] : []),
     { label: "Sales Subtotal", amount: `${quote.total}`, isBold: false },
     // { label: "Customer Cash", amount: `${quote.paymentMatrix}` },
     // {
