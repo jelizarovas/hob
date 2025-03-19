@@ -14,9 +14,13 @@
   },
   "main": "index.js",
   "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
     "cors": "^2.8.5",
-    "firebase-admin": "^13.0.2",
-    "firebase-functions": "^6.3.2"
+    "firebase-admin": "^13.2.0",
+    "firebase-functions": "^6.3.2",
+    "puppeteer-core": "^24.4.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.4.0"
