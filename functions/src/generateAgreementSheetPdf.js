@@ -7,9 +7,10 @@ import React from "react";
 import ReactDOMServer from "react-dom/server";
 
 // Import your AgreementSheet component via symlink
-const AgreementSheet = require("./components/templates/AgreementSheet").default;
+import { AgreementSheet } from "./components/templates/AgreementSheet.js";
 
-export const generatePDF = onRequest(async (req, res) => {
+//firebase deploy --only functions:generateAgreementSheetPdf
+export const generateAgreementSheetPdf = onRequest(async (req, res) => {
   try {
     let proposalData;
 
@@ -27,7 +28,11 @@ export const generatePDF = onRequest(async (req, res) => {
         res.status(400).send("Missing proposalId parameter");
         return;
       }
-      const proposalDoc = await admin.firestore().collection("proposals").doc(proposalId).get();
+      const proposalDoc = await admin
+        .firestore()
+        .collection("proposals")
+        .doc(proposalId)
+        .get();
       if (!proposalDoc.exists) {
         res.status(404).send("Proposal not found");
         return;
@@ -36,7 +41,9 @@ export const generatePDF = onRequest(async (req, res) => {
     }
 
     // Render AgreementSheet component to HTML using ReactDOMServer.
-    const html = ReactDOMServer.renderToStaticMarkup(React.createElement(AgreementSheet, { proposalData }));
+    const html = ReactDOMServer.renderToStaticMarkup(
+      React.createElement(AgreementSheet, { ...proposalData })
+    );
 
     // Build a full HTML document and include Tailwind CSS for styling.
     const fullHtml = `<!DOCTYPE html>
@@ -58,8 +65,14 @@ export const generatePDF = onRequest(async (req, res) => {
       headless: chrome.headless,
     });
     const page = await browser.newPage();
+
+    // Emulate print media to apply print-specific CSS
+    await page.emulateMediaType("print");
+
     await page.setContent(fullHtml, { waitUntil: "domcontentloaded" });
-    const pdfBuffer = await page.pdf({ format: "A4" });
+
+    // Generate the PDF with letter size. You can adjust other options as needed.
+    const pdfBuffer = await page.pdf({ format: "Letter" });
     await browser.close();
 
     res.set("Content-Type", "application/pdf");

@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "build": "vite build",
     "predeploy": "npm run build",
-    "deploy": "firebase deploy --only hosting:hofbapp"
+    "deploy": "firebase deploy --only hosting:hofbapp",
+    "setup": "npm install && cd functions && npm install && node setup-symlink.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
