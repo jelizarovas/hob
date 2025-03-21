@@ -17,26 +17,43 @@
         "firebase-debug.*.log",
         "*.local"
       ]
+    },
+    {
+      "source": "shortener/functions",
+      "codebase": "shortener"
     }
   ],
-  "hosting": {
-    "site": "hofbapp",
-    "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "redirects": [
-      {
-        "source": "/contact/:vCardFile",
-        "destination": "https://storage.googleapis.com/honda-burien.appspot.com/vcards/:vCardFile",
-        "type": 302
-      }
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  },
+  "hosting": [
+    {
+      "site": "hofbapp",
+      "public": "dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "/contact/:vCardFile",
+          "destination": "https://storage.googleapis.com/honda-burien.appspot.com/vcards/:vCardFile",
+          "type": 302
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "gohofb",
+      "site": "go-hofb-app",
+      "public": "public",
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "redirectHandler"
+        }
+      ]
+    }
+  ],
   "storage": {
     "rules": "storage.rules"
   }

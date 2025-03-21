@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "honda-burien"
+  },
+  "targets": {
+    "your-firebase-project-id": {
+      "hosting": {
+        "main": [
+          "hofbapp"
+        ],
+        "gohofb": [
+          "go-hofb-app"
+        ]
+      }
+    }
   }
 }
