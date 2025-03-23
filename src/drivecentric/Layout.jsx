@@ -7,6 +7,7 @@ const Immediate = () => <div className="bg-blue-500 p-4">Immediate</div>;
 const Lists = () => <div className="bg-green-500 p-4">Lists</div>;
 const Contexts = () => <div className="bg-yellow-500 p-4">Contexts</div>;
 const Panels = () => <div className="bg-red-500 p-4">Panels</div>;
+const Canels = () => <div className="bg-red-500 p-4">Panels</div>;
 
 const App = () => {
   return (
@@ -24,8 +25,7 @@ const App = () => {
 };
 
 const ResponsiveResizableLayout = ({ children, stackPriority = [] }) => {
-  const { colWidths, colHeights, handleResizeWidth, handleResizeHeight } =
-    useResizableColumns();
+  const { colWidths, colHeights, handleResizeWidth, handleResizeHeight } = useResizableColumns();
 
   // Track screen width for dynamic stacking
   const screenWidth = window.innerWidth;
@@ -45,14 +45,8 @@ const ResponsiveResizableLayout = ({ children, stackPriority = [] }) => {
           } bg-darkBg rounded-lg shadow-lg relative overflow-hidden`}
         >
           <ResizableBox
-            width={
-              shouldStack(groupIndex) ? Infinity : colWidths[groupIndex] || 300
-            }
-            height={
-              !shouldStack(groupIndex)
-                ? Infinity
-                : colHeights[groupIndex] || 300
-            }
+            width={shouldStack(groupIndex) ? Infinity : colWidths[groupIndex] || 300}
+            height={!shouldStack(groupIndex) ? Infinity : colHeights[groupIndex] || 300}
             axis={shouldStack(groupIndex) ? "y" : "x"}
             resizeHandles={shouldStack(groupIndex) ? ["s"] : ["e"]}
             handle={
@@ -69,14 +63,8 @@ const ResponsiveResizableLayout = ({ children, stackPriority = [] }) => {
                 handleResizeWidth(groupIndex, data.size.width);
               }
             }}
-            minConstraints={[
-              shouldStack(groupIndex) ? Infinity : 150,
-              !shouldStack(groupIndex) ? Infinity : 150,
-            ]}
-            maxConstraints={[
-              shouldStack(groupIndex) ? Infinity : 500,
-              !shouldStack(groupIndex) ? Infinity : 500,
-            ]}
+            minConstraints={[shouldStack(groupIndex) ? Infinity : 150, !shouldStack(groupIndex) ? Infinity : 150]}
+            maxConstraints={[shouldStack(groupIndex) ? Infinity : 500, !shouldStack(groupIndex) ? Infinity : 500]}
           >
             <div className="p-4 h-full">{group}</div>
           </ResizableBox>
