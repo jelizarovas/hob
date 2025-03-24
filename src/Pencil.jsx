@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import { useParams } from "react-router";
 import { AgreementSheet } from "./components/templates/AgreementSheet";
+import DownloadAgreementButton from "./DownloadAgreementButton";
 
 export const Pencil = (props) => {
   const { quoteId } = useParams(); // Get quoteId from URL (quotes/:quoteId)
@@ -49,14 +50,24 @@ export const Pencil = (props) => {
 
   // Determine source of data
   const dealData = quoteData || location.state?.dealData || props.dealData;
-  const vehicle = quoteData?.vehicle || location.state?.vehicle || props.vehicle;
+  const vehicle =
+    quoteData?.vehicle || location.state?.vehicle || props.vehicle;
 
   // If still loading from Firestore, show a loading indicator
   if (loading) return <div>Loading quote data...</div>;
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col md:p-0 font-proxima">
-      {/* Render AgreementSheet and pass the resolved props */}
+      <DownloadAgreementButton
+        proposalData={{
+          dealership:
+            props.dealership || dealData?.dealership || dealershipData,
+          manager: managerData,
+          dealData: dealData,
+          vehicle,
+        }}
+      />
+
       <AgreementSheet
         dealership={props.dealership || dealData?.dealership || dealershipData}
         manager={managerData}
@@ -66,4 +77,3 @@ export const Pencil = (props) => {
     </div>
   );
 };
-

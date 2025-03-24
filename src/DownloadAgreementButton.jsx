@@ -1,45 +1,14 @@
-import React from "react";
-import { getAuth } from "firebase/auth";
-
-const DownloadAgreementButton = ({
-  dealership,
-  manager,
-  dealData,
-  vehicle,
-  ...otherProps
-}) => {
-  const handleDownload = async () => {
+export default function DownloadAgreementButton({ proposalData }) {
+  async function handleDownload() {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
-        alert("You must be logged in to download the agreement.");
-        return;
-      }
-      // Get a Firebase ID token for authentication
-      const token = await user.getIdToken();
-
-      // Build the data payload for the PDF.
-      // This payload should contain all the props your AgreementSheet component requires.
-      const payload = {
-        dealership,
-        manager,
-        dealData,
-        vehicle,
-        ...otherProps,
-      };
-
-      // Replace with your deployed Cloud Function URL
       const functionUrl =
-        "https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/generateAgreementSheetPdf";
-
+        "https://generateagreementsheetpdf-muc7erlkaa-uc.a.run.app";
       const response = await fetch(functionUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(proposalData),
       });
 
       if (!response.ok) {
@@ -47,30 +16,27 @@ const DownloadAgreementButton = ({
         throw new Error(errorText || "Failed to generate PDF");
       }
 
-      // Convert the response to a blob and trigger the download
       const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = downloadUrl;
-      anchor.download = "AgreementSheet.pdf";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      window.URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
-      console.error("Error downloading agreement PDF:", error);
-      alert("Error downloading agreement PDF: " + error.message);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Agreement.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error downloading PDF:", err);
+      alert("Error downloading PDF: " + err.message);
     }
-  };
+  }
 
   return (
     <button
       onClick={handleDownload}
-      className="print:none px-4 py-2 bg-blue-600 text-white rounded"
+      className="print:hidden px-4 py-2 bg-blue-500 text-white"
     >
-      Download Agreement
+      Download PDF
     </button>
   );
-};
-
-export default DownloadAgreementButton;
+}

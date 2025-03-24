@@ -21,6 +21,10 @@
     {
       "source": "shortener/functions",
       "codebase": "shortener"
+    },
+    {
+      "source": "functions/pdf",
+      "codebase": "pdf"
     }
   ],
   "hosting": [
@@ -43,7 +47,6 @@
       ]
     },
     {
-      "target": "gohofb",
       "site": "go-hofb-app",
       "public": "public",
       "rewrites": [
