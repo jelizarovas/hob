@@ -98,26 +98,26 @@ export const AgreementSheet = ({
               </span>
               <div className="flex flex-wrap">
                 {buyerData.map((item, index) => (
-                  <React.Fragment key={index}>
+                  <>
                     {index > 0 && <span className="px-2">|</span>}
                     <span>{item}</span>
-                  </React.Fragment>
+                  </>
                 ))}
               </div>
             </div>
 
             {/* Conditionally Render Co-Buyer Column if Data Exists */}
-            {coBuyerData.length > 0 && (
+            {coBuyerData && coBuyerData.length > 0 && (
               <div className="flex-1">
                 <span className="font-arial font-bold whitespace-nowrap">
                   {realDealData.coBuyerFullName || ""}
                 </span>
                 <div className="flex flex-wrap">
-                  {coBuyerData.map((item, index) => (
-                    <React.Fragment key={index}>
+                  {coBuyerData && coBuyerData.map((item, index) => (
+                    <>
                       {index > 0 && <span className="px-2">|</span>}
                       <span>{item}</span>
-                    </React.Fragment>
+                    </>
                   ))}
                 </div>
               </div>

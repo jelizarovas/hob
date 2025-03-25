@@ -2,7 +2,7 @@
   "name": "pdf",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "18"
   },
   "dependencies": {
     "chrome-aws-lambda": "^10.1.0",

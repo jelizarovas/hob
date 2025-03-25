@@ -86,10 +86,25 @@ export const generateAgreementSheetPdf = onRequest(async (req, res) => {
 
       // 7) Launch Puppeteer with chrome-aws-lambda
       try {
+        const executablePath = await chrome.executablePath;
+
         browser = await puppeteer.launch({
-          args: chrome.args,
-          executablePath: await chrome.executablePath,
-          headless: chrome.headless,
+          headless: true,
+          timeout: 20000,
+          ignoreHTTPSErrors: true,
+          slowMo: 0,
+          executablePath,
+          args: [
+            "--disable-gpu",
+            "--disable-dev-shm-usage",
+            "--disable-setuid-sandbox",
+            "--no-first-run",
+            "--no-sandbox",
+            "--no-zygote",
+            "--window-size=1280,720",
+            //   ...chromium.args,
+          ],
+          defaultViewport: chrome.defaultViewport,
         });
       } catch (launchError) {
         logger.error("Error launching Puppeteer:", launchError);
