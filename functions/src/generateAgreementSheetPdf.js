@@ -4,9 +4,8 @@ import admin from "firebase-admin";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
- 
-
-import { createElement } from "react";
+import inlineCss from "inline-css";
+import React from "react";
 // import ReactDOMServer from "react-dom/server";
 import { renderToStaticMarkup } from "react-dom/server";
 import cors from "cors";
@@ -18,6 +17,7 @@ import { AgreementSheetText } from "../../src/components/templates/AgreementShee
 // 1) Create a CORS handler
 const corsHandler = cors({ origin: true });
 
+//firebase deploy --only functions:generateAgreementSheetPdf
 export const generateAgreementSheetPdf = onRequest(
   {
     memory: "1GiB", // or "1Gi", "256MiB", etc.
@@ -73,28 +73,14 @@ export const generateAgreementSheetPdf = onRequest(
         // 6) Render AgreementSheet using ...proposalData if it expects separate props
         let html;
         try {
-          html = renderToStaticMarkup(createElement(AgreementSheetText));
-        } catch (renderError) {
-          logger.error("Error rendering component:", renderError);
-          return res.status(500).json({ error: "Error rendering PDF content" });
+          // Use hardcoded props (or none) as needed for your test component.
+          const rawHtml = reactHtml(AgreementSheetText, {});
+          // inlineCss returns a Promise; you can await the result.
+          html = await inlineCss(rawHtml, { url: "./" });
+          console.log(html);
+        } catch (error) {
+          console.error("Error generating HTML:", error);
         }
-
-        // Build a minimal HTML doc
-        // ${html}
-        const fullHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Screenshot Test</title>
-        </head>
-        <body style="margin:0;padding:0;">
-          <h1>Hello from Puppeteer</h1>
-          ${html}
-          <h1>Bye from Puppeteer</h1>
-        </body>
-        </html>
-        `;
 
         // 7) Launch Puppeteer with chrome-aws-lambda
         try {
@@ -168,3 +154,17 @@ export const generateAgreementSheetPdf = onRequest(
     });
   }
 );
+
+function reactHtml(Template, props) {
+  const body = renderToStaticMarkup(React.createElement(Template, props));
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Agreement Sheet</title>
+  </head>
+  <body style="margin:0;padding:0;">
+    ${body}
+  </body>
+</html>`;
+}

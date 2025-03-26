@@ -21,12 +21,6 @@
     {
       "source": "shortener/functions",
       "codebase": "shortener"
-    },
-    {
-      "source": "functions/pdf",
-      "codebase": "pdf",
-      "runtime": "nodejs20",
-      "memory": "512MB"
     }
   ],
   "hosting": [
