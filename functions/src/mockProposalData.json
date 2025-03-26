@@ -1,0 +1,685 @@
+{
+  "dealership": {
+    "legalName": "HOFB Inc. dba Honda of Burien",
+    "addressLine1": "15206 1st Ave S.",
+    "addressLine2": "Burien, King, WA 98148"
+  },
+  "manager": { "fullName": "Arnas Jelizarovas", "cell": "(206) 591-9143" },
+  "dealData": {
+    "id": "N/A",
+    "dealData": {
+      "dealership": {
+        "storeId": "123",
+        "shortName": "HofB",
+        "longName": "Honda Burien",
+        "legalName": "HOFB Inc. dba Honda of Burien",
+        "address": "15206 1st Ave S. Burien, King, WA 98148",
+        "addressLine1": "15206 1st Ave S.",
+        "addressLine2": "Burien, King, WA 98148"
+      },
+      "selectedUser": {
+        "displayName": "Arnas Jelizarovas",
+        "cell": "(206) 591-9143"
+      }
+    },
+    "items": [
+      { "label": "Retail Price", "amount": "6977.00" },
+      { "label": "Your Price", "amount": "6977.00" },
+      { "label": "Vehicle Service Contract", "amount": "4495.00" },
+      { "label": "LoJack", "amount": "795.00" },
+      { "label": "PermaPlate", "amount": "995.00" },
+      { "label": "GAP", "amount": "995.00" },
+      { "label": "Rairdon Investment Package", "amount": "1995.00" },
+      { "label": "Dealer Prep", "amount": "695.00" },
+      { "label": "Doc Fee", "amount": "200.00" },
+      { "label": "Estimated Licensing Fees", "amount": "899.00" },
+      { "label": "Taxes (10.5%)", "amount": "1674.96" },
+      { "label": "Sales Subtotal", "amount": "19720.96", "isBold": false }
+    ],
+    "paymentOptions": {
+      "terms": [
+        { "id": 1, "duration": 48, "apr": 9.9, "selected": true },
+        { "id": 2, "duration": 60, "apr": 9.9, "selected": true },
+        { "id": 3, "duration": 72, "apr": 9.9, "selected": true }
+      ],
+      "downPayments": [
+        {
+          "id": 1,
+          "amount": 0,
+          "selected": true,
+          "payments": [501.29, 419.77, 365.86]
+        },
+        {
+          "id": 2,
+          "amount": 2000,
+          "selected": true,
+          "payments": [450.45, 377.2, 328.75]
+        },
+        {
+          "id": 3,
+          "amount": 4000,
+          "selected": true,
+          "payments": [399.61, 334.63, 291.65]
+        }
+      ]
+    },
+    "tradeIns": []
+  },
+  "vehicle": {
+    "link": "https://www.burienhonda.com/inventory/used-2010-honda-odyssey-ex-l-fwd-mini-van-passenger-5fnrl3h70ab037425/",
+    "thumbnail": "https://vehicle-images.dealerinspire.com/bff7-110004555/thumbnails/large/5FNRL3H70AB037425/003bfb1cf73e504b66378c703cc06d11.jpg",
+    "title_vrp": "Honda Odyssey EX-L 5-Speed Automatic Mini-van, Passenger FWD Gas V6 3.5L/",
+    "msrp": "0",
+    "our_price": 5977,
+    "discounts": 0,
+    "our_price_label": "Selling Price",
+    "api_id": "20619",
+    "body": "Vans",
+    "certified": "0",
+    "city_mpg": "17",
+    "cylinders": "6",
+    "date_in_stock": "03/18/2025",
+    "date_modified": "2025-03-25 21:27:51",
+    "doors": "4",
+    "drivetrain": "FWD",
+    "engine_description": "Gas V6 3.5L/",
+    "ext_color": "Mocha Metallic",
+    "ext_color_generic": "Gold",
+    "fueltype": "Gasoline Fuel",
+    "hw_mpg": "25",
+    "int_color": "Ivory",
+    "location": "15026 1st Ave S<br/>Burien, WA 98148",
+    "make": "Honda",
+    "metal_flags": [],
+    "miles": 201367,
+    "model": "Odyssey",
+    "model_number": "318965",
+    "special_field_1": "",
+    "stock": "AB037425",
+    "transmission_description": "5-Speed Automatic",
+    "trim": "EX-L",
+    "type": "Used",
+    "vin": "5FNRL3H70AB037425",
+    "year": "2010",
+    "days_in_stock": 7,
+    "ext_options": [
+      "16 alloy wheels",
+      "2-speed variable intermittent windshield wipers",
+      "Body-colored bumpers",
+      "Body-colored heated pwr mirrors",
+      "Body-colored rear roofline spoiler w/integrated brakelight",
+      "Body-colored side molding",
+      "Body-colored tailgate garnish",
+      "Compact spare tire",
+      "Dual pwr sliding doors",
+      "Heat-rejecting glass",
+      "Intermittent rear window wiper w/washer",
+      "Multi-reflector halogen headlights w/auto-off",
+      "P235/65TR16 all-season tires",
+      "Pwr tailgate",
+      "Pwr tilt & slide moonroof",
+      "Rear privacy glass",
+      "Roof rails"
+    ],
+    "features": [
+      "Automatic Climate Control",
+      "Hands-Free Liftgate",
+      "Keyless Entry",
+      "Leather Seats",
+      "Moonroof",
+      "Power Seats",
+      "Rear A/C",
+      "Satellite Radio Ready",
+      "Side-Impact Air Bags"
+    ],
+    "finance_details": null,
+    "int_options": [
+      "(15) cup holders",
+      "(6) cargo area bag hooks",
+      "(8) cargo area tie-down anchors",
+      "120-watt AM/FM/6-disc in-dash CD changer audio system -inc: MP3/WMA playback, aux input jack, (6) speakers",
+      "2nd row in-floor storage",
+      "2nd row integrated sunshades",
+      "2nd row PlusOne seat -inc: storage bin, head restraint",
+      "2nd row pwr windows",
+      "3rd row 115V pwr outlet",
+      "3rd row 60/40 Magic Seat -inc: one-motion stowing feature, head restraints",
+      "8-passenger seating",
+      "Ambient console lighting",
+      "Auto-dimming rearview mirror",
+      "Cargo area light",
+      "Coin holder",
+      "Conversation mirror w/sunglasses holder",
+      "Cruise control",
+      "Dual illuminated visor vanity mirrors",
+      "Floor mats",
+      "Front & 2nd row seatback pockets",
+      "Front & rear 12V pwr outlets",
+      "Front leather heated captains chairs w/adjustable armrests -inc: 8-way pwr driver seat, driver manual lumbar, 4-way pwr passenger seat, active adjustable head restraints",
+      "Front pwr windows w/driver auto-up/down",
+      "Front/2nd/3rd row map lights",
+      "Front/2nd/3rd row passenger assist grips -inc: 2nd row garment hooks",
+      "HomeLink universal garage door opener",
+      "Immobilizer theft-deterrent system",
+      "Instrument panel-mounted shifter",
+      "Instrumentation -inc: tachometer, outside temp display",
+      "Integrated glass antenna",
+      "Leather adjustable 2nd row captains chairs w/armrests -inc: walk-in feature, head restraints",
+      "Leather-wrapped shift knob",
+      "Leather-wrapped steering wheel",
+      "Maintenance minder system",
+      "Programmable pwr door/tailgate locks",
+      "Programmable remote entry system",
+      "Rear seat DVD entertainment system",
+      "Rear seat heater ducts",
+      "Rear storage well",
+      "Rear window defroster",
+      "Remote fuel filler door release",
+      "Retractable center tray table w/bag hooks",
+      "Security alarm system",
+      "Steering wheel-mounted audio controls",
+      "Tilt & telescopic steering column",
+      "Tri-zone automatic climate control",
+      "Upper & lower glove compartments",
+      "Warning lights -inc: low-fuel, low-oil pressure, door/tailgate open, passenger-side airbag-off",
+      "XM radio w/90-day subscription"
+    ],
+    "lease_details": null,
+    "lightning": {
+      "vrp_multilingual_titles": { "topTitle": "", "bottomTitle": "" },
+      "vrp_top_title": "Used 2010",
+      "vrp_bottom_title": "Honda Odyssey EX-L 5-Speed Automatic Mini-van, Passenger FWD Gas V6 3.5L/",
+      "vrp_image_alt": "2010 Honda Odyssey EX-L",
+      "advancedPricingStack": "<div class=\"advanced-pricing-stack used-vehicles-stack vertical-stack\"><div class=\"price-block our-price real-price\">\n\t<a href=\"https://www.burienhonda.com/inventory/used-2010-honda-odyssey-ex-l-fwd-mini-van-passenger-5fnrl3h70ab037425/\">\n\t  <span class=\"price-label\">Selling Price</span>\n\t  <span class=\"price\">$5,977</span>\n\t</a>\n</div></div> <!-- END OF PriceStack: Used Vehicles --><p><strong>Disclaimer:</strong></p>\n<p>*Advertised prices are valid only through the expiration date and are only available at the Rairdon Auto Group dealership location identified in the listing. Prices not valid if vehicle is purchased from a different Rairdon Auto Group dealership.</p>\n<p>* All vehicles are one of each and are subject to prior sale. All Pre-Owned or certified vehicles are used. A negotiable documentary service fee of up to $200 may be added to the sale price or capitalized cost. All financing is subject to credit approval. Prices exclude tax, title, and license. Please consider verifying any information in question with a dealership sales representative. *MSRP is not the advertised selling price of the vehicle. MSRP means &ldquo;Manufacturers Suggested Retail Price&rdquo; and is for informational purposes only. Contact dealer for the selling price. All offers and sales contingent on the vehicle being titled in Washington state. MPG is based on EPA estimates for newly manufactured vehicles only. Actual rating will vary with driving conditions, habits, and vehicle condition. No sale is final or binding until buyer and dealer execute a written purchase agreement. Vehicle specifications, equipment, features, and options are for informational purposes only and may change or vary. Customer must verify actual vehicle specifications, equipment, features, and options prior to sale. Dealership imposes a 3% surcharge on all non-vehicle sales credit card transactions. We do not surcharge cash or debit card transactions. Dealership reserves the right to restrict or limit the use of credit cards in vehicle sales transactions. All sale prices expire at 11:59pm on March 25th, 2025.</p>\n<p><em>Based on EPA mileage ratings. Use for comparison purposes only. Your mileage will vary depending on driving conditions, how you drive and maintain your vehicle, battery-pack age/condition, and other factors.</em></p>\n<p><a href=\"https://www.rairdon.com/\">Rairdon Auto Group</a></p>\n\n",
+      "lazyLoadDisclaimers": false,
+      "hasIncentivesDisclaimers": false,
+      "inventoryType": "Used",
+      "locations": [],
+      "isSpecial": false,
+      "pricing": {
+        "high": { "label": "Selling Price", "value": "5977" },
+        "low": false,
+        "savings": { "value": 5977 }
+      },
+      "logos": [],
+      "status": "",
+      "statusLabel": "",
+      "statusDisclaimer": "",
+      "statusETA": "",
+      "class": [],
+      "api-id-hard-sorting": 1,
+      "sortIndexes": {
+        "specials_oem_price": { "oem": 2, "our_price": 5977 },
+        "low_to_high": { "our_price": 5977 },
+        "specials_price": { "is_special": 0, "our_price": 5977 },
+        "defaultSort": { "is_special": 0, "our_price": 5977 }
+      },
+      "imageCount": 27
+    },
+    "ford_SpecialVehicle": "",
+    "algolia_sort_order": 0,
+    "hash": "50a40af6825c2adc12f73a5e35718ac7",
+    "objectID": "5FNRL3H70AB037425",
+    "_highlightResult": {
+      "link": {
+        "value": "https://www.burienhonda.com/inventory/used-2010-honda-odyssey-ex-l-fwd-mini-van-passenger-5fnrl3h70ab037425/",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "thumbnail": {
+        "value": "https://vehicle-images.dealerinspire.com/bff7-110004555/thumbnails/large/5FNRL3H70AB037425/003bfb1cf73e504b66378c703cc06d11.jpg",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "title_vrp": {
+        "value": "Honda Odyssey EX-L 5-Speed Automatic Mini-van, Passenger FWD Gas V6 3.5L/",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "msrp": { "value": "0", "matchLevel": "none", "matchedWords": [] },
+      "our_price": {
+        "value": "5977",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "discounts": { "value": "0", "matchLevel": "none", "matchedWords": [] },
+      "our_price_label": {
+        "value": "Selling Price",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "api_id": { "value": "20619", "matchLevel": "none", "matchedWords": [] },
+      "body": { "value": "Vans", "matchLevel": "none", "matchedWords": [] },
+      "certified": { "value": "0", "matchLevel": "none", "matchedWords": [] },
+      "city_mpg": { "value": "17", "matchLevel": "none", "matchedWords": [] },
+      "cylinders": { "value": "6", "matchLevel": "none", "matchedWords": [] },
+      "doors": { "value": "4", "matchLevel": "none", "matchedWords": [] },
+      "drivetrain": {
+        "value": "FWD",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "engine_description": {
+        "value": "Gas V6 3.5L/",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "ext_color": {
+        "value": "Mocha Metallic",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "ext_color_generic": {
+        "value": "Gold",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "fueltype": {
+        "value": "Gasoline Fuel",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "hw_mpg": { "value": "25", "matchLevel": "none", "matchedWords": [] },
+      "int_color": {
+        "value": "Ivory",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "location": {
+        "value": "15026 1st Ave S<br/>Burien, WA 98148",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "make": { "value": "Honda", "matchLevel": "none", "matchedWords": [] },
+      "miles": { "value": "201367", "matchLevel": "none", "matchedWords": [] },
+      "model": { "value": "Odyssey", "matchLevel": "none", "matchedWords": [] },
+      "model_number": {
+        "value": "318965",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "special_field_1": {
+        "value": "",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "stock": {
+        "value": "AB037425",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "transmission_description": {
+        "value": "5-Speed Automatic",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "trim": { "value": "EX-L", "matchLevel": "none", "matchedWords": [] },
+      "type": { "value": "Used", "matchLevel": "none", "matchedWords": [] },
+      "vin": {
+        "value": "5FNRL3H70AB037425",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "year": { "value": "2010", "matchLevel": "none", "matchedWords": [] },
+      "ext_options": [
+        {
+          "value": "16 alloy wheels",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "2-speed variable intermittent windshield wipers",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Body-colored bumpers",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Body-colored heated pwr mirrors",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Body-colored rear roofline spoiler w/integrated brakelight",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Body-colored side molding",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Body-colored tailgate garnish",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Compact spare tire",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Dual pwr sliding doors",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Heat-rejecting glass",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Intermittent rear window wiper w/washer",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Multi-reflector halogen headlights w/auto-off",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "P235/65TR16 all-season tires",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        { "value": "Pwr tailgate", "matchLevel": "none", "matchedWords": [] },
+        {
+          "value": "Pwr tilt & slide moonroof",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Rear privacy glass",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        { "value": "Roof rails", "matchLevel": "none", "matchedWords": [] }
+      ],
+      "features": [
+        {
+          "value": "Automatic Climate Control",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Hands-Free Liftgate",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        { "value": "Keyless Entry", "matchLevel": "none", "matchedWords": [] },
+        { "value": "Leather Seats", "matchLevel": "none", "matchedWords": [] },
+        { "value": "Moonroof", "matchLevel": "none", "matchedWords": [] },
+        { "value": "Power Seats", "matchLevel": "none", "matchedWords": [] },
+        { "value": "Rear A/C", "matchLevel": "none", "matchedWords": [] },
+        {
+          "value": "Satellite Radio Ready",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Side-Impact Air Bags",
+          "matchLevel": "none",
+          "matchedWords": []
+        }
+      ],
+      "int_options": [
+        {
+          "value": "(15) cup holders",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "(6) cargo area bag hooks",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "(8) cargo area tie-down anchors",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "120-watt AM/FM/6-disc in-dash CD changer audio system -inc: MP3/WMA playback, aux input jack, (6) speakers",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "2nd row in-floor storage",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "2nd row integrated sunshades",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "2nd row PlusOne seat -inc: storage bin, head restraint",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "2nd row pwr windows",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "3rd row 115V pwr outlet",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "3rd row 60/40 Magic Seat -inc: one-motion stowing feature, head restraints",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "8-passenger seating",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Ambient console lighting",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Auto-dimming rearview mirror",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Cargo area light",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        { "value": "Coin holder", "matchLevel": "none", "matchedWords": [] },
+        {
+          "value": "Conversation mirror w/sunglasses holder",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        { "value": "Cruise control", "matchLevel": "none", "matchedWords": [] },
+        {
+          "value": "Dual illuminated visor vanity mirrors",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        { "value": "Floor mats", "matchLevel": "none", "matchedWords": [] },
+        {
+          "value": "Front & 2nd row seatback pockets",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Front & rear 12V pwr outlets",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Front leather heated captains chairs w/adjustable armrests -inc: 8-way pwr driver seat, driver manual lumbar, 4-way pwr passenger seat, active adjustable head restraints",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Front pwr windows w/driver auto-up/down",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Front/2nd/3rd row map lights",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Front/2nd/3rd row passenger assist grips -inc: 2nd row garment hooks",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "HomeLink universal garage door opener",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Immobilizer theft-deterrent system",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Instrument panel-mounted shifter",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Instrumentation -inc: tachometer, outside temp display",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Integrated glass antenna",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Leather adjustable 2nd row captains chairs w/armrests -inc: walk-in feature, head restraints",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Leather-wrapped shift knob",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Leather-wrapped steering wheel",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Maintenance minder system",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Programmable pwr door/tailgate locks",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Programmable remote entry system",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Rear seat DVD entertainment system",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Rear seat heater ducts",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Rear storage well",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Rear window defroster",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Remote fuel filler door release",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Retractable center tray table w/bag hooks",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Security alarm system",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Steering wheel-mounted audio controls",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Tilt & telescopic steering column",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Tri-zone automatic climate control",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Upper & lower glove compartments",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "Warning lights -inc: low-fuel, low-oil pressure, door/tailgate open, passenger-side airbag-off",
+          "matchLevel": "none",
+          "matchedWords": []
+        },
+        {
+          "value": "XM radio w/90-day subscription",
+          "matchLevel": "none",
+          "matchedWords": []
+        }
+      ],
+      "lightning": {
+        "status": { "value": "", "matchLevel": "none", "matchedWords": [] }
+      },
+      "ford_SpecialVehicle": {
+        "value": "",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "algolia_sort_order": {
+        "value": "0",
+        "matchLevel": "none",
+        "matchedWords": []
+      },
+      "hash": {
+        "value": "50a40af6825c2adc12f73a5e35718ac7",
+        "matchLevel": "none",
+        "matchedWords": []
+      }
+    }
+  }
+}

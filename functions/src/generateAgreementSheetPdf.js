@@ -4,13 +4,16 @@ import admin from "firebase-admin";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
-import React from "react";
-import ReactDOMServer from "react-dom/server";
+ 
+
+import { createElement } from "react";
+// import ReactDOMServer from "react-dom/server";
+import { renderToStaticMarkup } from "react-dom/server";
 import cors from "cors";
 
 // If your AgreementSheet expects separate props like dealership, manager, etc.
 // you'll want to pass them via { ...proposalData } instead of { proposalData }.
-import { AgreementSheet } from "../../src/components/templates/AgreementSheet.jsx";
+import { AgreementSheetText } from "../../src/components/templates/AgreementSheetText.jsx";
 
 // 1) Create a CORS handler
 const corsHandler = cors({ origin: true });
@@ -68,15 +71,13 @@ export const generateAgreementSheetPdf = onRequest(
         // e.g. if your AgreementSheet expects "customerFullName"
 
         // 6) Render AgreementSheet using ...proposalData if it expects separate props
-        // let html;
-        // try {
-        //   html = ReactDOMServer.renderToStaticMarkup(
-        //     React.createElement(AgreementSheet, { ...proposalData })
-        //   );
-        // } catch (renderError) {
-        //   logger.error("Error rendering component:", renderError);
-        //   return res.status(500).json({ error: "Error rendering PDF content" });
-        // }
+        let html;
+        try {
+          html = renderToStaticMarkup(createElement(AgreementSheetText));
+        } catch (renderError) {
+          logger.error("Error rendering component:", renderError);
+          return res.status(500).json({ error: "Error rendering PDF content" });
+        }
 
         // Build a minimal HTML doc
         // ${html}
@@ -89,6 +90,8 @@ export const generateAgreementSheetPdf = onRequest(
         </head>
         <body style="margin:0;padding:0;">
           <h1>Hello from Puppeteer</h1>
+          ${html}
+          <h1>Bye from Puppeteer</h1>
         </body>
         </html>
         `;
