@@ -1,5 +1,10 @@
+import { useState } from "react";
+
 export default function DownloadAgreementButton({ proposalData }) {
+  const [loading, setLoading] = useState(false);
+
   async function handleDownload() {
+    setLoading(true);
     try {
       const functionUrl =
         "https://generateagreementsheetpdf-muc7erlkaa-uc.a.run.app";
@@ -16,11 +21,28 @@ export default function DownloadAgreementButton({ proposalData }) {
         throw new Error(errorText || "Failed to generate PDF");
       }
 
-      const blob = await response.blob();
+      // Get the base64 string from the response text.
+      let base64String = await response.text();
+
+      // If the returned string has a prefix (like "data:image/png;base64,") remove it:
+      base64String = base64String
+        .replace(/^data:image\/\w+;base64,/, "")
+        .trim();
+
+      // Decode the base64 string to a binary string.
+      const binaryString = atob(base64String);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: "image/png" });
+
+      // Create a URL for the blob and trigger the download.
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Agreement.pdf`;
+      a.download = "Agreement.png";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -28,15 +50,18 @@ export default function DownloadAgreementButton({ proposalData }) {
     } catch (err) {
       console.error("Error downloading PDF:", err);
       alert("Error downloading PDF: " + err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <button
       onClick={handleDownload}
+      disabled={loading}
       className="print:hidden px-4 py-2 bg-blue-500 text-white"
     >
-      Download PDF
+      {loading ? "Loading..." : "Download PDF"}
     </button>
   );
 }

@@ -24,7 +24,9 @@
     },
     {
       "source": "functions/pdf",
-      "codebase": "pdf"
+      "codebase": "pdf",
+      "runtime": "nodejs20",
+      "memory": "512MB"
     }
   ],
   "hosting": [
