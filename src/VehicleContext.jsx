@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useReducer } from "react";
 import {
-  burienAPI,
-  initialFilters,
+  hofbAPI,
   rairdonAPI,
+  sofaAPI,
+  initialFilters,
   defaultFacetKeys,
   generateLabelArray,
   generateTypeNewCertifiedUsed,
@@ -10,6 +11,12 @@ import {
 } from "./utils";
 import { useInfiniteQuery } from "react-query";
 import { throttle } from "lodash";
+
+export const API_MAP = {
+  hofbAPI,
+  rairdonAPI,
+  sofaAPI,
+};
 
 const VehicleContext = createContext();
 
@@ -24,7 +31,7 @@ const reducer = (state, { type, payload }) => {
     case "UPDATE_API":
       return {
         ...state,
-        api: payload === "burienApi" ? burienAPI : rairdonAPI,
+        api: API_MAP[payload] || state.api,
       };
 
     case "UPDATE_INDEX":
@@ -183,7 +190,7 @@ async function fetchReq({
   fetchNextPage,
   hasNextPage,
 }) {
-  const api = filters.api || burienAPI;
+  const api = filters.api || hofbAPI;
   const query = filters.query || "";
   const hitsPerPage = filters.hitsPerPage || 10;
 

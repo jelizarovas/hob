@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 
-const burienAPI = {
+export const hofbAPI = {
   name: "Burien",
   "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
   "X-Algolia-Application-Id": "SEWJN80HTN",
@@ -22,10 +22,17 @@ const rairdonAPI = {
     "rairdonautomotivegroup_production_inventory_days_in_stock_low_to_high",
   website: "rairdon.com",
 };
+const sofaAPI = {
+  name: "SofA",
+  "X-Algolia-API-Key": "003c8cddb5b15f2cfa774c02b7a3b59e",
+  "X-Algolia-Application-Id": "10APRXOTJR",
+  index: "rairdonsubaruofauburn_production_inventory_days_in_stock_high_to_low",
+  website: "subaruofauburn.com",
+};
 
 const initialSettings = {
   query: "",
-  api: burienAPI,
+  api: hofbAPI,
   totalFound: 0,
   hitsPerPage: 10,
   type: { new: true, certifiedUsed: true, used: true },
@@ -64,7 +71,7 @@ const reducer = (state, { type, payload }) => {
     case "UPDATE_API":
       return {
         ...state,
-        api: payload === "burienApi" ? burienAPI : rairdonAPI,
+        api: payload === "hofbAPI" ? hofbAPI : rairdonAPI,
       };
     case "UPDATE_YEAR":
       return { ...state, year: payload };

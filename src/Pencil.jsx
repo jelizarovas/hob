@@ -58,7 +58,7 @@ export const Pencil = (props) => {
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col md:p-0 font-proxima">
-      <DownloadAgreementButton
+      {/* <DownloadAgreementButton
         proposalData={{
           dealership:
             props.dealership || dealData?.dealership || dealershipData,
@@ -66,7 +66,7 @@ export const Pencil = (props) => {
           dealData: dealData,
           vehicle,
         }}
-      />
+      /> */}
 
       <AgreementSheet
         dealership={props.dealership || dealData?.dealership || dealershipData}

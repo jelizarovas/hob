@@ -1,4 +1,4 @@
-export const dealerhip = {
+export const dealership = {
   id: "hodaofburien",
   name: "Honda of Burien",
   shortName: "HofB",

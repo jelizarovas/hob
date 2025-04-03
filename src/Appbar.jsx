@@ -30,8 +30,6 @@ export const AppBar = ({
     // updateFilters,
   } = useVehicles();
 
-
-
   function handleChange(event) {
     updateQuery(event.target.value);
   }
@@ -40,8 +38,6 @@ export const AppBar = ({
   //   updateFilters({ type: { ...filters.type, [option]: !value } });
   // };
 
- 
-
   const stores = {
     popperPlacement: "bottom-end",
     options: [
@@ -49,13 +45,19 @@ export const AppBar = ({
         label: "Honda of Burien",
         Icon: MdBusinessCenter,
         onClick: () =>
-          filtersDispatch({ type: "UPDATE_API", payload: "burienApi" }),
+          filtersDispatch({ type: "UPDATE_API", payload: "hofbAPI" }),
       },
       {
         label: "All Rairdon Stores",
         Icon: MdBusinessCenter,
         onClick: () =>
-          filtersDispatch({ type: "UPDATE_API", payload: "rairdonApi" }),
+          filtersDispatch({ type: "UPDATE_API", payload: "rairdonAPI" }),
+      },
+      {
+        label: "Subaru of Auburn",
+        Icon: MdBusinessCenter,
+        onClick: () =>
+          filtersDispatch({ type: "UPDATE_API", payload: "sofaAPI" }),
       },
     ],
     renderItem: ({ label, Icon, ...props }) => (
@@ -196,7 +198,7 @@ export const AppBar = ({
         } `}
       > */}
 
-         <MenuButton />
+          <MenuButton />
         </div>
 
         {filterPanelOpen && (
@@ -231,8 +233,6 @@ export const AppBar = ({
     </div>
   );
 };
-
-
 
 function getType(filters) {
   const { new: isNew, certifiedUsed, used } = filters.type;

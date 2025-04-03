@@ -41,7 +41,7 @@ export const FilterPanel = ({
       <div className="flex justify-between flex-wrap md:space-x-2 pb-2">
         {/* <div className="flex text-sm border border-opacity-20 border-white rounded ">
           {[
-            { label: "Burien", payload: "burienApi", bg: "bg-blue-800" },
+            { label: "Burien", payload: "hofbAPI", bg: "bg-blue-800" },
             { label: "Rairdon", payload: "rairdonApi", bg: "bg-red-800" },
           ].map(({ label, payload, bg }, i) => (
             <button
@@ -57,7 +57,7 @@ export const FilterPanel = ({
             </button>
           ))}
         </div> */}
-         <div className="flex pb-0">
+        <div className="flex pb-0">
           <select
             className="bg-transparent px-2 py-1 rounded border border-white border-opacity-10 text-xs hover:bg-white hover:bg-opacity-10 cursor-pointer"
             onChange={(e) => {
@@ -90,20 +90,22 @@ export const FilterPanel = ({
               Age ⬇️
             </option>
           </select>
-        </div> 
+        </div>
         {/* <span>sortByAge {filters.sortByAge.toString()}</span> */}
 
         <button
-        className={`flex space-x-2 items-center justify-center   uppercase border border-white rounded px-2 py-0.5 border-opacity-10 bg-white transition-all ${settingsOpen ? "bg-opacity-10" : "bg-opacity-0"}`}
+          className={`flex space-x-2 items-center justify-center   uppercase border border-white rounded px-2 py-0.5 border-opacity-10 bg-white transition-all ${
+            settingsOpen ? "bg-opacity-10" : "bg-opacity-0"
+          }`}
           onClick={() =>
             !settingsOpen ? setSettingsOpen(true) : setSettingsOpen(false)
           }
-          
         >
-            <MdFilterAlt className="text-xl" /> <span className="text-[9px]">Filter</span>
-          </button>
+          <MdFilterAlt className="text-xl" />{" "}
+          <span className="text-[9px]">Filter</span>
+        </button>
 
-         <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
+        <div className="flex items-center   text-sm border border-opacity-20 border-white rounded ">
           {[
             { label: "New", bg: "bg-indigo-900", value: "new" },
             { label: "Certified", bg: "bg-purple-900", value: "certifiedUsed" },
@@ -128,7 +130,7 @@ export const FilterPanel = ({
               <span className="md:pl-1 upper">{label}</span>
             </button>
           ))}
-        </div> 
+        </div>
         {/* <button onClick={() => setFilterPanelOpen(false)} className="px-2 rotate-180">
           <MdKeyboardArrowDown />
         </button> */}

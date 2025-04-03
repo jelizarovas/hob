@@ -3,17 +3,21 @@ import React from "react";
 import { VehicleCard } from "../vehicle/VehicleCard";
 
 export const VehicleQuery = () => {
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
-    ["vehicles"],
-    fetchReq,
-    {
-      getNextPageParam: (lastPage, pages) => {
-        const nextPage = (lastPage.page ?? -1) + 1;
-        const hasNextPage = nextPage < lastPage.nbPages;
-        return hasNextPage ? nextPage : undefined;
-      },
-    }
-  );
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery(["vehicles"], fetchReq, {
+    getNextPageParam: (lastPage, pages) => {
+      const nextPage = (lastPage.page ?? -1) + 1;
+      const hasNextPage = nextPage < lastPage.nbPages;
+      return hasNextPage ? nextPage : undefined;
+    },
+  });
 
   const loadMoreRef = React.useRef(null);
   console.log(data);
@@ -58,8 +62,15 @@ export const VehicleQuery = () => {
         </React.Fragment>
       ))}
       <div>
-        <button onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
-          {isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load More" : "Nothing more to load"}
+        <button
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+        >
+          {isFetchingNextPage
+            ? "Loading more..."
+            : hasNextPage
+            ? "Load More"
+            : "Nothing more to load"}
         </button>
       </div>
       <div ref={loadMoreRef}></div>
@@ -68,27 +79,29 @@ export const VehicleQuery = () => {
   );
 };
 
-
-
 async function fetchReq({ pageParam = 0, filters = {} }) {
-  const api = burienAPI;
+  const api = hofbAPI;
   const query = filters.query || "";
   const hitsPerPage = 10;
-  const res = await fetch(`https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`, {
-    headers: {
-      "X-Algolia-API-Key": api["X-Algolia-API-Key"],
-      "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
-    },
-    method: "POST",
-    body: JSON.stringify({ hitsPerPage, query, page: pageParam }),
-  });
+  const res = await fetch(
+    `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
+    {
+      headers: {
+        "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+        "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
+      },
+      method: "POST",
+      body: JSON.stringify({ hitsPerPage, query, page: pageParam }),
+    }
+  );
   if (!res.ok) throw new Error("Network response was not ok");
   return res.json();
 }
 
-const burienAPI = {
+const hofbAPI = {
   name: "Burien",
   "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
   "X-Algolia-Application-Id": "SEWJN80HTN",
-  index: "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+  index:
+    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
 };
