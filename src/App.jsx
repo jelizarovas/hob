@@ -23,6 +23,8 @@ import Layout from "./Layout";
 import TakeIn from "./Take-In";
 import { ShareQRContact } from "./ShareQRContact";
 import ManageRates from "./rates/ManageRates";
+import { Stores } from "./stores/Stores";
+import { Store } from "./stores/Store";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -198,6 +200,26 @@ function App() {
                         ["RATES", `/manage/rates`],
                       ]}
                     />
+                    <ProtectedRoute
+                      exact
+                      path="/admin/stores"
+                      component={Stores}
+                      title={[
+                        ["ADMIN", "/"],
+                        ["STORES", "/admin/stores"],
+                      ]}
+                    />
+                    <ProtectedRoute
+                      exact
+                      path="/admin/store/:storeId"
+                      component={Store}
+                      title={(params) => [
+                        ["ADMIN", "/"],
+                        ["STORE", "/admin/stores"],
+                        [params.storeId, "/admin/stores"],
+                      ]}
+                    />
+                    
                     <ProtectedRoute
                       exact
                       path="/dev/test"
