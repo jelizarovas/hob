@@ -96,9 +96,9 @@ export const MenuButton = () => {
       // Show "Admin Panel" link if admin
       isAdmin
         ? {
-            label: "Admin Panel",
+            label: "Stores",
             Icon: MdAdminPanelSettings,
-            onClick: () => history.push("/dev/test"),
+            onClick: () => history.push("/admin/stores"),
           }
         : null,
       isAdmin
