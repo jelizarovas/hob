@@ -43,7 +43,7 @@
       ]
     },
     {
-      "site": "go-hofb-app",
+      "site": "gohofb",
       "public": "public",
       "rewrites": [
         {

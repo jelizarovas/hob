@@ -40,7 +40,7 @@ import {
   updateUserPhoto,
 } from "./src/auth.js";
 
-import { generateAgreementSheetPdf } from "./src/generateAgreementSheetPdf.js";
+// import { generateAgreementSheetPdf } from "./src/generateAgreementSheetPdf.js";
 
 admin.initializeApp();
 const db = getFirestore();
@@ -56,7 +56,7 @@ export {
   updateUserRole,
   updateUserPhoto,
 };
-export { generateAgreementSheetPdf };
+// export { generateAgreementSheetPdf };
 
 export const logUserCreated = onDocumentCreated(
   "users/{userId}",

@@ -25,6 +25,7 @@ import { ShareQRContact } from "./ShareQRContact";
 import ManageRates from "./rates/ManageRates";
 import { Stores } from "./stores/Stores";
 import { Store } from "./stores/Store";
+import LinkManagement from "./linkManagement/LinkManagement";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -54,15 +55,15 @@ function App() {
                     path="/#:stock"
                     component={VehiclePage}
                   />
-                   <ProtectedRoute
-                      exact
-                      path="/pencil/:quoteId"
-                      component={Pencil}
-                      title={(params) => [
-                        ["PENCIL", "/pencil"],
-                        [params.vin, `/pencil/${params.vin}`],
-                      ]}
-                    />
+                  <ProtectedRoute
+                    exact
+                    path="/pencil/:quoteId"
+                    component={Pencil}
+                    title={(params) => [
+                      ["PENCIL", "/pencil"],
+                      [params.vin, `/pencil/${params.vin}`],
+                    ]}
+                  />
 
                   <Layout>
                     <ProtectedRoute
@@ -190,7 +191,7 @@ function App() {
                         [params.vin, `/quote/${params.vin}`],
                       ]}
                     />
-                   
+
                     <ProtectedRoute
                       exact
                       path="/manage/rates"
@@ -219,7 +220,16 @@ function App() {
                         [params.storeId, "/admin/stores"],
                       ]}
                     />
-                    
+                    <ProtectedRoute
+                      exact
+                      path="/manage/links"
+                      component={LinkManagement}
+                      title={[
+                        ["MANAGE", "/manage"],
+                        ["LINKS", "/manage/links"],
+                      ]}
+                    />
+
                     <ProtectedRoute
                       exact
                       path="/dev/test"

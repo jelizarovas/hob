@@ -13,6 +13,7 @@ import {
   MdQrCode,
   MdGroup,
   MdPercent,
+  MdLink,
 } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
 
@@ -106,6 +107,13 @@ export const MenuButton = () => {
             label: "Manage Rates",
             Icon: MdPercent,
             onClick: () => history.push("/manage/rates"),
+          }
+        : null,
+      isAdmin
+        ? {
+            label: "Manage Links",
+            Icon: MdLink,
+            onClick: () => history.push("/manage/links"),
           }
         : null,
       {

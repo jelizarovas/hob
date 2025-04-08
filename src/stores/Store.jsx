@@ -138,6 +138,11 @@ export const Store = () => {
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this store?"
+    );
+    if (!confirmed) return;
+
     const docRef = doc(db, "stores", storeId);
     await deleteDoc(docRef);
     alert("Store deleted!");
@@ -196,12 +201,12 @@ export const Store = () => {
         style={style}
         className="mb-4 border border-white border-opacity-20 p-2 rounded bg-white bg-opacity-5"
       >
-        <div className="flex items-center gap-2 mb-2">
-          <span {...listeners} {...attributes} className="cursor-grab p-2">
+        <div className="w-full flex items-center gap-2 mb-2">
+          <span {...listeners} {...attributes} className="cursor-grab p-4">
             <FaGripLines />
           </span>
 
-          <div className="flex-1 flex gap-4">
+          <div className=" w-full  flex gap-4">
             <StoreInput
               label="Label"
               name="label"
@@ -214,6 +219,7 @@ export const Store = () => {
               label="Index"
               name="index"
               value={index?.index ?? ""}
+              labelClass="flex-grow"
               onChange={(e) =>
                 handleIndexFieldChange(idx, "index", e.target.value)
               }
@@ -240,12 +246,42 @@ export const Store = () => {
       </h1>
 
       {/* Top-level fields */}
-      <StoreInput label="Name" name="name" value={storeData?.name ?? ""} onChange={handleChange} />
-      <StoreInput label="Short Name" name="shortName" value={storeData?.shortName ?? ""} onChange={handleChange} />
-      <StoreInput label="Legal Name" name="legalName" value={storeData?.legalName ?? ""} onChange={handleChange} />
-      <StoreInput label="Address" name="address" value={storeData?.address ?? ""} onChange={handleChange} />
-      <StoreInput label="Phone" name="phone" value={storeData?.phone ?? ""} onChange={handleChange} />
-      <StoreInput label="Website" name="website" value={storeData?.website ?? ""} onChange={handleChange} />
+      <StoreInput
+        label="Name"
+        name="name"
+        value={storeData?.name ?? ""}
+        onChange={handleChange}
+      />
+      <StoreInput
+        label="Short Name"
+        name="shortName"
+        value={storeData?.shortName ?? ""}
+        onChange={handleChange}
+      />
+      <StoreInput
+        label="Legal Name"
+        name="legalName"
+        value={storeData?.legalName ?? ""}
+        onChange={handleChange}
+      />
+      <StoreInput
+        label="Address"
+        name="address"
+        value={storeData?.address ?? ""}
+        onChange={handleChange}
+      />
+      <StoreInput
+        label="Phone"
+        name="phone"
+        value={storeData?.phone ?? ""}
+        onChange={handleChange}
+      />
+      <StoreInput
+        label="Website"
+        name="website"
+        value={storeData?.website ?? ""}
+        onChange={handleChange}
+      />
 
       {/* API fields */}
       <StoreInput
@@ -280,9 +316,15 @@ export const Store = () => {
             }))
           }
         >
-          <option value="">(No default selected)</option>
+          <option className="bg-black text-white" value="">
+            (No default selected)
+          </option>
           {indexes.map((item, idx) => (
-            <option key={item?.index || idx} value={item?.index ?? ""}>
+            <option
+              className="bg-black text-white"
+              key={item?.index || idx}
+              value={item?.index ?? ""}
+            >
               {item?.label ?? "(Untitled)"} ({item?.index})
             </option>
           ))}
@@ -290,8 +332,15 @@ export const Store = () => {
       </label>
 
       {/* Index List with Drag-and-Drop */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={indexes.map((i) => i.index)} strategy={verticalListSortingStrategy}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={indexes.map((i) => i.index)}
+          strategy={verticalListSortingStrategy}
+        >
           <div className="mt-4">
             <h2 className="text-xl font-semibold mb-2">Indexes</h2>
 
