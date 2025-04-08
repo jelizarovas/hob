@@ -6,26 +6,24 @@ const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 initializeApp();
 const db = getFirestore();
 
-// Algolia setup – ensure you have installed algoliasearch via npm
-const algoliasearch = require("algoliasearch");
+// Algolia setup using the lite client
+const { liteClient } = require("algoliasearch/lite");
 const ALGOLIA_APP_ID = "SEWJN80HTN"; // Replace with your Algolia App ID
 const ALGOLIA_API_KEY = "179608f32563367799314290254e3e44"; // Replace with your Algolia API Key
 const ALGOLIA_INDEX_NAME =
   "rairdonshondaofburien-legacymigration0222_production_inventory_low_to_high"; // Replace with your index name
-const algoliaClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
-const algoliaIndex = algoliaClient.initIndex(ALGOLIA_INDEX_NAME);
+const algoliaClient = liteClient(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
 
 /**
- * Helper: Determines which redirect status to use
- * - Uses 307 for non-GET methods (which preserves method and body),
- * - Otherwise, returns 302.
+ * Helper: Determines which redirect status to use.
+ * Uses 307 for non-GET methods (to preserve method and body), otherwise returns 302.
  */
 function getRedirectStatus(method) {
   return method !== "GET" ? 307 : 302;
 }
 
 exports.redirectHandler = onRequest(async (req, res) => {
-  // Get the incoming slug; remove the leading "/" and force lowercase.
+  // Get the incoming slug; remove the leading "/" and convert to lowercase.
   let slug = req.path.slice(1).toLowerCase();
 
   // If no slug is provided, redirect to the default site.
@@ -36,9 +34,8 @@ exports.redirectHandler = onRequest(async (req, res) => {
     );
   }
 
-  // 1. Directory Forwarding: e.g., "quote/64443" => proposals.hofb.app/64443
+  // 1. Directory Forwarding: e.g. "quote/64443" -> proposals.hofb.app/64443
   if (slug.startsWith("quote/")) {
-    // Remove "quote/" prefix
     const id = slug.slice("quote/".length);
     return res.redirect(
       getRedirectStatus(req.method),
@@ -46,22 +43,35 @@ exports.redirectHandler = onRequest(async (req, res) => {
     );
   }
 
+  // 2. Stock Number Searches: if slug starts with "#" (e.g. URL-encoded as '%23')
   // 2. Stock Number Searches: if slug starts with "#" (expect URL-encoded as '%23')
   if (slug.startsWith("#")) {
-    // Remove the "#" to get the stock number
+    // Remove the "#" to get the stock number.
     const stockNumber = slug.slice(1);
     try {
-      const algoliaResult = await algoliaIndex.search(stockNumber, {
-        // Optionally add filters here if needed:
-        // filters: `stockNumber:"${stockNumber}"`,
+      // Use the Algolia lite client's search API.
+      const { results } = await algoliaClient.search({
+        requests: [
+          {
+            indexName: ALGOLIA_INDEX_NAME,
+            query: stockNumber,
+          },
+        ],
       });
-      if (algoliaResult.hits && algoliaResult.hits.length > 0) {
-        const result = algoliaResult.hits[0];
-        if (result.url) {
-          return res.redirect(getRedirectStatus(req.method), result.url);
+      // Ensure at least one hit is returned.
+      if (
+        results &&
+        results[0] &&
+        results[0].hits &&
+        results[0].hits.length > 0
+      ) {
+        const result = results[0].hits[0];
+        // Check for the 'link' property in the returned object.
+        if (result.link) {
+          return res.redirect(getRedirectStatus(req.method), result.link);
         }
       }
-      // No match found – treat as expired.
+      // No matching result, treat as expired.
       return res.status(404).send("Link has expired.");
     } catch (err) {
       console.error("Algolia search error:", err);
@@ -69,7 +79,7 @@ exports.redirectHandler = onRequest(async (req, res) => {
     }
   }
 
-  // 3. Standard Short URL Redirect via Firestore lookup
+  // 3. Standard Short URL Redirect via Firestore lookup.
   try {
     const docRef = db.collection("links").doc(slug);
     const docSnap = await docRef.get();
@@ -79,8 +89,6 @@ exports.redirectHandler = onRequest(async (req, res) => {
 
       // Check if an expiration date is set and if the link is expired.
       if (data.expirationDate && data.expirationDate.toMillis() < Date.now()) {
-        // Either send a message or redirect to the default site.
-        // Here we choose to redirect to burienhonda.com.
         return res.redirect(
           getRedirectStatus(req.method),
           "https://burienhonda.com"
