@@ -59,6 +59,7 @@ export default function LinkManagement() {
   const [formData, setFormData] = useState({
     slug: "",
     destination: "",
+    expirationDate: "",
   });
 
   // Load data (simplest approach: once on mount, or on demand)
@@ -93,8 +94,17 @@ export default function LinkManagement() {
   // Add or update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { slug, destination } = formData;
-    if (!slug.trim() || !destination.trim()) return;
+    const slug = formData.slug.trim().toLowerCase();
+    const destination = formData.destination.trim();
+    if (!slug || !destination) return;
+
+    // Convert expirationDate input to a Firestore Timestamp if provided.
+    let expirationTimestamp = null;
+    if (formData.expirationDate) {
+      expirationTimestamp = Timestamp.fromDate(
+        new Date(formData.expirationDate)
+      );
+    }
 
     try {
       if (isEditing && editLinkId) {
@@ -102,6 +112,7 @@ export default function LinkManagement() {
         await updateDoc(doc(db, "links", editLinkId), {
           slug,
           destination,
+          expirationDate: expirationTimestamp,
         });
       } else {
         // Create new doc (with slug as the ID)
@@ -109,6 +120,7 @@ export default function LinkManagement() {
           slug,
           destination,
           clickCount: 0,
+          expirationDate: expirationTimestamp,
           createdBy: {
             uid: currentUser?.uid || "unknown",
             displayName: currentUser?.displayName || "Anonymous",
@@ -120,7 +132,7 @@ export default function LinkManagement() {
         });
       }
       // Clear / reset
-      setFormData({ slug: "", destination: "" });
+      setFormData({ slug: "", destination: "", expirationDate: "" });
       setIsEditing(false);
       setEditLinkId(null);
       // Refresh list
@@ -285,6 +297,21 @@ export default function LinkManagement() {
             placeholder="e.g. https://example.com/my-product"
           />
         </div>
+        <div>
+          <label className="block font-semibold mb-1">
+            Expiration Date (optional)
+          </label>
+          <input
+            type="datetime-local"
+            name="expirationDate"
+            value={formData.expirationDate}
+            onChange={handleChange}
+            className="w-full p-2 rounded bg-gray-700 border border-gray-600"
+          />
+          <p className="text-sm text-gray-400">
+            Set a date and time for the link to expire.
+          </p>
+        </div>
         <button
           type="submit"
           className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded"
@@ -334,7 +361,10 @@ export default function LinkManagement() {
                   : link.destination;
 
               return (
-                <tr key={link.id} className="border-b border-gray-700 flex-wrap">
+                <tr
+                  key={link.id}
+                  className="border-b border-gray-700 flex-wrap"
+                >
                   <td className="p-2">
                     <div className="flex items-center gap-2">
                       <a
