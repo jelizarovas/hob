@@ -26,6 +26,8 @@ import ManageRates from "./rates/ManageRates";
 import { Stores } from "./stores/Stores";
 import { Store } from "./stores/Store";
 import LinkManagement from "./linkManagement/LinkManagement";
+import InventoryManager from "./inventoryManager/InventoryManager";
+import Inventories from "./inventoryManager/Inventories";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -50,11 +52,7 @@ function App() {
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
-                  <ProtectedRoute
-                    exact
-                    path="/#:stock"
-                    component={VehiclePage}
-                  />
+                  <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
                   <ProtectedRoute
                     exact
                     path="/pencil/:quoteId"
@@ -227,6 +225,21 @@ function App() {
                       title={[
                         ["MANAGE", "/manage"],
                         ["LINKS", "/manage/links"],
+                      ]}
+                    />
+                    <ProtectedRoute
+                      exact
+                      path="/inventories/"
+                      component={Inventories}
+                      title={(params) => [["Inventories", "/inventories/"]]}
+                    />
+                    <ProtectedRoute
+                      exact
+                      path="/inventory/:inventoryId"
+                      component={InventoryManager}
+                      title={(params) => [
+                        ["Inventories", "/inventories"],
+                        [params.inventoryId, `/inventory/${params.inventoryId}`],
                       ]}
                     />
 
