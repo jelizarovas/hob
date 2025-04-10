@@ -15,6 +15,7 @@ import {
   MdPercent,
   MdLink,
   MdCarCrash,
+  MdGamepad,
 } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
 
@@ -92,6 +93,13 @@ export const MenuButton = () => {
             label: "Stores",
             Icon: MdAdminPanelSettings,
             onClick: () => history.push("/admin/stores"),
+          }
+        : null,
+      isAdmin
+        ? {
+            label: "GamePad",
+            Icon: MdGamepad,
+            onClick: () => history.push("/gamepaddemo"),
           }
         : null,
       isAdmin

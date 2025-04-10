@@ -28,6 +28,7 @@ import { Store } from "./stores/Store";
 import LinkManagement from "./linkManagement/LinkManagement";
 import InventoryManager from "./inventoryManager/InventoryManager";
 import Inventories from "./inventoryManager/Inventories";
+import GamePadDemo from "./gamepad/GamePadDemo";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ function App() {
               <Router>
                 <Switch>
                   <Route path="/login" component={Login} />
+                  <Route path="/gamepaddemo" component={GamePadDemo} />
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />

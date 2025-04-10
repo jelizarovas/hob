@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import {
-  ref,
-  onValue,
-  push,
-  set,
-  query,
-  orderByChild,
-  limitToLast,
-} from "firebase/database";
+import { ref, onValue, push, set, query, orderByChild, limitToLast } from "firebase/database";
 import { rtdb } from "../firebase"; // Make sure you export getDatabase(...) as rtdb in firebase.js
 import { useAuth } from "../auth/AuthProvider";
 import { Toolbar } from "./Toolbar";
@@ -44,11 +36,7 @@ export default function InventoryManager() {
     if (!inventoryId) return;
     if (inventoryId === "current") {
       // Query the newest inventory by createdAt
-      const newest = query(
-        ref(rtdb, "inventories"),
-        orderByChild("createdAt"),
-        limitToLast(1)
-      );
+      const newest = query(ref(rtdb, "inventories"), orderByChild("createdAt"), limitToLast(1));
       onValue(newest, (snap) => {
         if (!snap.exists()) {
           setInventoryData(null);
@@ -93,17 +81,7 @@ export default function InventoryManager() {
             query: "",
             page: 0,
             facetFilters: [["type:New", "type:Certified Used", "type:Used"]],
-            facets: [
-              "stock",
-              "year",
-              "make",
-              "model",
-              "vin",
-              "days_in_stock",
-              "msrp",
-              "our_price",
-              "location",
-            ],
+            facets: ["stock", "year", "make", "model", "vin", "days_in_stock", "msrp", "our_price", "location"],
           }),
         }
       );
@@ -118,8 +96,7 @@ export default function InventoryManager() {
       // Build vehicles object
       const vehObj = {};
       data.hits.forEach((item) => {
-        const key =
-          item.vin || item.objectID || Math.random().toString(36).substr(2, 9);
+        const key = item.vin || item.objectID || Math.random().toString(36).substr(2, 9);
         vehObj[key] = {
           stock: item.stock || "",
           year: item.year || "",
@@ -154,15 +131,7 @@ export default function InventoryManager() {
 
   // --- FILTER FOR SEARCH ---
   const filteredVehicles = vehicles.filter((v) => {
-    const text = (
-      v.stock +
-      v.year +
-      v.make +
-      v.model +
-      v.vin +
-      v.location +
-      v.status
-    ).toLowerCase();
+    const text = (v.stock + v.year + v.make + v.model + v.vin + v.location + v.status).toLowerCase();
     return text.includes(searchTerm.toLowerCase());
   });
 
@@ -178,9 +147,7 @@ export default function InventoryManager() {
         vehicles={vehicles}
       />
 
-      {inventoryData && showMetadata && (
-        <Metadata inventoryData={inventoryData} />
-      )}
+      {inventoryData && showMetadata && <Metadata inventoryData={inventoryData} />}
 
       {/* Table */}
       <table className="w-full border-collapse text-sm">
@@ -207,20 +174,14 @@ export default function InventoryManager() {
             </tr>
           ) : (
             filteredVehicles.map((veh, idx) => (
-              <tr
-                key={veh.vin || idx}
-                className="border-b border-gray-700 hover:bg-gray-800  print:hover:bg-white"
-              >
+              <tr key={veh.vin || idx} className="border-b border-gray-700 hover:bg-gray-800  print:hover:bg-white">
                 <td className="">
-                  <StatusDropdown
-                    vehicle={veh}
-                    inventoryId={inventoryData?.id}
-                  />
+                  <StatusDropdown vehicle={veh} inventoryId={inventoryData?.id} />
                 </td>
                 <td className="">{veh.stock}</td>
                 <td className="">{veh.year}</td>
                 <td className="">{veh.make}</td>
-                <td className="">{veh.model}</td>
+                <td className="text-nowrap">{veh.model}</td>
                 <td className="">{veh.vin}</td>
                 <td className="">{veh.days_in_stock}</td>
                 <td className="">{veh.msrp}</td>
@@ -250,10 +211,9 @@ function StatusDropdown({ vehicle, inventoryId }) {
     if (!inventoryId || !vehicle.vin) return;
 
     // Update this vehicle's status in RTDB
-    set(
-      ref(rtdb, `inventories/${inventoryId}/vehicles/${vehicle.vin}/status`),
-      newStatus
-    ).catch((err) => console.error("Error updating status:", err));
+    set(ref(rtdb, `inventories/${inventoryId}/vehicles/${vehicle.vin}/status`), newStatus).catch((err) =>
+      console.error("Error updating status:", err)
+    );
 
     // Update top-level updatedAt
     set(ref(rtdb, `inventories/${inventoryId}/updatedAt`), Date.now());
