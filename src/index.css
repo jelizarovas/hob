@@ -61,3 +61,12 @@ input[type="number"] {
   font-weight: 600;
   font-style: normal;
 }
+
+@media print {
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+  }
+}

@@ -34,7 +34,7 @@ export const LayoutAppBar = () => {
   }
 
   return (
-    <div className="text-white w-full">
+    <div className="text-white print:hidden w-full">
       <div className="container flex  items-center bg-black p-2 mx-auto w-full">
         {/* Left side: Logo + Breadcrumbs */}
         <div className="flex flex-wrap items-center flex-grow w-full">

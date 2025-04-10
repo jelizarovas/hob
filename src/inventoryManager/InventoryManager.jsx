@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { ref, onValue, push, set, query, orderByChild, limitToLast } from "firebase/database";
+import {
+  ref,
+  onValue,
+  push,
+  set,
+  query,
+  orderByChild,
+  limitToLast,
+} from "firebase/database";
 import { rtdb } from "../firebase"; // Make sure you export getDatabase(...) as rtdb in firebase.js
 import { useAuth } from "../auth/AuthProvider";
-import { FiDownload, FiPrinter, FiShare2, FiRefreshCw } from "react-icons/fi";
+import { Toolbar } from "./Toolbar";
+import { Metadata } from "./Metadata";
 
 // Example statuses/locations
 const LOCATIONS = [
@@ -28,13 +37,18 @@ export default function InventoryManager() {
   const [inventoryData, setInventoryData] = useState(null);
   const [vehicles, setVehicles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showMetadata, setShowMetadata] = useState(false);
 
   // --- LOAD INVENTORY ---
   useEffect(() => {
     if (!inventoryId) return;
     if (inventoryId === "current") {
       // Query the newest inventory by createdAt
-      const newest = query(ref(rtdb, "inventories"), orderByChild("createdAt"), limitToLast(1));
+      const newest = query(
+        ref(rtdb, "inventories"),
+        orderByChild("createdAt"),
+        limitToLast(1)
+      );
       onValue(newest, (snap) => {
         if (!snap.exists()) {
           setInventoryData(null);
@@ -62,12 +76,6 @@ export default function InventoryManager() {
     }
   }, [inventoryId]);
 
-  // --- UTILITY: Format Timestamp ---
-  const formatTimestamp = (ts) => {
-    if (!ts) return "";
-    return new Date(ts).toLocaleString();
-  };
-
   // --- CREATE/UPDATE INVENTORY (FETCH ALGOLIA) ---
   const handleCreateNew = async () => {
     try {
@@ -85,7 +93,17 @@ export default function InventoryManager() {
             query: "",
             page: 0,
             facetFilters: [["type:New", "type:Certified Used", "type:Used"]],
-            facets: ["stock", "year", "make", "model", "vin", "days_in_stock", "msrp", "our_price", "location"],
+            facets: [
+              "stock",
+              "year",
+              "make",
+              "model",
+              "vin",
+              "days_in_stock",
+              "msrp",
+              "our_price",
+              "location",
+            ],
           }),
         }
       );
@@ -100,7 +118,8 @@ export default function InventoryManager() {
       // Build vehicles object
       const vehObj = {};
       data.hits.forEach((item) => {
-        const key = item.vin || item.objectID || Math.random().toString(36).substr(2, 9);
+        const key =
+          item.vin || item.objectID || Math.random().toString(36).substr(2, 9);
         vehObj[key] = {
           stock: item.stock || "",
           year: item.year || "",
@@ -111,7 +130,7 @@ export default function InventoryManager() {
           msrp: item.msrp || "",
           our_price: item.our_price || "",
           location: item.location || "",
-          status: "HOB NEW",
+          status: null,
         };
       });
 
@@ -133,121 +152,50 @@ export default function InventoryManager() {
     }
   };
 
-  // --- DOWNLOAD CSV ---
-  const handleDownload = () => {
-    if (!vehicles.length) {
-      alert("No vehicles to download.");
-      return;
-    }
-    const headers = ["Stock", "Year", "Make", "Model", "VIN", "Days", "MSRP", "Price", "Location", "Status"];
-    const rows = vehicles.map((v) =>
-      [
-        csvEscape(v.stock),
-        csvEscape(v.year),
-        csvEscape(v.make),
-        csvEscape(v.model),
-        csvEscape(v.vin),
-        csvEscape(v.days_in_stock),
-        csvEscape(v.msrp),
-        csvEscape(v.our_price),
-        csvEscape(v.location),
-        csvEscape(v.status),
-      ].join(",")
-    );
-
-    const content = [headers.join(","), ...rows].join("\r\n");
-    const dateStr = new Date().toISOString().split("T")[0];
-    const fileName = `inventory-${dateStr}.csv`;
-    const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    link.click();
-  };
-
-  // --- PRINT ---
-  const handlePrint = () => window.print();
-
-  // --- SHARE (COPY URL) ---
-  const handleShare = () => {
-    navigator.clipboard
-      .writeText(window.location.href)
-      .then(() => alert("URL copied!"))
-      .catch(() => alert("Failed to copy URL"));
-  };
-
   // --- FILTER FOR SEARCH ---
   const filteredVehicles = vehicles.filter((v) => {
-    const text = (v.stock + v.year + v.make + v.model + v.vin + v.location + v.status).toLowerCase();
+    const text = (
+      v.stock +
+      v.year +
+      v.make +
+      v.model +
+      v.vin +
+      v.location +
+      v.status
+    ).toLowerCase();
     return text.includes(searchTerm.toLowerCase());
   });
 
   return (
-    <div className="bg-gray-900 text-gray-100 min-h-screen p-4">
-      {/* Toolbar */}
-      <div className="flex items-center space-x-2 mb-4">
-        <button onClick={handleCreateNew} className="flex items-center bg-blue-600 px-3 py-2 rounded hover:bg-blue-500">
-          <FiRefreshCw className="mr-1" /> New Inventory
-        </button>
-        <button
-          onClick={handleDownload}
-          disabled={!inventoryData}
-          className="flex items-center bg-green-600 px-3 py-2 rounded hover:bg-green-500"
-        >
-          <FiDownload className="mr-1" /> Download
-        </button>
-        <button
-          onClick={handlePrint}
-          disabled={!inventoryData}
-          className="flex items-center bg-orange-600 px-3 py-2 rounded hover:bg-orange-500"
-        >
-          <FiPrinter className="mr-1" /> Print
-        </button>
-        <button
-          onClick={handleShare}
-          disabled={!inventoryData}
-          className="flex items-center bg-purple-600 px-3 py-2 rounded hover:bg-purple-500"
-        >
-          <FiShare2 className="mr-1" /> Share
-        </button>
-      </div>
+    <div className="bg-gray-900 text-gray-100 print:bg-white print:text-black min-h-screen p-4">
+      <Toolbar
+        inventoryData={inventoryData}
+        handleCreateNew={handleCreateNew}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        showMetadata={showMetadata}
+        setShowMetadata={setShowMetadata}
+        vehicles={vehicles}
+      />
 
-      {/* Metadata */}
-      {inventoryData && (
-        <div className="mb-3 text-sm">
-          <p>Inventory ID: {inventoryData.id}</p>
-          <p>Created At: {formatTimestamp(inventoryData.createdAt)}</p>
-          <p>Updated At: {formatTimestamp(inventoryData.updatedAt)}</p>
-          <p>Created By: {inventoryData.createdBy?.displayName || "unknown"}</p>
-        </div>
+      {inventoryData && showMetadata && (
+        <Metadata inventoryData={inventoryData} />
       )}
-
-      {/* Search */}
-      <div className="flex items-center space-x-2 mb-3">
-        <input
-          type="text"
-          className="bg-gray-800 text-gray-200 p-2 rounded"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
 
       {/* Table */}
       <table className="w-full border-collapse text-sm">
-        <thead className="bg-gray-800">
+        <thead className="bg-gray-800 print:bg-white">
           <tr>
-            <th className="p-2 text-left">Stock</th>
-            <th className="p-2 text-left">Year</th>
-            <th className="p-2 text-left">Make</th>
-            <th className="p-2 text-left">Model</th>
-            <th className="p-2 text-left">VIN</th>
-            <th className="p-2 text-left">Days</th>
-            <th className="p-2 text-left">MSRP</th>
-            <th className="p-2 text-left">Price</th>
-            <th className="p-2 text-left">Location</th>
-            <th className="p-2 text-left">Status</th>
+            <th className="text-left">Status</th>
+            <th className="text-left">Stock</th>
+            <th className="text-left">Year</th>
+            <th className="text-left">Make</th>
+            <th className="text-left">Model</th>
+            <th className="text-left">VIN</th>
+            <th className="text-left">Days</th>
+            <th className="text-left">MSRP</th>
+            <th className="text-left w-12">Price</th>
+            <th className="text-left">Location</th>
           </tr>
         </thead>
         <tbody>
@@ -259,18 +207,28 @@ export default function InventoryManager() {
             </tr>
           ) : (
             filteredVehicles.map((veh, idx) => (
-              <tr key={veh.vin || idx} className="border-b border-gray-700 hover:bg-gray-800">
-                <td className="p-2">{veh.stock}</td>
-                <td className="p-2">{veh.year}</td>
-                <td className="p-2">{veh.make}</td>
-                <td className="p-2">{veh.model}</td>
-                <td className="p-2">{veh.vin}</td>
-                <td className="p-2">{veh.days_in_stock}</td>
-                <td className="p-2">{veh.msrp}</td>
-                <td className="p-2">{veh.our_price}</td>
-                <td className="p-2">{veh.location}</td>
-                <td className="p-2">
-                  <StatusDropdown vehicle={veh} inventoryId={inventoryData?.id} />
+              <tr
+                key={veh.vin || idx}
+                className="border-b border-gray-700 hover:bg-gray-800  print:hover:bg-white"
+              >
+                <td className="">
+                  <StatusDropdown
+                    vehicle={veh}
+                    inventoryId={inventoryData?.id}
+                  />
+                </td>
+                <td className="">{veh.stock}</td>
+                <td className="">{veh.year}</td>
+                <td className="">{veh.make}</td>
+                <td className="">{veh.model}</td>
+                <td className="">{veh.vin}</td>
+                <td className="">{veh.days_in_stock}</td>
+                <td className="">{veh.msrp}</td>
+                <td title={veh.our_price} className="w-12 truncate">
+                  {isNaN(veh.our_price) ? "Call" : veh.our_price}
+                </td>
+                <td className="" title={veh.location}>
+                  {mapAddress(veh.location)}
                 </td>
               </tr>
             ))
@@ -283,7 +241,8 @@ export default function InventoryManager() {
 
 /** Status/Location dropdown */
 function StatusDropdown({ vehicle, inventoryId }) {
-  const [status, setStatus] = useState(vehicle.status);
+  // Initialize state to an empty string if no vehicle status is present.
+  const [status, setStatus] = useState(vehicle.status || "");
 
   const handleChange = (e) => {
     const newStatus = e.target.value;
@@ -291,16 +250,25 @@ function StatusDropdown({ vehicle, inventoryId }) {
     if (!inventoryId || !vehicle.vin) return;
 
     // Update this vehicle's status in RTDB
-    set(ref(rtdb, `inventories/${inventoryId}/vehicles/${vehicle.vin}/status`), newStatus).catch((err) =>
-      console.error("Error updating status:", err)
-    );
+    set(
+      ref(rtdb, `inventories/${inventoryId}/vehicles/${vehicle.vin}/status`),
+      newStatus
+    ).catch((err) => console.error("Error updating status:", err));
 
     // Update top-level updatedAt
     set(ref(rtdb, `inventories/${inventoryId}/updatedAt`), Date.now());
   };
 
   return (
-    <select className="bg-gray-800 text-gray-200 p-1 rounded" value={status} onChange={handleChange}>
+    <select
+      className="bg-gray-800 no-print-arrow print:bg-white hover:bg-slate-600 print:hover:bg-white cursor-pointer max-w-24 text-gray-200 print:text-black text-xs px-1 py-0.5 rounded"
+      value={status}
+      onChange={handleChange}
+    >
+      {/* Placeholder option shown when no value is selected */}
+      <option value="" disabled>
+        Select
+      </option>
       {LOCATIONS.map((loc) => (
         <option key={loc} value={loc}>
           {loc}
@@ -316,4 +284,17 @@ function csvEscape(val) {
   return `"${String(val)
     .replace(/"/g, '""')
     .replace(/<br\s*\/?>/gi, " ")}"`;
+}
+
+const addressMapping = {
+  "16302 Auto Ln<br/>Sumner, WA 98390": "HOFS",
+  "14555 1st Avenue South<br/>Burien, WA 98166": "RAO",
+  "15026 1st Ave S<br/>Burien, WA 98148": "HOFB",
+  "15714 Smokey Point Blvd<br/>Marysville, WA 98271": "HOFM",
+
+  // Add additional mappings here...
+};
+
+function mapAddress(address) {
+  return addressMapping[address] || "OTHER";
 }

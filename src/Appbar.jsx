@@ -147,7 +147,7 @@ export const AppBar = ({
   // };
 
   return (
-    <div className="   w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
+    <div className=" print:none  w-full bottom-0 bg-opacity-100 px-2  md:mb-0">
       <div className="flex flex-col  max-w-[480px] bg-black rounded items-center mx-auto ">
         <div className=" flex mb-0.5  pt-1 items-center w-full">
           <div className="flex items-center justify-center">
