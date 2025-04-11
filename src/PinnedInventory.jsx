@@ -1,6 +1,12 @@
 import React from "react";
 import { VehicleCard } from "./vehicle/VehicleCard";
-import { MdDeleteForever, MdKeyboardArrowUp, MdMinimize, MdListAlt, MdPrint } from "react-icons/md";
+import {
+  MdDeleteForever,
+  MdKeyboardArrowUp,
+  MdMinimize,
+  MdListAlt,
+  MdPrint,
+} from "react-icons/md";
 import { Link } from "react-router-dom";
 
 export const PinnedInventory = ({
@@ -23,24 +29,33 @@ export const PinnedInventory = ({
       <style>
         {`
           @media print {
-            body * {
-              visibility: hidden;
-            }
-            #printable, #printable * {
-              visibility: visible;
-              color: black; /* Make all text black */
-              background: white !important; /* Change background to white */
-            }
-            #printable {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-            }
-            img {
-                page-break-inside: avoid; /* Avoid breaking images */
-              }
-          }
+  body * {
+    visibility: hidden;
+  }
+  #printable, #printable * {
+    visibility: visible;
+    color: black;
+    background: white !important;
+  }
+  #printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+  #printable > div {
+    margin-bottom: 1rem;
+    page-break-inside: avoid;
+    border: 1px solid black;
+    padding: 0.75rem;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+  }
+}
         `}
       </style>
       <div className="w-full my-2 rounded border border-opacity-20 border-white transition-all bg-slate-300 bg-opacity-10">
@@ -51,7 +66,9 @@ export const PinnedInventory = ({
           >
             <h2 className="  ">Pinned Cars ({pinnedCars.length})</h2>
             <div className="flex space-x-2 items-center">
-              <MdKeyboardArrowUp className={`transition-all ${isOpen ? "" : " rotate-180"}`} />
+              <MdKeyboardArrowUp
+                className={`transition-all ${isOpen ? "" : " rotate-180"}`}
+              />
             </div>
           </div>
           <div className="flex items-center space-x-2 px-2">
