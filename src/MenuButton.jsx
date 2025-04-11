@@ -16,6 +16,7 @@ import {
   MdLink,
   MdCarCrash,
   MdGamepad,
+  MdVoiceChat,
 } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa6";
 
@@ -42,7 +43,12 @@ export const MenuButton = () => {
     // onSelect: () => {}, // If you leave this in, the library might show a checkmark
     disableSearch: true,
     renderButton: ({ isOpen, open, close, props }) => (
-      <AppBarButton {...props} Icon={MdMenu} onClick={isOpen ? close : open} isActive={isOpen} />
+      <AppBarButton
+        {...props}
+        Icon={MdMenu}
+        onClick={isOpen ? close : open}
+        isActive={isOpen}
+      />
     ),
     renderItem: ({ label, Icon, ...props }) => (
       <div
@@ -64,7 +70,11 @@ export const MenuButton = () => {
               className="flex flex-row items-center gap-2 hover:bg-opacity-10 bg-white bg-opacity-0 rounded p-2 flex-1"
             >
               {currentUser?.photoURL ? (
-                <img src={currentUser.photoURL} alt="Profile" className="w-8 h-8 rounded-full mx-2" />
+                <img
+                  src={currentUser.photoURL}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full mx-2"
+                />
               ) : (
                 <MdPerson className="w-8 h-8 mr-2" />
               )}
@@ -100,6 +110,20 @@ export const MenuButton = () => {
             label: "GamePad",
             Icon: MdGamepad,
             onClick: () => history.push("/gamepaddemo"),
+          }
+        : null,
+      isAdmin
+        ? {
+            label: "VoiceDemo",
+            Icon: MdVoiceChat,
+            onClick: () => history.push("/voicedemo"),
+          }
+        : null,
+      isAdmin
+        ? {
+            label: "ChatBox",
+            Icon: MdVoiceChat,
+            onClick: () => history.push("/chatbox"),
           }
         : null,
       isAdmin
@@ -162,18 +186,28 @@ export const MenuButton = () => {
   );
 };
 
-export const AppBarButton = ({ Icon, onClick = () => {}, isActive, label, ...props }) => {
+export const AppBarButton = ({
+  Icon,
+  onClick = () => {},
+  isActive,
+  label,
+  ...props
+}) => {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`flex flex-col group relative rounded-lg p-2 mx-2 text-xl bg-white border-opacity-20 border-white hover:bg-opacity-20 transition-all ${
-        isActive ? "bg-opacity-80 text-black hover:text-white" : "bg-opacity-0 text-white"
+        isActive
+          ? "bg-opacity-80 text-black hover:text-white"
+          : "bg-opacity-0 text-white"
       }`}
       {...props}
     >
       <Icon />
-      {label && <span className="text-[8px] leading-none uppercase">{label}</span>}
+      {label && (
+        <span className="text-[8px] leading-none uppercase">{label}</span>
+      )}
     </button>
   );
 };

@@ -29,6 +29,8 @@ import LinkManagement from "./linkManagement/LinkManagement";
 import InventoryManager from "./inventoryManager/InventoryManager";
 import Inventories from "./inventoryManager/Inventories";
 import GamePadDemo from "./gamepad/GamePadDemo";
+import VoiceDemo from "./gamepad/VoiceDemo";
+import ChatBox from "./gamepad/ChatBox";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -51,10 +53,16 @@ function App() {
                 <Switch>
                   <Route path="/login" component={Login} />
                   <Route path="/gamepaddemo" component={GamePadDemo} />
+                  <Route path="/voicedemo" component={VoiceDemo} />
+                  <Route path="/chatbox" component={ChatBox} />
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
-                  <ProtectedRoute exact path="/#:stock" component={VehiclePage} />
+                  <ProtectedRoute
+                    exact
+                    path="/#:stock"
+                    component={VehiclePage}
+                  />
                   <ProtectedRoute
                     exact
                     path="/pencil/:quoteId"
@@ -241,7 +249,10 @@ function App() {
                       component={InventoryManager}
                       title={(params) => [
                         ["Inventories", "/inventories"],
-                        [params.inventoryId, `/inventory/${params.inventoryId}`],
+                        [
+                          params.inventoryId,
+                          `/inventory/${params.inventoryId}`,
+                        ],
                       ]}
                     />
 
