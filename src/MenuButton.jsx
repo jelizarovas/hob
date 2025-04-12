@@ -119,7 +119,7 @@ export const MenuButton = () => {
             onClick: () => history.push("/voicedemo"),
           }
         : null,
-      isAdmin
+      isUser
         ? {
             label: "ChatBox",
             Icon: MdVoiceChat,

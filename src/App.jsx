@@ -54,7 +54,7 @@ function App() {
                   <Route path="/login" component={Login} />
                   <Route path="/gamepaddemo" component={GamePadDemo} />
                   <Route path="/voicedemo" component={VoiceDemo} />
-                  <Route path="/chatbox" component={ChatBox} />
+                  <ProtectedRoute path="/chatbox" component={ChatBox} />
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
