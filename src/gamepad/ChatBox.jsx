@@ -4,6 +4,7 @@ import { FaCheck, FaMicrophone, FaPaperPlane } from "react-icons/fa";
 import { onValue, push, remove, ref, serverTimestamp } from "firebase/database";
 import { rtdb } from "../firebase";
 import { useAuth } from "../auth/AuthProvider";
+import { isMobile, isIOS } from "react-device-detect";
 
 // Web Speech
 const SpeechRecognition =
@@ -84,6 +85,8 @@ export default function ChatBox() {
   const yPressTimeoutRef = useRef(null);
   const yPressStartTimeRef = useRef(null);
   const isHoldInitiatedRef = useRef(false); // Track if recording started via HOLD
+
+  const lastFinalChunkRef = useRef("");
 
   // Add this constant near the top
   const Y_HOLD_THRESHOLD = 220; // Milliseconds to distinguish tap vs hold
@@ -217,113 +220,159 @@ export default function ChatBox() {
 
     // Create the instance ONCE
     const rec = new SpeechRecognition();
-    rec.continuous = true;
+    rec.continuous = !isMobile; // When isMobile is true (or isIOS), this is false.
     rec.interimResults = true;
     rec.lang = "en-US";
 
-    // Assign event listeners
-    rec.onresult = (event) => {
-      // Use ref or check state for stopManually
-      if (stopManuallyRef.current) return;
+    if (isMobile) {
+      // ---------- Mobile-Specific Setup (including iPhone) ----------
+      // In mobile mode, we treat each utterance separately because mobile browsers
+      // (especially Safari on iOS) tend to fire duplicate final results.
+      // We'll use a local flag to ensure we process a final result only once per utterance.
+      let utteranceCompleted = false;
 
-      let currentInterim = "";
-      let currentFinal = "";
+      rec.onresult = (event) => {
+        // Use ref or check state for stopManually
+        if (stopManuallyRef.current) return;
 
-      // Iterate through all results received in this event
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        const result = event.results[i];
-        const transcript = result[0].transcript;
+        let currentInterim = "";
+        let currentFinal = "";
 
-        if (result.isFinal) {
-          // Accumulate final transcript parts for this event
-          currentFinal += transcript;
-        } else {
-          // Accumulate the latest interim transcript for this event
-          currentInterim += transcript;
-        }
-      }
+        // Iterate through all results received in this event
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const result = event.results[i];
+          const transcript = result[0].transcript;
 
-      // --- *** MODIFICATION IS HERE *** ---
-      // If we received final text in this event...
-      if (currentFinal) {
-        // Trim the newly finalized chunk
-        const newFinalChunk = currentFinal.trim();
-
-        // Update the main input text
-        setInputText((prev) => {
-          if (!newFinalChunk) return prev; // Do nothing if the new chunk is empty
-
-          if (prev) {
-            // If there's existing text, ADD A SPACE before the new chunk
-            return prev + " " + newFinalChunk;
+          if (result.isFinal) {
+            currentFinal += transcript;
           } else {
-            // If this is the first chunk, just use it directly
-            return newFinalChunk;
+            currentInterim += transcript;
           }
-        });
-
-        // Clear the interim display because we just got a final segment
-        setInterimText("");
-      }
-      // Otherwise (if only interim results were received), update interim display
-      else if (currentInterim) {
-        // Update the interim text state
-        setInterimText(currentInterim);
-      }
-      // --- *** END OF MODIFICATION *** ---
-    };
-
-    rec.onend = () => {
-      // Use refs or check state directly for stopManually and isRecording
-      // Reading state directly here *should* also be okay
-      if (!stopManuallyRef.current && isRecordingRef.current) {
-        // Example if using refs
-        // Or just: if (!stopManually && isRecording) {
-        console.log(
-          "Speech recognition ended unexpectedly, attempting restart..."
-        );
-        try {
-          // DO NOT call rec.start() directly here if startRecording handles it
-          // This automatic restart might still be tricky.
-          // Consider removing the automatic restart or making it more robust.
-          // If you keep it, ensure it doesn't conflict with manual starts.
-          // Maybe only restart if start() isn't already pending? Difficult to track.
-          rec.start(); // Attempt restart on the *single* instance
-        } catch (err) {
-          console.warn("Speech restart error:", err);
-          // Maybe set isRecording to false here if restart fails?
-          // setIsRecording(false);
         }
-      } else {
-        console.log("Speech recognition ended.");
-      }
-    };
 
-    rec.onerror = (event) => {
-      console.error("Speech recognition error:", event.error, event.message);
+        // Update the interim text if available
+        if (currentInterim) {
+          setInterimText(currentInterim);
+        }
 
-      // --- Capture final interim text on error ---
-      const lastInterimTextOnError = interimText.trim(); // Read state
-      if (lastInterimTextOnError) {
-        console.log(
-          "Appending final interim text on error:",
-          lastInterimTextOnError
-        );
-        // Use functional update to append safely
-        setInputText((prevInputText) => {
-          return prevInputText
-            ? prevInputText + " " + lastInterimTextOnError
-            : lastInterimTextOnError;
-        });
-      }
-      // --- End capture ---
+        // Process final result only once per utterance
+        if (currentFinal && !utteranceCompleted) {
+          const newFinalChunk = currentFinal.trim();
+          utteranceCompleted = true; // Mark this utterance as completed
+          // Update the main input text with the new final chunk
+          setInputText((prev) =>
+            prev ? `${prev} ${newFinalChunk}` : newFinalChunk
+          );
+          // Clear the interim display because we just got a final segment
+          setInterimText("");
+          // Stop recognition to prevent duplicate events for this utterance
+          try {
+            rec.stop();
+          } catch (err) {
+            console.error("Error stopping recognition on mobile:", err);
+          }
+        }
+      };
 
-      // Stop recording UI state on error
-      setIsRecording(false);
-      setStopManually(true); // Ensure stop state is set
-      stopManuallyRef.current = true; // Update ref too
-      setInterimText(""); // Clear interim text state AFTER potentially capturing it
-    };
+      rec.onend = () => {
+        // Reset the utterance flag for the next utterance
+        utteranceCompleted = false;
+        // If the user is still recording, restart recognition
+        if (isRecording) {
+          try {
+            rec.start();
+          } catch (err) {
+            console.error("Error restarting recognition on mobile:", err);
+          }
+        }
+      };
+    } else {
+      rec.onresult = (event) => {
+        if (stopManuallyRef.current) return; // Use ref or check state for stopManually
+
+        let currentInterim = "";
+        let currentFinal = "";
+
+        // Iterate through all results received in this event
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const result = event.results[i];
+          const transcript = result[0].transcript;
+
+          if (result.isFinal) {
+            currentFinal += transcript; // Accumulate final transcript parts for this event
+          } else {
+            currentInterim += transcript; // Accumulate the latest interim transcript for this event
+          }
+        }
+
+        if (currentFinal) {
+          // If we received final text in this event...
+          const newFinalChunk = currentFinal.trim(); // Trim the newly finalized chunk
+          if (newFinalChunk && newFinalChunk === lastFinalChunkRef.current) {
+            return; // Skip updating if this chunk is the same as last time
+          }
+          lastFinalChunkRef.current = newFinalChunk; // Update the ref with the new final chunk
+
+          setInputText((prev) => {
+            // Update the main input text
+            if (!newFinalChunk) return prev; // Do nothing if the new chunk is empty
+
+            if (prev) {
+              // If there's existing text, ADD A SPACE before the new chunk
+              return prev + " " + newFinalChunk;
+            } else {
+              // If this is the first chunk, just use it directly
+              return newFinalChunk;
+            }
+          });
+          setInterimText(""); // Clear the interim display because we just got a final segment
+        } else if (currentInterim) {
+          // Otherwise (if only interim results were received), update interim display
+          setInterimText(currentInterim); // Update the interim text state
+        }
+      };
+
+      rec.onend = () => {
+        if (!stopManuallyRef.current && isRecordingRef.current) {
+          console.log("Speech recognition ended unexpectedly, restarting");
+          try {
+            // DO NOT call rec.start() directly here if startRecording handles it
+            // This automatic restart might still be tricky.
+            // Consider removing the automatic restart or making it more robust.
+            // If you keep it, ensure it doesn't conflict with manual starts.
+            // Maybe only restart if start() isn't already pending? Difficult to track.
+            rec.start(); // Attempt restart on the *single* instance
+          } catch (err) {
+            console.warn("Speech restart error:", err);
+            // Maybe set isRecording to false here if restart fails?
+            // setIsRecording(false);
+          }
+        } else {
+          console.log("Speech recognition ended.");
+        }
+      };
+
+      rec.onerror = (event) => {
+        console.error("Speech recognition error:", event.error, event.message);
+        const lastInterimTextOnError = interimText.trim(); // Read state
+        if (lastInterimTextOnError) {
+          console.log(
+            "Appending final interim text on error:",
+            lastInterimTextOnError
+          );
+          // Use functional update to append safely
+          setInputText((prevInputText) => {
+            return prevInputText
+              ? prevInputText + " " + lastInterimTextOnError
+              : lastInterimTextOnError;
+          });
+        }
+        setIsRecording(false);
+        setStopManually(true); // Ensure stop state is set
+        stopManuallyRef.current = true; // Update ref too
+        setInterimText(""); // Clear interim text state AFTER potentially capturing it
+      };
+    }
 
     // Store the single instance in the ref
     recognitionRef.current = rec;
@@ -746,23 +795,26 @@ export default function ChatBox() {
       <div className="flex h-screen  bg-gray-900 text-white container mx-auto max-w-xl">
         <div className="flex flex-col w-full py-2 ">
           {/* Top row: show isRecording & autoSend */}
-          {false && <div className="mb-2 flex items-center justify-between text-sm">
-            <div>
-              Mic (Y): {/* Added button indicator */}
-              <span
-                className={`ml-1 font-bold ${
-                  isRecording ? "text-green-400 animate-pulse" : "text-red-400" // Pulse when recording
-                }`}
-              >
-                {isRecording ? "Listening..." : "Off"}
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => {
-                  setAutoSendOnStop((prev) => !prev);
-                }}
-                className={` flex space-x-2 items-center
+          {false && (
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <div>
+                Mic (Y): {/* Added button indicator */}
+                <span
+                  className={`ml-1 font-bold ${
+                    isRecording
+                      ? "text-green-400 animate-pulse"
+                      : "text-red-400" // Pulse when recording
+                  }`}
+                >
+                  {isRecording ? "Listening..." : "Off"}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setAutoSendOnStop((prev) => !prev);
+                  }}
+                  className={` flex space-x-2 items-center
                 px-3 py-1 rounded text-xs font-bold 
                 transition-all duration-300 
                 focus:outline-none focus:ring-2 focus:ring-offset-2 
@@ -775,20 +827,21 @@ export default function ChatBox() {
                       "bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-500"
                 }
               `}
-              >
-                {controllerConnected ? (
-                  <span className="bg-black flex items-center justify-center leading-none font-mono rounded-full w-4 h-4 text-xs px-1 py-0  ">
-                    x
-                  </span>
-                ) : (
-                  ""
-                )}
-                <span>Auto Send </span>
+                >
+                  {controllerConnected ? (
+                    <span className="bg-black flex items-center justify-center leading-none font-mono rounded-full w-4 h-4 text-xs px-1 py-0  ">
+                      x
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                  <span>Auto Send </span>
 
-                {autoSendOnStop ? <FaCheck /> : ""}
-              </button>
+                  {autoSendOnStop ? <FaCheck /> : ""}
+                </button>
+              </div>
             </div>
-          </div>}
+          )}
           {/* Messages */}
           <div
             ref={messagesContainerRef}
@@ -917,7 +970,7 @@ export default function ChatBox() {
                 ref={textAreaRef}
                 rows={1}
                 className="block w-full px-3 py-2 bg-gray-800 rounded focus:outline-none resize-none overflow-auto max-h-64 align-top font-sans text-base leading-normal" // Example: Define styles clearly
-                placeholder={!interimText && "Type or Hold Mic [Y]"}
+                placeholder={!interimText ? "Type or Hold Mic [Y]" : ""}
                 value={inputText} // <--- VALUE IS ONLY inputText
                 onChange={(e) => {
                   setInputText(e.target.value);
