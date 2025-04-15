@@ -6,10 +6,9 @@ import { MenuBar } from "./components/MenuBar";
 const Layout = ({ children }) => {
   return (
     <TitleProvider>
-      <div className="relative flex flex-col min-h-screen">
+      <div className="relative flex flex-col min-h-screen h-screen">
         <LayoutAppBar />
-        {/* <MenuBar /> */}
-        <main className="container flex-grow  bg-red-500  mx-auto md:px-2 md:py-1">{children}</main>
+        <main className="relative container flex-grow  bg-red-500  mx-auto md:px-2 md:py-1">{children}</main>
       </div>
     </TitleProvider>
   );

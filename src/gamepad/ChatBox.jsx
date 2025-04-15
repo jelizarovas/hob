@@ -768,94 +768,99 @@ export default function ChatBox() {
   // 8) Render
   // ──────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col  items-center  bg-gray-900 text-white container mx-auto max-w-xl">
-      <div
-        ref={messagesContainerRef}
-        id="message-list-container"
-        className="flex-1 overflow-y-auto  mb-1 "
-      >
-        {messages.map((msg) => {
-          const mine = isMine(msg.userId);
-          const selected = msg.id === selectedMessageId;
-          const initials = getInitials(msg.displayName || "??");
-          return (
-            <div
-              key={msg.id}
-              id={`message-${msg.id}`} // Add ID to each message row for potential scrolling target
-              className={`flex items-start my-1 ${
-                mine ? "justify-end" : "justify-start"
-              }`}
-            >
-              {/* Avatar left if not mine */}
-              {!mine && (
-                <div className="mr-2 flex-shrink-0 w-8 h-8">
-                  {msg.photoURL ? (
-                    <img
-                      src={msg.photoURL}
-                      alt={msg.displayName}
-                      title={msg.displayName}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  ) : (
-                    <div
-                      className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
-                      title={msg.displayName}
-                    >
-                      {initials}
+    <div className="flex flex-col h-full justify-between  bg-gray-700 text-white mx-auto  max-w-xl relative ">
+    
+      {true && (
+        <div
+          ref={messagesContainerRef}
+          id="message-list-container"
+          className="   relative    bg-yellow-500  "
+        >
+          <div className="overflow-y-hidden max-h-full  bg-orange-500  ">
+            {messages.map((msg) => {
+              const mine = isMine(msg.userId);
+              const selected = msg.id === selectedMessageId;
+              const initials = getInitials(msg.displayName || "??");
+              return (
+                <div
+                  key={msg.id}
+                  id={`message-${msg.id}`} // Add ID to each message row for potential scrolling target
+                  className={`flex items-start my-1 ${
+                    mine ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {/* Avatar left if not mine */}
+                  {!mine && (
+                    <div className="mr-2 flex-shrink-0 w-8 h-8">
+                      {msg.photoURL ? (
+                        <img
+                          src={msg.photoURL}
+                          alt={msg.displayName}
+                          title={msg.displayName}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      ) : (
+                        <div
+                          className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
+                          title={msg.displayName}
+                        >
+                          {initials}
+                        </div>
+                      )}
                     </div>
                   )}
-                </div>
-              )}
 
-              <div
-                onClick={() => {
-                  if (mine) {
-                    if (selectedMessageId === msg.id) {
-                      remove(ref(rtdb, `/chat/current/${msg.id}`));
-                      setSelectedMessageId(null);
-                    } else {
-                      setSelectedMessageId(msg.id);
-                    }
-                  }
-                }}
-                className={`
+                  <div
+                    onClick={() => {
+                      if (mine) {
+                        if (selectedMessageId === msg.id) {
+                          remove(ref(rtdb, `/chat/current/${msg.id}`));
+                          setSelectedMessageId(null);
+                        } else {
+                          setSelectedMessageId(msg.id);
+                        }
+                      }
+                    }}
+                    className={`
                       p-2 rounded-lg max-w-xl cursor-pointer
                       ${mine ? "bg-blue-600" : "bg-gray-700"}
                       ${selected ? "bg-red-700" : ""}
                     `}
-              >
-                <div className={bubbleTextClass}>{msg.text}</div>
-                <div className="text-right text-xs text-gray-300 mt-1">
-                  {formatTime(msg.timestamp)}
-                </div>
-              </div>
+                  >
+                    <div className={bubbleTextClass}>{msg.text}</div>
+                    <div className="text-right text-xs text-gray-300 mt-1">
+                      {formatTime(msg.timestamp)}
+                    </div>
+                  </div>
 
-              {/* Avatar right if mine */}
-              {mine && (
-                <div className="ml-2 flex-shrink-0 w-8 h-8">
-                  {photoURL ? (
-                    <img
-                      src={photoURL}
-                      alt={displayName}
-                      title={displayName}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  ) : (
-                    <div
-                      className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
-                      title={displayName}
-                    >
-                      {initials}
+                  {/* Avatar right if mine */}
+                  {mine && (
+                    <div className="ml-2 flex-shrink-0 w-8 h-8">
+                      {photoURL ? (
+                        <img
+                          src={photoURL}
+                          alt={displayName}
+                          title={displayName}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      ) : (
+                        <div
+                          className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
+                          title={displayName}
+                        >
+                          {initials}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="flex items-center space-x-2 w-full px-2">
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+      )}
+      <div className="flex items-center space-x-2 w-full px-2 bg-gray-800 py-2">
         <RoundButton
           onMouseDown={handleMicPressStart}
           onMouseUp={handleMicPressEnd}
@@ -869,14 +874,8 @@ export default function ChatBox() {
           controllerConnected={true}
           gamepadActionButton="Y"
           title="Toggle/Hold Recording (Y)"
-          className={`
-              relative p-2 rounded-full self-end mb-1 transition-all duration-150 active:scale-95
-              ${
-                isRecording
-                  ? "bg-red-600 hover:bg-red-700 animate-pulse"
-                  : "bg-gray-600 hover:bg-gray-700"
-              }
-            `}
+          isActive={isRecording}
+          className={""}
           Icon={FaMicrophone}
         />
 
@@ -965,8 +964,8 @@ const RoundButton = ({
         relative p-2 rounded-full transition-all duration-150 active:scale-95
         ${
           isActive
-            ? "bg-red-600 hover:bg-red-700"
-            : "bg-gray-600 hover:bg-gray-700"
+            ? "bg-red-600 hover:bg-red-700 animate-pulse"
+            : "bg-gray-600 hover:bg-gray-700 "
         }
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
         ${className}
