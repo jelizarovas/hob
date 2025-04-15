@@ -26,7 +26,7 @@ export default function GamePadDemo() {
     }`;
 
   return (
-    <div className="w-screen h-screen bg-gray-900 text-white flex flex-col items-center justify-center overflow-hidden">
+    <div className="py-20 bg-gray-900 text-white flex flex-col items-center justify-center overflow-hidden">
       <div className="text-lg mb-3">
         Gamepad is {gamepad.connected ? "Connected" : "Disconnected"}
       </div>
@@ -96,14 +96,8 @@ export default function GamePadDemo() {
               left: "50%",
               top: "50%",
               transform: `translate(-50%, -50%) translate(${
-                gamepad.axes && gamepad.axes["LeftStickX"]
-                  ? gamepad.axes["LeftStickX"] * 40
-                  : 0
-              }px, ${
-                gamepad.axes && gamepad.axes["LeftStickY"]
-                  ? gamepad.axes["LeftStickY"] * -40
-                  : 0
-              }px)`,
+                (gamepad?.axes?.["LeftStickX"] ?? 0) * 40
+              }px, ${(gamepad?.axes?.["LeftStickY"] ?? 0) * -40}px)`,
               transition: "transform 0.03s linear",
             }}
           />

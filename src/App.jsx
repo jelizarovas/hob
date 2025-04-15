@@ -52,9 +52,7 @@ function App() {
               <Router>
                 <Switch>
                   <Route path="/login" component={Login} />
-                  <Route path="/gamepaddemo" component={GamePadDemo} />
                   <Route path="/voicedemo" component={VoiceDemo} />
-                  <ProtectedRoute path="/chatbox" component={ChatBox} />
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
@@ -74,6 +72,11 @@ function App() {
                   />
 
                   <Layout>
+                    <ProtectedRoute
+                      path="/gamepaddemo"
+                      component={GamePadDemo}
+                    />
+                    <ProtectedRoute path="/chatbox" component={ChatBox} />
                     <ProtectedRoute
                       exact
                       path="/users/"

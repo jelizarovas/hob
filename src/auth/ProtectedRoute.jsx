@@ -4,14 +4,24 @@ import { Route, Redirect } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { TitleContext } from "../TitleContext";
 
-const ProtectedRouteWrapper = ({ Component, title, setBreadcrumbs, currentUser, ...props }) => {
-  // Use optional chaining to safely get breadcrumbs
+const ProtectedRouteWrapper = ({
+  Component,
+  title,
+  setBreadcrumbs,
+  currentUser,
+  ...props
+}) => {
+  // Safely retrieve breadcrumbs from the TitleContext.
   const breadcrumbs = useContext(TitleContext)?.breadcrumbs || [];
 
   React.useEffect(() => {
-    if (setBreadcrumbs) {
-      const newBreadcrumbs = typeof title === "function" ? title(props.match.params) : title;
-      // Only update if different
+    // Only update breadcrumbs if a title is provided.
+    if (setBreadcrumbs && title !== undefined) {
+      // Compute new breadcrumbs based on whether title is a function or a static value.
+      const newBreadcrumbs =
+        typeof title === "function" ? title(props.match.params) : title;
+
+      // Update breadcrumbs only if they have changed.
       if (JSON.stringify(newBreadcrumbs) !== JSON.stringify(breadcrumbs)) {
         setBreadcrumbs(newBreadcrumbs);
       }
@@ -19,7 +29,8 @@ const ProtectedRouteWrapper = ({ Component, title, setBreadcrumbs, currentUser, 
   }, [title, props.match.params, setBreadcrumbs, breadcrumbs]);
 
   return currentUser ? (
-    <Component title={title} {...props} />
+    // Pass title down to the component if provided.
+    <Component {...props} title={title ?? undefined} />
   ) : (
     <Redirect to="/login" />
   );

@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import Gamepad from "react-gamepad";
-import { FaCheck, FaMicrophone, FaPaperPlane } from "react-icons/fa";
+import { FaCheck, FaMicrophone, FaPaperPlane, FaSpinner } from "react-icons/fa";
 import { onValue, push, remove, ref, serverTimestamp } from "firebase/database";
 import { rtdb } from "../firebase";
 import { useAuth } from "../auth/AuthProvider";
 import { isMobile, isIOS } from "react-device-detect";
+import { useGamepad } from "./gamepadStore";
 
-// Web Speech
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// Buttons recognized by react-gamepad
 const KNOWN_BUTTONS = [
   "A",
   "B",
@@ -31,11 +30,14 @@ const KNOWN_BUTTONS = [
   "DPadRight",
 ];
 
-const RIGHT_STICK_Y_DEADZONE = 0.15; // Ignore small movements near the center
-const MESSAGE_SCROLL_SPEED = 15; // Adjust scroll sensitivity as needed
+const RIGHT_STICK_Y_DEADZONE = 0.15;
+const MESSAGE_SCROLL_SPEED = 15;
+const Y_HOLD_THRESHOLD = 220;
 
 export default function ChatBox() {
   const { currentUser } = useAuth();
+
+  const { gamepad } = useGamepad();
 
   // Basic user info
   const userId = currentUser?.uid || "anon";
@@ -44,20 +46,26 @@ export default function ChatBox() {
 
   // Chat state
   const [messages, setMessages] = useState([]);
-  const [interimText, setInterimText] = useState("");
-  const messagesEndRef = useRef(null);
 
-  // Text area content (typed + recognized text)
   const [inputText, setInputText] = useState("");
-  // Is the mic actively recording?
+  const [interimText, setInterimText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  // If forcibly stop, skip trailing final results
   const [stopManually, setStopManually] = useState(false);
-  // If auto-send is on, we send when we stop
   const [autoSendOnStop, setAutoSendOnStop] = useState(false);
   const [controllerConnected, setControllerConnected] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
 
-  // For ignoring repeated button events
+  const messagesEndRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const textAreaRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const rightStickYRef = useRef(0);
+  const selectedMessageIdRef = useRef(selectedMessageId);
+  const yPressTimeoutRef = useRef(null);
+  const yPressStartTimeRef = useRef(null);
+  const isHoldInitiatedRef = useRef(false);
+  const lastFinalChunkRef = useRef("");
+
   const [buttonStates, setButtonStates] = useState(() => {
     const init = {};
     KNOWN_BUTTONS.forEach((b) => {
@@ -65,31 +73,6 @@ export default function ChatBox() {
     });
     return init;
   });
-
-  // The SpeechRecognition instance
-  const recognitionRef = useRef(null);
-
-  // For message selection/deletion
-  const [selectedMessageId, setSelectedMessageId] = useState(null);
-  // For auto-grow text area
-  const textAreaRef = useRef(null);
-
-  const messagesContainerRef = useRef(null);
-
-  const rightStickYRef = useRef(0);
-  const scrollAnimationRef = useRef(null);
-
-  const selectedMessageIdRef = useRef(selectedMessageId);
-
-  // Add these refs inside the component function, near other refs
-  const yPressTimeoutRef = useRef(null);
-  const yPressStartTimeRef = useRef(null);
-  const isHoldInitiatedRef = useRef(false); // Track if recording started via HOLD
-
-  const lastFinalChunkRef = useRef("");
-
-  // Add this constant near the top
-  const Y_HOLD_THRESHOLD = 220; // Milliseconds to distinguish tap vs hold
 
   useEffect(() => {
     selectedMessageIdRef.current = selectedMessageId;
@@ -785,244 +768,280 @@ export default function ChatBox() {
   // 8) Render
   // ──────────────────────────────────────────────────────────
   return (
-    <Gamepad
-      onConnect={() => setControllerConnected(true)}
-      onDisconnect={() => setControllerConnected(false)}
-      onButtonChange={handleButtonChange}
-      onAxisChange={handleAxisChange}
-      gamepadIndex={0}
-    >
-      <div className="flex h-screen  bg-gray-900 text-white container mx-auto max-w-xl">
-        <div className="flex flex-col w-full py-2 ">
-          {/* Top row: show isRecording & autoSend */}
-          {false && (
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <div>
-                Mic (Y): {/* Added button indicator */}
-                <span
-                  className={`ml-1 font-bold ${
-                    isRecording
-                      ? "text-green-400 animate-pulse"
-                      : "text-red-400" // Pulse when recording
-                  }`}
-                >
-                  {isRecording ? "Listening..." : "Off"}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => {
-                    setAutoSendOnStop((prev) => !prev);
-                  }}
-                  className={` flex space-x-2 items-center
-                px-3 py-1 rounded text-xs font-bold 
-                transition-all duration-300 
-                focus:outline-none focus:ring-2 focus:ring-offset-2 
-                active:scale-95
-                ${
-                  autoSendOnStop
-                    ? // If ON, show green background
-                      "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
-                    : // If OFF, show gray background
-                      "bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-500"
-                }
-              `}
-                >
-                  {controllerConnected ? (
-                    <span className="bg-black flex items-center justify-center leading-none font-mono rounded-full w-4 h-4 text-xs px-1 py-0  ">
-                      x
-                    </span>
+    <div className="flex flex-col  items-center  bg-gray-900 text-white container mx-auto max-w-xl">
+      <div
+        ref={messagesContainerRef}
+        id="message-list-container"
+        className="flex-1 overflow-y-auto  mb-1 "
+      >
+        {messages.map((msg) => {
+          const mine = isMine(msg.userId);
+          const selected = msg.id === selectedMessageId;
+          const initials = getInitials(msg.displayName || "??");
+          return (
+            <div
+              key={msg.id}
+              id={`message-${msg.id}`} // Add ID to each message row for potential scrolling target
+              className={`flex items-start my-1 ${
+                mine ? "justify-end" : "justify-start"
+              }`}
+            >
+              {/* Avatar left if not mine */}
+              {!mine && (
+                <div className="mr-2 flex-shrink-0 w-8 h-8">
+                  {msg.photoURL ? (
+                    <img
+                      src={msg.photoURL}
+                      alt={msg.displayName}
+                      title={msg.displayName}
+                      className="w-8 h-8 rounded-full"
+                    />
                   ) : (
-                    ""
-                  )}
-                  <span>Auto Send </span>
-
-                  {autoSendOnStop ? <FaCheck /> : ""}
-                </button>
-              </div>
-            </div>
-          )}
-          {/* Messages */}
-          <div
-            ref={messagesContainerRef}
-            id="message-list-container"
-            className="flex-1 overflow-y-auto mb-1"
-          >
-            {messages.map((msg) => {
-              const mine = isMine(msg.userId);
-              const selected = msg.id === selectedMessageId;
-              const initials = getInitials(msg.displayName || "??");
-              return (
-                <div
-                  key={msg.id}
-                  id={`message-${msg.id}`} // Add ID to each message row for potential scrolling target
-                  className={`flex items-start my-1 ${
-                    mine ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {/* Avatar left if not mine */}
-                  {!mine && (
-                    <div className="mr-2 flex-shrink-0 w-8 h-8">
-                      {msg.photoURL ? (
-                        <img
-                          src={msg.photoURL}
-                          alt={msg.displayName}
-                          title={msg.displayName}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div
-                          className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
-                          title={msg.displayName}
-                        >
-                          {initials}
-                        </div>
-                      )}
+                    <div
+                      className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
+                      title={msg.displayName}
+                    >
+                      {initials}
                     </div>
                   )}
+                </div>
+              )}
 
-                  <div
-                    onClick={() => {
-                      if (mine) {
-                        if (selectedMessageId === msg.id) {
-                          remove(ref(rtdb, `/chat/current/${msg.id}`));
-                          setSelectedMessageId(null);
-                        } else {
-                          setSelectedMessageId(msg.id);
-                        }
-                      }
-                    }}
-                    className={`
+              <div
+                onClick={() => {
+                  if (mine) {
+                    if (selectedMessageId === msg.id) {
+                      remove(ref(rtdb, `/chat/current/${msg.id}`));
+                      setSelectedMessageId(null);
+                    } else {
+                      setSelectedMessageId(msg.id);
+                    }
+                  }
+                }}
+                className={`
                       p-2 rounded-lg max-w-xl cursor-pointer
                       ${mine ? "bg-blue-600" : "bg-gray-700"}
                       ${selected ? "bg-red-700" : ""}
                     `}
-                  >
-                    <div className={bubbleTextClass}>{msg.text}</div>
-                    <div className="text-right text-xs text-gray-300 mt-1">
-                      {formatTime(msg.timestamp)}
-                    </div>
-                  </div>
+              >
+                <div className={bubbleTextClass}>{msg.text}</div>
+                <div className="text-right text-xs text-gray-300 mt-1">
+                  {formatTime(msg.timestamp)}
+                </div>
+              </div>
 
-                  {/* Avatar right if mine */}
-                  {mine && (
-                    <div className="ml-2 flex-shrink-0 w-8 h-8">
-                      {photoURL ? (
-                        <img
-                          src={photoURL}
-                          alt={displayName}
-                          title={displayName}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div
-                          className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
-                          title={displayName}
-                        >
-                          {initials}
-                        </div>
-                      )}
+              {/* Avatar right if mine */}
+              {mine && (
+                <div className="ml-2 flex-shrink-0 w-8 h-8">
+                  {photoURL ? (
+                    <img
+                      src={photoURL}
+                      alt={displayName}
+                      title={displayName}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div
+                      className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
+                      title={displayName}
+                    >
+                      {initials}
                     </div>
                   )}
                 </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
-          {/* Input Row Container - Needs to allow for the relative/absolute positioning */}
-          <div className="flex items-end space-x-2 w-full px-2">
-            {/* Mic button */}
-            <button
-              onMouseDown={handleMicPressStart}
-              onMouseUp={handleMicPressEnd}
-              onMouseLeave={handleMicLeave} // Cancel hold if mouse leaves
-              onTouchStart={(e) => {
-                e.preventDefault();
-                handleMicPressStart();
-              }}
-              onTouchEnd={handleMicPressEnd}
-              onTouchCancel={handleMicPressEnd}
-              title="Toggle/Hold Recording (Y)"
-              className={`
-        relative p-2 rounded-full self-end mb-1 transition-all duration-150 active:scale-95
-        ${
-          isRecording
-            ? "bg-red-600 hover:bg-red-700 animate-pulse"
-            : "bg-gray-600 hover:bg-gray-700"
-        }
-      `}
-            >
-              <FaMicrophone />
-              {controllerConnected && (
-                <span className="absolute top-0 right-0 translate-x-1 -translate-y-1 bg-yellow-400 text-black text-xs w-4 h-4 flex items-center justify-center rounded-full border border-black">
-                  Y
-                </span>
               )}
-            </button>
-
-            {/* --- Relative Container for Textarea and Overlay --- */}
-            {/* This container establishes the positioning context for the absolute overlay */}
-            <div className="relative flex-1">
-              {/* --- The Actual Textarea --- */}
-              {/* It only contains the 'final' inputText */}
-              {/* Be specific and consistent with text/font/padding styles */}
-              <textarea
-                ref={textAreaRef}
-                rows={1}
-                className="block w-full px-3 py-2 bg-gray-800 rounded focus:outline-none resize-none overflow-auto max-h-64 align-top font-sans text-base leading-normal" // Example: Define styles clearly
-                placeholder={!interimText ? "Type or Hold Mic [Y]" : ""}
-                value={inputText} // <--- VALUE IS ONLY inputText
-                onChange={(e) => {
-                  setInputText(e.target.value);
-                  setInterimText("");
-                }}
-                onInput={autoGrow}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-              />
-              {/* --- End of Textarea --- */}
-
-              {/* --- The Absolute Overlay Div --- */}
-              {/* Renders ONLY when interimText exists */}
-              {/* Sits on top of the textarea */}
-              {interimText && (
-                <div
-                  // Positioning: Absolute, covering the parent relative container.
-                  // Styling: MUST exactly match textarea's internal text area styles.
-                  // Interaction: pointer-events-none lets clicks pass through.
-                  // Text Handling: Match textarea's wrapping behavior.
-                  className="absolute inset-0 px-3 py-2 overflow-hidden pointer-events-none whitespace-pre-wrap break-words align-top font-sans text-base leading-normal" // <-- !!! These classes MUST meticulously match the textarea's font, size, padding, line-height, etc. !!!
-                  aria-hidden="true" // Hide from screen readers as it duplicates textarea visually
-                >
-                  {/* Invisible inputText - renders transparently but takes up space */}
-                  <span style={{ color: "transparent" }}>{inputText}</span>
-
-                  {/* Visible, styled interimText - appended after the invisible text */}
-                  {/* Apply your desired styling here */}
-                  <span className="text-gray-400 opacity-75 animate-pulse">
-                    {interimText}
-                  </span>
-                </div>
-              )}
-              {/* --- End of Overlay Div --- */}
             </div>
-            {/* --- End of Relative Container --- */}
-
-            {/* Send button */}
-            <button
-              onClick={handleSend}
-              // Align button with bottom of input area
-              className="p-2 bg-blue-600 rounded-full flex items-center justify-center self-end mb-1"
-            >
-              <FaPaperPlane />
-            </button>
-          </div>
-        </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
-    </Gamepad>
+      <div className="flex items-center space-x-2 w-full px-2">
+        <RoundButton
+          onMouseDown={handleMicPressStart}
+          onMouseUp={handleMicPressEnd}
+          onMouseLeave={handleMicLeave}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            handleMicPressStart();
+          }}
+          onTouchEnd={handleMicPressEnd}
+          onTouchCancel={handleMicPressEnd}
+          controllerConnected={true}
+          gamepadActionButton="Y"
+          title="Toggle/Hold Recording (Y)"
+          className={`
+              relative p-2 rounded-full self-end mb-1 transition-all duration-150 active:scale-95
+              ${
+                isRecording
+                  ? "bg-red-600 hover:bg-red-700 animate-pulse"
+                  : "bg-gray-600 hover:bg-gray-700"
+              }
+            `}
+          Icon={FaMicrophone}
+        />
+
+        <div className="relative flex-1">
+          <textarea
+            ref={textAreaRef}
+            rows={1}
+            className="block w-full px-3 py-2 bg-gray-800 rounded focus:outline-none resize-none overflow-auto max-h-64 align-top font-sans text-base leading-normal" // Example: Define styles clearly
+            placeholder={!interimText ? "Type or Hold Mic [Y]" : ""}
+            value={inputText} // <--- VALUE IS ONLY inputText
+            onChange={(e) => {
+              setInputText(e.target.value);
+              setInterimText("");
+            }}
+            onInput={autoGrow}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+          />
+          {interimText && (
+            <div
+              className="absolute inset-0 px-3 py-2 overflow-hidden pointer-events-none whitespace-pre-wrap break-words align-top font-sans text-base leading-normal" // <-- !!! These classes MUST meticulously match the textarea's font, size, padding, line-height, etc. !!!
+              aria-hidden="true"
+            >
+              <span style={{ color: "transparent" }}>{inputText}</span>
+              <span className="text-gray-400 opacity-75 animate-pulse">
+                {interimText}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <RoundButton
+          Icon={FaPaperPlane}
+          onClick={handleSend}
+          controllerConnected={true}
+          gamepadActionButton="A"
+          gamepadBadgeBgColor="bg-green-400"
+          className="bg-blue-400"
+          isLoading={false}
+        />
+      </div>
+    </div>
   );
 }
+
+const RoundButton = ({
+  Icon,
+  onClick,
+  controllerConnected,
+  gamepadActionButton,
+  // New optional props for gamepad badge colors:
+  gamepadBadgeBgColor = "bg-yellow-400",
+  gamepadBadgeTextColor = "text-black",
+  // Other props:
+  isLoading = false,
+  isActive = false,
+  disabled = false,
+  title = "",
+  className = "",
+  // Animation event handlers
+  onMouseDown,
+  onMouseUp,
+  onMouseLeave,
+  onTouchStart,
+  onTouchEnd,
+  onTouchCancel,
+  ...rest
+}) => {
+  return (
+    <button
+      {...rest}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseLeave}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchCancel}
+      title={title}
+      disabled={disabled || isLoading}
+      className={`
+        relative p-2 rounded-full transition-all duration-150 active:scale-95
+        ${
+          isActive
+            ? "bg-red-600 hover:bg-red-700"
+            : "bg-gray-600 hover:bg-gray-700"
+        }
+        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+        ${className}
+      `}
+    >
+      {/* Render a spinner if loading; otherwise, render the Icon */}
+      {isLoading ? <FaSpinner className="animate-spin" /> : Icon && <Icon />}
+
+      {/* Gamepad action button badge */}
+      {controllerConnected && !isLoading && (
+        <span
+          className={`
+            absolute top-0 right-0 translate-x-1 -translate-y-1
+            ${gamepadBadgeBgColor} ${gamepadBadgeTextColor} 
+            text-xs w-4 h-4 flex items-center justify-center 
+            rounded-full border border-black
+          `}
+        >
+          {gamepadActionButton}
+        </span>
+      )}
+    </button>
+  );
+};
+
+const TopRow = ({
+  isRecording,
+  autoSendOnStop,
+  setAutoSendOnStop,
+  controllerConnected,
+  props,
+}) => {
+  return (
+    <div className="mb-2 flex items-center justify-between text-sm">
+      <div>
+        Mic (Y): {/* Added button indicator */}
+        <span
+          className={`ml-1 font-bold ${
+            isRecording ? "text-green-400 animate-pulse" : "text-red-400" // Pulse when recording
+          }`}
+        >
+          {isRecording ? "Listening..." : "Off"}
+        </span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => {
+            setAutoSendOnStop((prev) => !prev);
+          }}
+          className={` flex space-x-2 items-center
+            px-3 py-1 rounded text-xs font-bold 
+            transition-all duration-300 
+            focus:outline-none focus:ring-2 focus:ring-offset-2 
+            active:scale-95
+            ${
+              autoSendOnStop
+                ? // If ON, show green background
+                  "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+                : // If OFF, show gray background
+                  "bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-500"
+            }
+          `}
+        >
+          {controllerConnected ? (
+            <span className="bg-black flex items-center justify-center leading-none font-mono rounded-full w-4 h-4 text-xs px-1 py-0  ">
+              x
+            </span>
+          ) : (
+            ""
+          )}
+          <span>Auto Send </span>
+
+          {autoSendOnStop ? <FaCheck /> : ""}
+        </button>
+      </div>
+    </div>
+  );
+};
