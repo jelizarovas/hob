@@ -740,127 +740,23 @@ export default function ChatBox() {
     }
   }, [inputText]);
 
-  // ──────────────────────────────────────────────────────────
-  // 7) Helpers
-  // ──────────────────────────────────────────────────────────
-  function getInitials(name) {
-    const parts = name.split(/\s+/);
-    return parts
-      .slice(0, 2)
-      .map((p) => p[0]?.toUpperCase())
-      .join("");
-  }
-
-  function formatTime(ts) {
-    if (!ts) return "";
-    const d = new Date(ts);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
-  function isMine(uid) {
-    return uid === userId;
-  }
-
-  // Basic pre-wrap for multi-line
-  const bubbleTextClass = "text-sm whitespace-pre-wrap break-words"; // Added break-words
-
-  // ──────────────────────────────────────────────────────────
-  // 8) Render
-  // ──────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-full justify-between  bg-gray-700 text-white mx-auto  max-w-xl relative ">
-    
-      {true && (
-        <div
-          ref={messagesContainerRef}
-          id="message-list-container"
-          className="   relative    bg-yellow-500  "
-        >
-          <div className="overflow-y-hidden max-h-full  bg-orange-500  ">
-            {messages.map((msg) => {
-              const mine = isMine(msg.userId);
-              const selected = msg.id === selectedMessageId;
-              const initials = getInitials(msg.displayName || "??");
-              return (
-                <div
-                  key={msg.id}
-                  id={`message-${msg.id}`} // Add ID to each message row for potential scrolling target
-                  className={`flex items-start my-1 ${
-                    mine ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {/* Avatar left if not mine */}
-                  {!mine && (
-                    <div className="mr-2 flex-shrink-0 w-8 h-8">
-                      {msg.photoURL ? (
-                        <img
-                          src={msg.photoURL}
-                          alt={msg.displayName}
-                          title={msg.displayName}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div
-                          className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
-                          title={msg.displayName}
-                        >
-                          {initials}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div
-                    onClick={() => {
-                      if (mine) {
-                        if (selectedMessageId === msg.id) {
-                          remove(ref(rtdb, `/chat/current/${msg.id}`));
-                          setSelectedMessageId(null);
-                        } else {
-                          setSelectedMessageId(msg.id);
-                        }
-                      }
-                    }}
-                    className={`
-                      p-2 rounded-lg max-w-xl cursor-pointer
-                      ${mine ? "bg-blue-600" : "bg-gray-700"}
-                      ${selected ? "bg-red-700" : ""}
-                    `}
-                  >
-                    <div className={bubbleTextClass}>{msg.text}</div>
-                    <div className="text-right text-xs text-gray-300 mt-1">
-                      {formatTime(msg.timestamp)}
-                    </div>
-                  </div>
-
-                  {/* Avatar right if mine */}
-                  {mine && (
-                    <div className="ml-2 flex-shrink-0 w-8 h-8">
-                      {photoURL ? (
-                        <img
-                          src={photoURL}
-                          alt={displayName}
-                          title={displayName}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div
-                          className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
-                          title={displayName}
-                        >
-                          {initials}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-      )}
-      <div className="flex items-center space-x-2 w-full px-2 bg-gray-800 py-2">
+    <>
+      <div className="flex-1 overflow-y-auto w-full  bg-gray-900 text-white mx-auto  max-w-xl relative ">
+        <MessagesContainer
+          wrapperClassName=""
+          messagesContainerClassName=""
+          messagesContainerRef={messagesContainerRef}
+          messages={messages}
+          userId={userId}
+          selectedMessageId={selectedMessageId}
+          setSelectedMessageId={setSelectedMessageId}
+          photoURL={photoURL}
+          displayName={displayName}
+          messagesEndRef={messagesEndRef}
+        />
+      </div>
+      <div className="flex-none flex items-center space-x-2 w-full px-2 bg-gray-800 py-2">
         <RoundButton
           onMouseDown={handleMicPressStart}
           onMouseUp={handleMicPressEnd}
@@ -921,7 +817,7 @@ export default function ChatBox() {
           isLoading={false}
         />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -1040,6 +936,131 @@ const TopRow = ({
 
           {autoSendOnStop ? <FaCheck /> : ""}
         </button>
+      </div>
+    </div>
+  );
+};
+
+const MessagesContainer = ({
+  messagesContainerRef,
+  messages,
+  userId,
+  selectedMessageId,
+  setSelectedMessageId,
+  photoURL,
+  displayName,
+  messagesEndRef,
+  wrapperClassName,
+  messagesContainerClassName,
+
+  ...props
+}) => {
+  function isMine(uid) {
+    return uid === userId;
+  }
+
+  function getInitials(name) {
+    const parts = name.split(/\s+/);
+    return parts
+      .slice(0, 2)
+      .map((p) => p[0]?.toUpperCase())
+      .join("");
+  }
+
+  function formatTime(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  const bubbleTextClass = "text-sm whitespace-pre-wrap break-words"; // Added break-words
+
+  return (
+    <div
+      ref={messagesContainerRef}
+      id="message-list-container"
+      className={wrapperClassName}
+    >
+      <div className={messagesContainerClassName}>
+        {messages.map((msg) => {
+          const mine = isMine(msg.userId);
+          const selected = msg.id === selectedMessageId;
+          const initials = getInitials(msg.displayName || "??");
+          return (
+            <div
+              key={msg.id}
+              id={`message-${msg.id}`} // Add ID to each message row for potential scrolling target
+              className={`flex items-start my-1 ${
+                mine ? "justify-end" : "justify-start"
+              }`}
+            >
+              {/* Avatar left if not mine */}
+              {!mine && (
+                <div className="mr-2 flex-shrink-0 w-8 h-8">
+                  {msg.photoURL ? (
+                    <img
+                      src={msg.photoURL}
+                      alt={msg.displayName}
+                      title={msg.displayName}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div
+                      className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
+                      title={msg.displayName}
+                    >
+                      {initials}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div
+                onClick={() => {
+                  if (mine) {
+                    if (selectedMessageId === msg.id) {
+                      remove(ref(rtdb, `/chat/current/${msg.id}`));
+                      setSelectedMessageId(null);
+                    } else {
+                      setSelectedMessageId(msg.id);
+                    }
+                  }
+                }}
+                className={`
+                    p-2 rounded-lg max-w-xl cursor-pointer
+                    ${mine ? "bg-blue-600" : "bg-gray-700"}
+                    ${selected ? "bg-red-700" : ""}
+                  `}
+              >
+                <div className={bubbleTextClass}>{msg.text}</div>
+                <div className="text-right text-xs text-gray-300 mt-1">
+                  {formatTime(msg.timestamp)}
+                </div>
+              </div>
+
+              {/* Avatar right if mine */}
+              {mine && (
+                <div className="ml-2 flex-shrink-0 w-8 h-8">
+                  {photoURL ? (
+                    <img
+                      src={photoURL}
+                      alt={displayName}
+                      title={displayName}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div
+                      className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-sm"
+                      title={displayName}
+                    >
+                      {initials}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );
