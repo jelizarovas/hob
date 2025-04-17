@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { updateProfile, reauthenticateWithCredential, updatePassword, EmailAuthProvider } from "firebase/auth";
+import { collection, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import {
+  updateProfile,
+  reauthenticateWithCredential,
+  updatePassword,
+  EmailAuthProvider,
+} from "firebase/auth";
 import { db, auth } from "./firebase";
 import { useAuth } from "./auth/AuthProvider";
 import ProfilePhotoUpload from "./ProfilePhotoUpload";
@@ -12,8 +17,10 @@ import { getAuth } from "firebase/auth";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import SignatureEPad from "./SignatureEPad";
+import { FaLayerGroup, FaStore } from "react-icons/fa";
 
-const updateUserPhotoURL = "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
+const updateUserPhotoURL =
+  "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
 
 const Account = () => {
   const { currentUser, isPrivileged } = useAuth();
@@ -36,6 +43,22 @@ const Account = () => {
 
   // Loading state for user doc fetch
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+  const [stores, setStores] = React.useState([]);
+  const [teams, setTeams] = React.useState([]);
+
+  React.useEffect(() => {
+    const unsubStores = onSnapshot(collection(db, "stores"), (snap) =>
+      setStores(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+    const unsubTeams = onSnapshot(collection(db, "teams"), (snap) =>
+      setTeams(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+    return () => {
+      unsubStores();
+      unsubTeams();
+    };
+  }, []);
 
   const fetchWithAuth = async (url, options = {}) => {
     const auth = getAuth();
@@ -134,7 +157,9 @@ const Account = () => {
   };
 
   // Check if any field is modified
-  const isModified = Object.keys(userData).some((key) => userData[key] !== originalData[key]);
+  const isModified = Object.keys(userData).some(
+    (key) => userData[key] !== originalData[key]
+  );
 
   // Save form to Firestore
   const handleSave = async (e) => {
@@ -146,7 +171,9 @@ const Account = () => {
         ...userData,
         lastUpdatedBy: {
           userId: currentUser.uid,
-          displayName: currentUser.displayName || `${userData.firstName} ${userData.lastName}`,
+          displayName:
+            currentUser.displayName ||
+            `${userData.firstName} ${userData.lastName}`,
         },
       };
       await updateDoc(docRef, updatedData);
@@ -186,7 +213,9 @@ const Account = () => {
       setConfirmPassword("");
     } catch (error) {
       console.error("Error updating password:", error);
-      alert("Could not update password. Please ensure your current password is correct.");
+      alert(
+        "Could not update password. Please ensure your current password is correct."
+      );
     } finally {
       setIsUpdatingPassword(false);
     }
@@ -195,6 +224,14 @@ const Account = () => {
   if (!targetUid()) {
     return <p>No user found or not logged in.</p>;
   }
+
+  const storeChips = (userData.storeIds ?? [])
+    .map((id) => stores.find((s) => s.id === id))
+    .filter(Boolean);
+
+  const teamChips = (userData.teamIds ?? [])
+    .map((id) => teams.find((t) => t.id === id || `team-${t.id}` === id)) // handles old prefixed ids
+    .filter(Boolean);
 
   return (
     <div className="container mx-auto p-2">
@@ -213,7 +250,10 @@ const Account = () => {
         </div>
       ) : (
         <>
-          <form onSubmit={handleSave} className="flex flex-col space-y-4 max-w-md">
+          <form
+            onSubmit={handleSave}
+            className="flex flex-col space-y-4 max-w-md"
+          >
             <AccountInput
               label="Email"
               name="email"
@@ -222,6 +262,25 @@ const Account = () => {
               onChange={handleChange}
               disabled
             />
+            {/* Stores */}
+            <Section title="Stores" icon={<FaStore />}>
+              {storeChips.length ? (
+                storeChips.map((s) => (
+                  <Chip key={s.id} label={s.shortName || s.name} />
+                ))
+              ) : (
+                <Empty>None assigned</Empty>
+              )}
+            </Section>
+
+            {/* Teams */}
+            <Section title="Teams" icon={<FaLayerGroup />}>
+              {teamChips.length ? (
+                teamChips.map((t) => <Chip key={t.id} label={t.name} />)
+              ) : (
+                <Empty>None assigned</Empty>
+              )}
+            </Section>
             <AccountInput
               label="First Name"
               name="firstName"
@@ -299,8 +358,13 @@ const Account = () => {
               originalValue={originalData.contactUrl}
               onChange={handleChange}
             />
-            <SignatureEPad signature={userData.signature} handleChange={handleChange} />
-            {userData?.contactUrl?.length > 0 && <MyQRCode value={userData?.contactUrl} />}
+            <SignatureEPad
+              signature={userData.signature}
+              handleChange={handleChange}
+            />
+            {userData?.contactUrl?.length > 0 && (
+              <MyQRCode value={userData?.contactUrl} />
+            )}
             <button
               type="submit"
               disabled={!isModified || isSaving}
@@ -321,7 +385,10 @@ const Account = () => {
 
           <div className="p-4">
             <div className="mt-6">
-              <ProfilePhotoUpload userId={targetUid()} onUploadComplete={handlePhotoUploadComplete} />
+              <ProfilePhotoUpload
+                userId={targetUid()}
+                onUploadComplete={handlePhotoUploadComplete}
+              />
             </div>
             {userData.profilePhotoThumbURL && (
               <img
@@ -375,10 +442,23 @@ const Account = () => {
   );
 };
 
-const AccountInput = ({ label, name, value, originalValue, onChange, type = "text", disabled, ...props }) => {
+const AccountInput = ({
+  label,
+  name,
+  value,
+  originalValue,
+  onChange,
+  type = "text",
+  disabled,
+  ...props
+}) => {
   const hasChanged = value !== originalValue;
-  const highlightClass = hasChanged ? "border-green-400" : "border-white border-opacity-10";
-  const labelClass = hasChanged ? "text-green-400 text-xs uppercase mb-1" : "text-xs uppercase opacity-50 mb-1";
+  const highlightClass = hasChanged
+    ? "border-green-400"
+    : "border-white border-opacity-10";
+  const labelClass = hasChanged
+    ? "text-green-400 text-xs uppercase mb-1"
+    : "text-xs uppercase opacity-50 mb-1";
   const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
 
   return (
@@ -399,3 +479,23 @@ const AccountInput = ({ label, name, value, originalValue, onChange, type = "tex
 };
 
 export default Account;
+
+/* ---------- tiny presentational helpers ------------------- */
+const Section = ({ title, icon, children }) => (
+  <section>
+    <h2 className="flex items-center gap-2 text-lg font-semibold mb-2">
+      {icon} {title}
+    </h2>
+    <div className="flex flex-wrap gap-2">{children}</div>
+  </section>
+);
+
+const Chip = ({ label }) => (
+  <span className="px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-sm dark:text-slate-100">
+    {label}
+  </span>
+);
+
+const Empty = ({ children }) => (
+  <span className="text-slate-400 text-sm">{children}</span>
+);

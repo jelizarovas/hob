@@ -31,6 +31,7 @@ import Inventories from "./inventoryManager/Inventories";
 import GamePadDemo from "./gamepad/GamePadDemo";
 import VoiceDemo from "./gamepad/VoiceDemo";
 import ChatBox from "./gamepad/ChatBox";
+import TeamsManager from "./teams/TeamsManager";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -231,6 +232,16 @@ function App() {
                         [params.storeId, "/admin/stores"],
                       ]}
                     />
+                    <ProtectedRoute
+                      exact
+                      path="/manage/teams"
+                      component={TeamsManager}
+                      title={[
+                        ["ADMIN", "/"],
+                        ["TEAMS", "/manage/teams"],
+                      ]}
+                    />
+
                     <ProtectedRoute
                       exact
                       path="/manage/links"

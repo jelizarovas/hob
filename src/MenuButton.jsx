@@ -142,6 +142,13 @@ export const MenuButton = () => {
         : null,
       isAdmin
         ? {
+            label: "Manage Teams",
+            Icon: MdPerson,
+            onClick: () => history.push("/manage/teams"),
+          }
+        : null,
+      isAdmin
+        ? {
             label: "Manage Inventory",
             Icon: MdCarCrash,
             onClick: () => history.push("/inventory/current"),
