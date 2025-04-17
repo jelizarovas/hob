@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { collection, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import {
   updateProfile,
   reauthenticateWithCredential,
@@ -23,7 +30,7 @@ const updateUserPhotoURL =
   "https://us-central1-honda-burien.cloudfunctions.net/updateUserPhoto";
 
 const Account = () => {
-  const { currentUser, isPrivileged } = useAuth();
+  const { currentUser, isPrivileged, isAdmin, profile } = useAuth();
   const { uid } = useParams();
 
   // Keep two copies: one for the original from DB, one for current user edits.
@@ -43,22 +50,6 @@ const Account = () => {
 
   // Loading state for user doc fetch
   const [isLoadingUser, setIsLoadingUser] = useState(true);
-
-  const [stores, setStores] = React.useState([]);
-  const [teams, setTeams] = React.useState([]);
-
-  React.useEffect(() => {
-    const unsubStores = onSnapshot(collection(db, "stores"), (snap) =>
-      setStores(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-    );
-    const unsubTeams = onSnapshot(collection(db, "teams"), (snap) =>
-      setTeams(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-    );
-    return () => {
-      unsubStores();
-      unsubTeams();
-    };
-  }, []);
 
   const fetchWithAuth = async (url, options = {}) => {
     const auth = getAuth();
@@ -109,6 +100,7 @@ const Account = () => {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   // Password fields
+  const [showRawData, setShowRawData] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -225,13 +217,7 @@ const Account = () => {
     return <p>No user found or not logged in.</p>;
   }
 
-  const storeChips = (userData.storeIds ?? [])
-    .map((id) => stores.find((s) => s.id === id))
-    .filter(Boolean);
-
-  const teamChips = (userData.teamIds ?? [])
-    .map((id) => teams.find((t) => t.id === id || `team-${t.id}` === id)) // handles old prefixed ids
-    .filter(Boolean);
+  const assignedTeams = Object.values(userData.assignments || {});
 
   return (
     <div className="container mx-auto p-2">
@@ -254,6 +240,39 @@ const Account = () => {
             onSubmit={handleSave}
             className="flex flex-col space-y-4 max-w-md"
           >
+            {/* { isAdmin && showRawData ? (
+              <pre className="text-xs">{JSON.stringify(userData, null, 2)}</pre>
+            ) : (
+              <button onClick={() => setShowRawData(true)}>RawData</button>
+            )} */}
+            <Section title="Teams" icon={<FaLayerGroup />}>
+              {assignedTeams?.length > 0 ? (
+                assignedTeams?.map((a) => (
+                  <div
+                    key={a?.teamId}
+                    className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow"
+                    title={`Added by ${a?.addedBy.displayName} on
+                      ${a?.addedAt.toDate().toLocaleDateString()}`}
+                  >
+                    <h4 className="font-semibold dark:text-slate-100">
+                      {a?.teamName}
+                    </h4>
+                    <p className="text-sm text-slate-500"></p>
+                    <div className="text-xs text-gray-500">
+                      <ul className=" list-inside">
+                        {a?.stores?.map((s) => (
+                          <li key={s?.id} className=" ">
+                            {s?.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <Empty>None assigned</Empty>
+              )}
+            </Section>
             <AccountInput
               label="Email"
               name="email"
@@ -262,25 +281,7 @@ const Account = () => {
               onChange={handleChange}
               disabled
             />
-            {/* Stores */}
-            <Section title="Stores" icon={<FaStore />}>
-              {storeChips.length ? (
-                storeChips.map((s) => (
-                  <Chip key={s.id} label={s.shortName || s.name} />
-                ))
-              ) : (
-                <Empty>None assigned</Empty>
-              )}
-            </Section>
-
-            {/* Teams */}
-            <Section title="Teams" icon={<FaLayerGroup />}>
-              {teamChips.length ? (
-                teamChips.map((t) => <Chip key={t.id} label={t.name} />)
-              ) : (
-                <Empty>None assigned</Empty>
-              )}
-            </Section>
+            
             <AccountInput
               label="First Name"
               name="firstName"
@@ -490,10 +491,13 @@ const Section = ({ title, icon, children }) => (
   </section>
 );
 
-const Chip = ({ label }) => (
-  <span className="px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-sm dark:text-slate-100">
-    {label}
-  </span>
+const Chip = ({ label, subLabel }) => (
+  <div className="flex flex-col bg-slate-200 dark:bg-slate-700 rounded-full px-3 py-1">
+    <span className="text-sm dark:text-slate-100">{label}</span>
+    {subLabel && (
+      <span className="text-xs opacity-70 dark:text-slate-400">{subLabel}</span>
+    )}
+  </div>
 );
 
 const Empty = ({ children }) => (
