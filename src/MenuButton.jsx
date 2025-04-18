@@ -135,6 +135,13 @@ export const MenuButton = () => {
         : null,
       isAdmin
         ? {
+            label: "Note Page",
+            Icon: MdPercent,
+            onClick: () => history.push("/notepage"),
+          }
+        : null,
+      isAdmin
+        ? {
             label: "Manage Links",
             Icon: MdLink,
             onClick: () => history.push("/manage/links"),

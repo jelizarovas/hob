@@ -32,6 +32,7 @@ import GamePadDemo from "./gamepad/GamePadDemo";
 import VoiceDemo from "./gamepad/VoiceDemo";
 import ChatBox from "./gamepad/ChatBox";
 import TeamsManager from "./teams/TeamsManager";
+import { NotePage } from "./NotePage";
 // import { ScanTest } from "./ScanTest";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ function App() {
                 <Switch>
                   <Route path="/login" component={Login} />
                   <Route path="/voicedemo" component={VoiceDemo} />
+                  <Route path="/notepage" component={NotePage} />
                   <ProtectedRoute exact path="/" component={Dashboard} />
                   {/* <ProtectedRoute exact path="/dev/scan" component={ScanTest} /> */}
                   <ProtectedRoute exact path="/dev/pencil" component={Pencil} />
